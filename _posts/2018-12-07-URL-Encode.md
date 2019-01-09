@@ -10,7 +10,7 @@ tags:	web							#标签
 ---
 [为什么要对url进行encode](http://www.blogjava.net/donghang73/archive/2011/08/10/356208.html)
 
-发现现在几乎所有的网站都对url中的汉字和特殊的字符，进行了urlencode操作，也就是：
+发现现在几乎所有的网站都对url中的汉字和特殊的字符，进行了url encode操作，也就是：
 
 [http://hi.baidu.com/%BE%B2%D0%C4%C0%CF%C8%CB/creat/blog/](http://hi.baidu.com/%BE%B2%D0%C4%C0%CF%C8%CB/creat/blog/)
 
