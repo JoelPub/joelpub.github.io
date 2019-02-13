@@ -12,23 +12,14 @@ tags:	web							#标签
 <li>Intellij AEM Plugin:<a href="https://github.com/headwirecom/aem-ide-tooling-4-intellij/blob/master/documenation/AEM%20Tooling%20Plugin%20for%20IntelliJ%20IDEA.md">https://github.com/headwirecom/aem-ide-tooling-4-intellij/blob/master/documenation/AEM%20Tooling%20Plugin%20for%20IntelliJ%20IDEA.md</a></li>
 <li>Using archetype         ��<a href="https://github.com/Adobe-Marketing-Cloud/aem-project-archetype">https://github.com/Adobe-Marketing-Cloud/aem-project-archetype</a>��</li>
 <li>config settings.xml in .m2 folder (<a href="https://helpx.adobe.com/experience-manager/using/first-osgi.html">https://helpx.adobe.com/experience-manager/using/first-osgi.html</a>��</li>
-<li>
-<ul>
 <li>create simple content pakcage archetype</li>
-</ul>
-</li>
-<li></li>
 </ul>
 <pre><code>mvn archetype:generate -DarchetypeGroupId=com.day.jcr.vault -DarchetypeArtifactId=simple-content-package-archetype -DarchetypeVersion=1.0.2 -DarchetypeRepository=adobe-public-releases -DgroupId=my-group-id -Dversion=1.0-SNAPSHOT -Dpackage=com.mycompany.myproject -DappsFolderName=myproject -DpackageGroup=&quot;My Company&quot; -DpackageGroup=&quot;My Company&quot; -DartifactId=myproject -DartifactName=&quot;My Project&quot;
 </code></pre>
-<ul>
-<li></li>
-</ul>
 <pre><code>mvn clean install -PautoInstallPackage Clean: remove target folder created during mvn compile
 </code></pre>
 <ul>
-<li>&lt;i&gt;Settings.xml&lt;/i&gt;</li>
-<li></li>
+<li>Settings.xml</li>
 </ul>
 <pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
 &lt;project xmlns=&quot;http://maven.apache.org/POM/4.0.0&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
