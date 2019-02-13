@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
 title:      URL Encode 				# 标题 
-subtitle:   Encode 的必要性 #副标题
+subtitle:   Encode 的原因 #副标题
 date:       2018-12-07 				# 时间
 author:     转载 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
