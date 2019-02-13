@@ -8,7 +8,6 @@ header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
 tags:	web							#标签
 ---
-<div class="entry-content">
 
 *   Intellij AEM Plugin: [https://github.com/headwirecom/aem-ide-tooling-4-intellij/blob/master/documenation/AEM%20Tooling%20Plugin%20for%20IntelliJ%20IDEA.md](https://github.com/headwirecom/aem-ide-tooling-4-intellij/blob/master/documenation/AEM%20Tooling%20Plugin%20for%20IntelliJ%20IDEA.md)
 *   Using archetype         （[https://github.com/Adobe-Marketing-Cloud/aem-project-archetype](https://github.com/Adobe-Marketing-Cloud/aem-project-archetype)）
@@ -134,5 +133,3 @@ tags:	web							#标签
     <span class="s2">*        </plugins>*</span>
     <span class="s2">*    </build>*</span>
     <span class="s2">*</project>*</span></span>
-
-	</div>
