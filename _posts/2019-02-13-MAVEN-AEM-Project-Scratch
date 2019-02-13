@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
 title:      Build AEM project by Maven from scratch 				# 标题 
-subtitle:   ( Archetype )  的必要 #副标题
+subtitle:   ( Archetype )   #副标题
 date:       2019-02-13 				# 时间
 author:     转载 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
