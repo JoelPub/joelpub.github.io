@@ -35,7 +35,7 @@ tags:	web							#标签
 <p><strong>appsFolderName</strong>– amp_app</p>
 <p>/apps folder name and /etc/designs folder name<br>
 <img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-2-188x300.png?raw=true" alt="image"><br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-3-208x300?raw=true" alt="image"><br>
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-3-208x300.png?raw=true" alt="image"><br>
 <img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-7.png?raw=true" alt="image"><br>
 <strong>artifactName</strong>– AMPProject</p>
 <p>maven project description<br>
