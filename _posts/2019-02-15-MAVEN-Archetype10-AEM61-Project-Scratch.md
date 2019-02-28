@@ -10,6 +10,8 @@ tags:	web							#标签
 ---
 <h1><a id="Creating_your_first_Adobe_Experience_Manager_61_Project_using_Adobe_Maven_Archetype_10_1"></a>Creating your first Adobe Experience Manager 6.1 Project using Adobe Maven Archetype 10</h1>
 <p><a href="https://helpx.adobe.com/experience-manager/using/first-arch10.html">https://helpx.adobe.com/experience-manager/using/first-arch10.html</a></p>
+<p>Another guide with java class create</p>
+<p><a href="https://helpx.adobe.com/experience-manager/using/htl_61.html">https://helpx.adobe.com/experience-manager/using/htl_61.html</a></p>
 <ol>
 <li>
 <p>Open the command prompt and go to your working directory (for example, /var/www/html/aem).</p>
