@@ -9,7 +9,7 @@ catalog: true 						# 是否归档
 tags:	program							#标签
 ---
 <pre><code>
-#include&lt;?iostream?&gt;
+#include &lt;iostream&gt;
 using namespace std; 
 class P
 {
