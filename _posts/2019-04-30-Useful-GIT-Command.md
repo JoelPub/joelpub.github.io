@@ -20,3 +20,7 @@ git diff --name-only OLD_COMMIT_ID_HERE NEW_COMMIT_ID_HERE
 <pre><code>
 git show  COMMIT_ID_HERE    --name-only
 </code></pre>
+或者
+<pre><code>
+git show –pretty=”” –name-only bd61ad98
+</code></pre>
