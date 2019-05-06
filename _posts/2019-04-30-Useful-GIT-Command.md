@@ -8,19 +8,15 @@ header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
 tags:	program							#标签
 ---
-**查看最近一次提交的所有文件名**
+**查看最近一次提交的所有文件名(不包括comment)**
 <pre><code>
 git diff --name-only HEAD~ HEAD
 </code></pre>
-**查看两个版本之间变动的文件**
+**查看两个版本之间变动的文件名(不包括comment)**
 <pre><code>
 git diff --name-only OLD_COMMIT_ID_HERE NEW_COMMIT_ID_HERE
 </code></pre>
-**查看指定提交的所有文件名**
+**查看指定提交的所有文件名(包括comment)**
 <pre><code>
-git show  COMMIT_ID_HERE    --name-only
-</code></pre>
-或者
-<pre><code>
-git show –pretty=”” –name-only bd61ad98
+git show  COMMIT_ID_HERE --name-only
 </code></pre>
