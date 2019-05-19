@@ -2,7 +2,7 @@
 layout:     post   				    # 使用的布局（不需要改）
 title:      React Native component life cycle 				# 标题 
 subtitle:   React Native组件的生命周期 #副标题
-date:       2016-10-07 				# 时间
+date:       2016-09-27 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
