@@ -8,7 +8,7 @@ header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
 tags:	React							#标签
 ---
-<h1><a id="buttonTextInput_0"></a>用button获得TextInput的值</h1>
+<h1><a id="buttonTextInput_1"></a>用button获得TextInput的值</h1>
 <p><strong>this.refs.input. _lastNativeText</strong></p>
 <p>app.js:</p>
 <p>import React, { Component } from ‘react’&lt;br&gt;</p>
