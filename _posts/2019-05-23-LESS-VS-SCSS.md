@@ -8,74 +8,214 @@ header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
 tags:	web							#标签
 ---
-[https://www.jianshu.com/p/bf641d9d979a](https://www.jianshu.com/p/bf641d9d979a)
+[https://www.cnblogs.com/hope666/p/6791790.html](https://www.cnblogs.com/hope666/p/6791790.html)
 
 
-<h1><a id="sassless_1"></a>sass、less是什么，如何使用？</h1>
-<p><a href="https://www.jianshu.com/u/52eae30447e9">远望的云</a> <a href="">关注</a><br>
-0.8<br>
-2017.06.21 10:49*字数 2112 阅读 17045 评论 3 喜欢 26</p>
-<p>1.背景介绍</p>
-<p>CSS 是一门非程序式语言，没有变量、函数、SCOPE（作用域），需要书写大量看似没有逻辑的代码，不方便维护及扩 展，不利于复用，尤其对于非前端开发工程师来讲，往往会因为缺少 CSS 编写经验而很难写出组织良好且易于维护的 CSS 代码。为了方便前端开发的工作量，出现了sass和less.</p>
-<p>2.知识解剖</p>
-<p>Sass背景介绍</p>
-<p>Sass是对CSS（层叠样式表）的语法的一种扩充，诞生于2007年，最早也是最成熟的一款CSS预处理器语言，它 可以使用变量、常量、嵌套、混 入、函数等功能，可以更有效有弹性的写出CSS。Sass最后还是会编译出合法 的CSS让浏览器使用，也就是说它本身的语法并不太容易让浏览器识别，因为 它不是标准的CSS格式，在它的 语法内部可以使用动态变量等，所以它更像一种极简单的动态语言。 其实现在的Sass已经有了两套语法规则：一个依旧是用缩进作为分隔符来区分代码块的；另一套规则和CSS一 样采用了大括号（｛｝）作为分隔符。后一种语法规则又名SCSS，在Sass3之后的版本都支持这种语法规则。</p>
-<p>SASS是什么？</p>
-<p>Sass（Syntactically Awesome Style Sheets）是一个相对新的编程语言，Sass为web前端开发而生，可以用它来定 义一套新的语法规则和函数，以加强和提升CSS。通过这种新的编程语言，你可以使用最高效的方式，以少量的代 码创建复杂的设计。它改进并增强了CSS的能力，增加了变量，局部和函数这些特性。而这只使Sass一部分利器！</p>
-<p>SASS的安装</p>
-<p>SASS是Ruby语言写的，但是两者的语法没有关系。不懂Ruby，照样使用。只是必须先安装Ruby，然后再安装SASS。</p>
-<p><a href="https://link.jianshu.com/?t=https%3A%2F%2Frubyinstaller.org%2Fdownloads%2F">WINDOW下安装RUBY</a>链接</p>
-<p>在系统上运行来安装Ruby。添加Ruby的bin文件夹到PATH用户变量和系统变量以使用 gem 命令工作，第二个和第三个框去要打勾。</p>
-<p>在系统中打开命令提示符，然后输入以下命令行</p>
-<p>gem source -ahttp://rubygems.org/</p>
-<p>gem sources -ahttp://ruby.taobao.org/</p>
-<p>gem install sass</p>
-<p>出现屏幕下方信息，表示SASS 安装成功，(国内线路不稳定，需要多试几次)。</p>
-<p>SASS使用-文件明后缀</p>
-<p>sass有两种后缀名文件：一种后缀名为sass，不使用大括号和分号；另一种就是我们这里使用的scss文件，这种和 我们平时写的css文件格式差不多，使用大括号和分号。而本教程中所说的所有sass文件都指后缀名为scss的文件。 在此也建议使用后缀名为scss的文件，以避免sass后缀名的严格格式要求报错。</p>
-<p>sass的导入</p>
-<p>sass的导入(@import)规则和CSS的有所不同，编译时会将@import的scss文件合并进来只生成一个CSS文件。但是如 果你在sass文件中导入css文件如@import ‘reset.css’，那效果跟普通CSS导入样式文件一样，导入的css文件不会 合并到编译后的文件中，而是以@import方式存在。 所有的sass导入文件都可以忽略后缀名.scss。一般来说基础的文件命名方法以_开头，如_mixin.scss。这种文件在 导入的时候可以不写下划线，可写成@import “mixin”</p>
-<p>sass的导入</p>
-<p>sass的注释</p>
-<p>LESS的背景介绍</p>
-<p>（2009年开源的一个项目，受Sass的影响较大，但又使用CSS的语法，让大部分开发者和设计师更容易上手。LESS提供了 多种方式能平滑的将写好的代码转化成标准的CSS代码。</p>
-<p>LESS的介绍</p>
-<p>第一个，less是单独的一种文件，可以理解为css的升级版，完全按照css写也没问题，不过它提供了很多便利的东 西， 可以省好多代码量。第二个，html只认css,所以需要配套一些软件将less解析成css,引用时候，直接引用css 就好。gulp,koala 都是常用的，Koala好像简单且方便一点。 多种方式能平滑的将写好的代码转化成标准的CSS代码。</p>
-<p>LESS的安装</p>
-<p>LESS的安装和Sass安装有所不同，他不需要依赖于Ruby环境，就能直接安装使用。不过LESS安装分为两种：客户端和 服务器端安装。</p>
-<p>less客户端安装</p>
-<p>我们可以直接在客户端使用&quot;.less&quot;（LESS源文件），只需要在官网载一个Javascript脚本文件主&quot;less.js&quot;，然后 在我们需要引入LESS源文件的HTML的中加入如下代码。</p>
-<p>需要注意的是：在引入&quot;.less&quot;文件中，“link&quot;的&quot;rel&quot;属性要设置为&quot;stylesheet/less”。还有更重要的一 点需要注意的是：LESS源文件一定要在&quot;less.js&quot;引入之前引入，这样才能保证LESS源文件正确编译解析。到这里就已经安装好了。</p>
-<p>less的使用</p>
-<p>使用less，css文件的后缀名需要改为.less在html页面中加入下面代码。</p>
-<p>less定义变量</p>
-<p>less样式嵌套</p>
-<p>less嵌套规则</p>
-<p>名称更为简短，并修改时易查找。</p>
-<p><a href="https://link.jianshu.com/?t=http%3A%2F%2Fblog.csdn.net%2Fwebxiaoma%2Farticle%2Fdetails%2F72768170">less样式的运算</a></p>
-<p>less样式的传参</p>
-<p>4.常见问题</p>
-<p>SASS/SCSS、LESS有什么区别?</p>
-<p>4.解析问题</p>
-<p>1.编译环境不一样</p>
-<p>Sass的安装需要Ruby环境，是在服务端处理的，而Less是需要引入less.js来处理Less代码输出css到浏览器，也可 以在开发环节使用Less，然后编译成css文件，直接放到项目中，也有 Less.app、SimpleLess、CodeKit.app这样 的工具，也有在线编译地址。</p>
-<p>2.变量符不一样，LESS是@，而SCSS是$，而且变量的作用域也不一样。</p>
-<p>3.输出设置，LESS没有输出设置，SASS提供4中输出选项：NESTED, COMPACT, COMPRESSED 和 EXPANDED。</p>
-<p>输出样式的风格可以有四种选择，默认为nested</p>
-<p>nested：嵌套缩进的css代码</p>
-<p>expanded：展开的多行css代码</p>
-<p>compact：简洁格式的css代码</p>
-<p>compressed：压缩后的css代码</p>
-<p>4.SASS支持条件语句，可以使用IF{}ELSE{},FOR{}循环等等。而LESS不支持。</p>
-<p>5.引用外部CSS文件。</p>
-<p>scss引用的外部文件命名必须以_开头, 如下例所示:其中_test1.scss、_test2.scss、_test3.scss文件分别设置 的h1 h2 h3。文件名如果以下划线_开头的话，Sass会认为该文件是一个引用文件，不会将其编译为css文件。</p>
-<p>6.SASS和LESS的工具库不同。</p>
-<p>Sass有工具库Compass, 简单说，Sass和Compass的关系有点像Javascript和jQuery的关系,Compass是Sass的工具库。 在它的基础上，封装了一系列有用的模块和模板，补充强化了Sass的功能。 Less有UI组件库Bootstrap,Bootstrap是web前端开发中一个比较有名的前端UI组件库，Bootstrap的样式文件部分 源码就是采用Less语法编写。</p>
-<p>5.参考文献</p>
-<p>参考一：<a href="https://link.jianshu.com/?t=http%3A%2F%2Fwww.haorooms.com%2Fpost%2Fsass_css">SASS入门教程及用法指南</a></p>
-<p>参考二：<a href="https://link.jianshu.com/?t=http%3A%2F%2Fwww.51xuediannao.com%2Fhtml%2Bcss%2Fhtmlcssjq%2Fccc-block-inline.html">深入理解CSS块级(block)元素和内联(inline)元素</a></p>
-<p>参考三：<a href="https://link.jianshu.com/?t=https%3A%2F%2Fwww.ibm.com%2Fdeveloperworks%2Fcn%2Fweb%2F1207_shenyi_lesscss%2F">初步认识 LESS</a></p>
-<p>参考四：<a href="https://link.jianshu.com/?t=http%3A%2F%2Fcaibaojian.com%2Fsass-less-stylus.html">sass、less和stylus的安装使用和入门实践</a></p>
-<p>参考五：<a href="https://link.jianshu.com/?t=http%3A%2F%2Fwww.w3cplus.com%2Fsassguide%2Fsyntax.html">sass语法</a></p>
-<p>参考六：<a href="https://link.jianshu.com/?t=http%3A%2F%2Fwww.cnblogs.com%2Fgrey-zhou%2Fp%2F5796496.html">less的一些用法整理</a></p>
-<p>参考七：<a href="https://link.jianshu.com/?t=http%3A%2F%2Fwww.jsann.com%2Fpost%2Fless_introduction.html">LESS使用简介</a></p>
+<h1><a id="lesssasshttpswwwcnblogscomhope666p6791790html_1"></a><a href="https://www.cnblogs.com/hope666/p/6791790.html">【less和sass的区别，你了解多少？】</a></h1>
+<p>在介绍less和sass的区别之前，我们先来了解一下他们的定义：</p>
+<p>一、Less、Sass/Scss是什么?</p>
+<p>1、Less：</p>
+<p>是一种动态样式语言. 对CSS赋予了动态语言的特性，如变量、继承、运算、函数。</p>
+<p>Less 既可以在客户端上运行 (支持IE 6+, Webkit, Firefox)，也可在服务端运行。</p>
+<p>2、Sass：</p>
+<p>是一种动态样式语言，Sass语法属于缩排语法，</p>
+<p>比css比多出好些功能(如变量、嵌套、运算,混入(Mixin)、继承、颜色处理，函数等)，更容易阅读。</p>
+<p>Sass与Scss是什么关系?</p>
+<p>Sass的缩排语法，对于写惯css前端的web开发者来说很不直观，也不能将css代码加入到Sass里面，因此sass语法进行了改良，Sass 3就变成了Scss(sassy css)。与原来的语法兼容，只是用{}取代了原来的缩进。</p>
+<p>二、less和sass的相同之处</p>
+<p>&lt;br&gt;<br>
+Less和Sass在语法上有些共性，比如下面这些：</p>
+<p>&lt;br&gt;<br>
+1、混入(Mixins)——class中的class；&lt;br&gt;<br>
+2、参数混入——可以传递参数的class，就像函数一样；&lt;br&gt;<br>
+3、嵌套规则——Class中嵌套class，从而减少重复的代码；&lt;br&gt;<br>
+4、运算——CSS中用上数学；&lt;br&gt;<br>
+5、颜色功能——可以编辑颜色；&lt;br&gt;<br>
+6、名字空间(namespace)——分组样式，从而可以被调用；&lt;br&gt;<br>
+7、作用域——局部修改样式；&lt;br&gt;<br>
+8、JavaScript 赋值——在CSS中使用JavaScript表达式赋值。</p>
+<p>三、less和sass的区别</p>
+<p>Less和Sass的主要不同就是他们的实现方式。</p>
+<p>Less是基于JavaScript，是在客户端处理的。&lt;br&gt;<br>
+Sass是基于Ruby的，是在服务器端处理的。</p>
+<p>&lt;br&gt;<br>
+关于变量在Less和Sass中的唯一区别就是Less用@，Sass用$。</p>
+<p>1、Less：</p>
+<p>&lt;br&gt;<br>
+【两种注释方式】&lt;br&gt;<br>
+①//less中的注释，但这种不会被编译</p>
+<p>②</p>
+<p>/*&lt;br&gt;<br>
+ * 这也是less中的注释，但是会被编译&lt;br&gt;<br>
+ */</p>
+<p>【less中的变量】&lt;br&gt;<br>
+1、声明变量:@变量名:变量值;&lt;br&gt;<br>
+使用变量: @变量名</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>less中变量的类型：&lt;br&gt;<br>
+①数字类  1 10px  &lt;br&gt;<br>
+②字符串：无引号字符串 red ;有引号字符串  “haha”   &lt;br&gt;<br>
+③颜色类：red #000000 rgb()    &lt;br&gt;<br>
+④值列表类型：用逗号和空格分隔    10px solid red&lt;br&gt;<br>
+eg:</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<pre><code>1 @length: 100px;
+ 2 @color:red;
+ 3 @opa:0.5;
+ 4 @border:10px solid red;
+ 5 .borderRadius(@brWidth:10px){
+ 6 border-radius: @brWidth;
+ 7 }
+ 8 .setMargin(lefts,@width){
+ 9 margin-left:@width;
+10 }
+</code></pre>
+<p>&lt;br&gt;<br>
+&lt;br&gt;</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>变量使用原则：&lt;br&gt;<br>
+多次频繁出现的值、需要修改的值，设为变量</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>2、混合(MiXins)&lt;br&gt;<br>
+①无参混合&lt;br&gt;<br>
+声明：.name{}  选择器中调用：.name;</p>
+<p>②代参混合&lt;br&gt;<br>
+无默认值声明：.name(@param){} 调用：.name(parValue);&lt;br&gt;<br>
+有默认值声明：.name(@param:value){} &lt;br&gt;<br>
+调用：.name(parValue);  parValue可省&lt;br&gt;</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>如果声明时，参数没有默认值，则调用时必须赋值，否则报错！&lt;br&gt;<br>
+无参混合，会在css中编译除同名的class选择器，有参的不会</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>3、less的匹配模式：使用混合进行匹配，类似于if结构&lt;br&gt;<br>
+声明：&lt;br&gt;<br>
+.name(条件一，参数){} &lt;br&gt;<br>
+.name(条件二，参数){} &lt;br&gt;<br>
+.name(@_,参数){}&lt;br&gt;<br>
+调用：.name(条件值，参数值);</p>
+<p>匹配规则：根据调用时提供的条件值去寻找与之匹配的&quot;MiXins&quot;执行，其中@_表示永远需要执行的部分</p>
+<p>4、less中的运算&lt;br&gt;</p>
+<ul>
+<li>
+<ul>
+<li>
+<ul>
+<li>/  可带、可不带单位&lt;br&gt;<br>
+颜色运算时，红绿蓝分三组计算，组内可进位，组间互不干涉</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>5、包含了传进来的所有参数：border:@arguments;&lt;br&gt;<br>
+6、less中的嵌套：保留HTML中的代码结构&lt;br&gt;<br>
+①嵌套默认是后代选择器，如果需要子代选择器，则在子代前加&gt;&lt;br&gt;<br>
+②.&amp;表示上一层       &amp;:表示上一层的hover事件&lt;br&gt;<br>
+eg:</p>
+<pre><code>1 section{
+ 2 p{
+ 3 color: red;
+ 4 background-color: yellowgreen;
+ 5 text-align: center;
+ 6 }
+ 7 ul{
+ 8 padding: 0px;
+ 9 list-style: none;
+10 li{
+11 float: left;
+12 margin: 10px;
+13 width: 100px;
+14 text-align: center;
+15 border: @border;
+16 &amp;:hover{
+17 background-color: yellow;
+18 }
+19 }
+</code></pre>
+<p>2、Sass：</p>
+<p>1、Sass中的变量&lt;br&gt;<br>
+使用   $变量名：变量值，声明变量；</p>
+<p>如果变量需要在字符串中嵌套，则需使用#加大括号包裹；&lt;br&gt;<br>
+border-#{$left}:10px solid blue;</p>
+<p>2、Sass中的运算，会将单位也进行运算，使用时需注意最终单位&lt;br&gt;<br>
+例：10px<em>10px=100px</em>px</p>
+<p>3、sass中的嵌套：选择器嵌套，属性嵌套，伪类嵌套</p>
+<p>选择器嵌套 ul{ li{} } 后代&lt;br&gt;<br>
+           ul{ &gt;li{} }  子代&lt;br&gt;<br>
+&amp;:表示上一层 div{ ul{ li{ &amp;==“div ul li” } } }</p>
+<p>属性嵌套：属性名与大括号之间必须有:   &lt;br&gt;<br>
+例如:border:{color:red;}</p>
+<p>伪类嵌套：ul{li{ &amp;:hover{ “ul li:hover” } } }</p>
+<p>4、混合宏、继承、占位符</p>
+<p>①混合宏：声明：@mixin name($param:value){}&lt;br&gt;<br>
+调用：@include name(value);&lt;br&gt;</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>声明时，可以有参，可以无参；可带默认值，也可不带；但是，调用时，必须符合声明规范。同less&lt;br&gt;<br>
+优点；可以传参，不会生成同名class；&lt;br&gt;<br>
+缺点：会将混合宏中的代码，copy到对应的选择器中，产生冗余代码！</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>②继承：声明：.class{} 调用：@extend .class;&lt;br&gt;</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>优点：继承的相同代码，会提取到并集选择器中，减少冗余代码&lt;br&gt;<br>
+缺点：无法进行传参，会在css中，生成一个同名class</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>③占位符：声明：&amp;class{}  调用：@extend  %class;&lt;br&gt;</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>优点：继承相同代码，会提前到并集选择器；不会生成同名的class选择器&lt;br&gt;<br>
+缺点：无法进行传参</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>综上所述：当需要传递参数时，用混合宏；当有现成的class时用继承；当不需要参数，也不需要class时，用占位符</p>
+<p>5、if条件结构：&lt;br&gt;<br>
+@if 条件{}&lt;br&gt;<br>
+@else{}</p>
+<p>6、for循环结构：&lt;br&gt;<br>
+@for $i from 1 to 10{}  不包含10;&lt;br&gt;<br>
+@for $i from 1 through 10{}  包含10;</p>
+<p>7、while循环结构：&lt;br&gt;<br>
+$j:1;&lt;br&gt;<br>
+@while $j&lt;10{&lt;br&gt;<br>
+.while#{$j}{&lt;br&gt;<br>
+border:#{$j}px solid red;&lt;br&gt;<br>
+}&lt;br&gt;<br>
+$j:$j+1;&lt;br&gt;<br>
+}</p>
+<p>8、each循环遍历&lt;br&gt;<br>
+@each item in a,b,c,d{&lt;br&gt;<br>
+//item表示每一项&lt;br&gt;<br>
+}</p>
+<p>9、函数：&lt;br&gt;<br>
+@function func($length){&lt;br&gt;<br>
+$length1:$length*5;&lt;br&gt;<br>
+@return $length1;&lt;br&gt;<br>
+}&lt;br&gt;<br>
+调用：func(10px);&lt;br&gt;<br>
+10、使用…将传进来的所有参数，接收到一个变量中&lt;br&gt;<br>
+@mixin bordeRadius($param1…){&lt;br&gt;<br>
+//使用…将传进来的所有参数，接收到一个变量中&lt;br&gt;<br>
+border-radius:$param1;&lt;br&gt;<br>
+-webkit-border-radius:$param1;&lt;br&gt;<br>
+}</p>
