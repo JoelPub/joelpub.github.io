@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
 title:      Chrome Performance Tools				# 标题 
-subtitle:   常用命令   #副标题
+subtitle:   前端优化   #副标题
 date:       2019-05-23 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
