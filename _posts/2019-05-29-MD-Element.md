@@ -20,9 +20,10 @@ tags:	program							#标签
 </code></pre>
 超链接
 <pre><code>
-&lt;a href="https://blog.csdn.net/xianghongai/article/details/78976273"&gt;如何在MarkDown中使用尖括号&lt;/a&gt;
+&lt;a href="https://blog.csdn.net/xiangwanpeng/article/details/53149774"&gt;如何在MarkDown中使用尖括号&lt;/a&gt;
 </code></pre>
 如何在MarkDown中使用尖括号
 <pre><code>
-使用转义字符。使用 "&lt;" 代替 “<” , 使用 "&gt;" 代替 ">"。 例如要输出<a>，则需要写为&lt;a&gt;
+使用转义字符。使用 "& l t ;" 代替 “<” , 使用 "& g t ;" 代替 ">"。 例如要输出<a>，则需要写为& l t ; a & g t ;
+<a href="https://blog.csdn.net/xiangwanpeng/article/details/53149774"&gt;如何在MarkDown中使用尖括号&lt;/a>
 </code></pre>
