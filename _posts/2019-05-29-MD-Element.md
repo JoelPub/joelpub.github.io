@@ -11,10 +11,10 @@ tags:	program							#标签
 **MD 常用的一些元素
 图片
 <pre><code>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"><br>
+\<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"><br>
 </code></pre>
 代码
 <pre><code>
-<pre><code>
-</code></pre>
+\<pre><code>
+\</code></pre>
 </code></pre>
