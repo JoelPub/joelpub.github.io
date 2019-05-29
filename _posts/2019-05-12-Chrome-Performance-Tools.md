@@ -8,10 +8,18 @@ header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
 tags:	web							#标签
 ---
-1.performance 工具栏（在network和memory中间）
-除了dashboard之外，下面的子工具栏里coverage和Rendering也很有用（需要自行添加，在console/what's new/remote device之后）
-2.Coverage 查看js的使用率也很有用
-3.阻止第三方请求可以准确的帮助调优 （Request blocking to block 3rd party request）
+1.performance 工具栏（在network和memory中间）<br>
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"><br>
+这里可以查看具体js执行的时间和代码<br>
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.49.29 PM.png?raw=true" alt="image"><br>
+除了dashboard之外，下面的子工具栏里coverage和Rendering也很有用（需要自行添加，在console/what's new/remote device之后）<br>
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.21.24 PM.png?raw=true" alt="image"><br>
+2.Coverage 查看js的使用率也很有用<br>
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.46.02 PM.png?raw=true" alt="image"><br>
+3.阻止第三方请求可以准确的帮助调优 （Request blocking to block 3rd party request）<br>
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.13.55 PM.png?raw=true" alt="image"><br>
+不止阻止第三方请求，可以过滤一些东西便于查看这些东西占了多少时间<br>
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.46.46 PM.png?raw=true" alt="image"><br>
 
 另外几个有用的帮助测试性能的工具：
 https://www.webpagetest.org/result/190517_87_05dca81e68ca59c41f0e498e836c652d/1/details/#waterfall_view_step1
