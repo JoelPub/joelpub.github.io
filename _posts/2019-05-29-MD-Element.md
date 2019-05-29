@@ -11,10 +11,18 @@ tags:	program							#标签
 **MD 常用的一些元素
 图片
 <pre><code>
-\<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"><br>
+&lt;img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"&gt;
 </code></pre>
 代码
 <pre><code>
-\<pre><code>
-\</code></pre>
+&lt;pre&gt;&lt;code&gt;
+&lt;/code&gt;&lt;pre&gt;
+</code></pre>
+超链接
+<pre><code>
+&lt;a href="https://blog.csdn.net/xianghongai/article/details/78976273"&gt;如何在MarkDown中使用尖括号&lt;/a&gt;
+</code></pre>
+如何在MarkDown中使用尖括号
+<pre><code>
+使用转义字符。使用 "&lt;" 代替 “<” , 使用 "&gt;" 代替 ">"。 例如要输出<a>，则需要写为&lt;a&gt;
 </code></pre>
