@@ -1,0 +1,14 @@
+---
+layout:     post   				    # 使用的布局（不需要改）
+title:      Chrome Security issue 				# 标题 
+subtitle:   跨域问题解决   #副标题
+date:       2019-05-29 				# 时间
+author:     Joel 						# 作者
+header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
+catalog: true 						# 是否归档
+tags:	program							#标签
+---
+
+<pre><code>
+open -a Google\ Chrome --args --disable-web-security --user-data-dir=""
+</code></pre>
