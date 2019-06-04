@@ -29,7 +29,14 @@ nvm ls
 <pre><code>
 nvm use 11.2
 </code></pre>
-
+安装最新nvm版本
+<pre><code>
+nvm install node
+</code></pre>
+安装指定nvm版本
+<pre><code>
+nvm install 6.14.4
+</code></pre>
 
 
 
