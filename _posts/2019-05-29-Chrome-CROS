@@ -12,3 +12,5 @@ tags:	program							#标签
 <pre><code>
 open -a Google\ Chrome --args --disable-web-security --user-data-dir=""
 </code></pre>
+
+
