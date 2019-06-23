@@ -17,3 +17,4 @@ tags:	Life							#标签
 </object>
 
 <img src="http://www.pdf995.com/samples/pdf.pdf" alt="image">
+<img src="http://africau.edu/images/default/sample.pdf" alt="image">
