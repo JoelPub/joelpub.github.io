@@ -24,3 +24,7 @@ tags:	Life							#标签
 <img src="https://www.docdroid.net/WJIbfqM/1.pdf" alt="pdf">
 7
 ![Alt](https://www.docdroid.net/WJIbfqM/1.pdf)
+8
+<img src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/1.pdf" alt="pdf">
+9
+![Alt](https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/1.pdf)
