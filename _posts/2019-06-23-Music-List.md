@@ -12,11 +12,11 @@ tags:	Life							#标签
 1
 <img src="http://africau.edu/images/default/sample.pdf" alt="image">
 2
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/1.pdf" alt="image">
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/1.pdf?raw=true" alt="pdf">
 
 3
-<img src="../img/blog/1.pdf" alt="image">
+<img src="../img/blog/1.pdf?raw=true" alt="pdf">
 4
-![Alt](https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/1.pdf)
+![Alt](https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/1.pdf?raw=true)
 5
-![Alt](../img/blog/1.pdf)
+![Alt](../img/blog/1.pdf?raw=true)
