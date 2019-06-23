@@ -20,3 +20,7 @@ tags:	Life							#标签
 ![Alt](https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/1.pdf?raw=true)
 5
 ![Alt](../img/blog/1.pdf?raw=true)
+6
+<img src="https://www.docdroid.net/WJIbfqM/1.pdf" alt="pdf">
+7
+![Alt](https://www.docdroid.net/WJIbfqM/1.pdf)
