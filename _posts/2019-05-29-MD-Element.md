@@ -13,6 +13,10 @@ MD 常用的一些元素
 <pre><code>
 &lt;img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"&gt;
 </code></pre>
+PDF
+<pre><code>
+&lt;embed width="100%" min-height="540px" name="plugin" id="plugin" src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/2.pdf" type="application/pdf" internalinstanceid="9"&gt;
+</code></pre>
 代码
 <pre><code>
 &lt;pre&gt;&lt;code&gt;
@@ -27,4 +31,3 @@ MD 常用的一些元素
 <pre><code>
 使用转义字符。使用 "& l t ;" 代替 “<” , 使用 "& g t ;" 代替 ">"。 例如要输出<a>，则需要写为& l t ; a & g t ; 
 </code></pre>
-
