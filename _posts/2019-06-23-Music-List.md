@@ -9,16 +9,14 @@ catalog: true 						# 是否归档
 tags:	Life							#标签
 ---
 <a href="https://mp.weixin.qq.com/s?__biz=MjM5ODAxODM0MA==&mid=401612325&idx=1&sn=dacc6663c2aac6c1d77b62af6e782572&chksm=34d5926e03a21b78d1d9f3c8f622fe94bb0fbd8bf094d9f03e0af64aac93f07cdbbbc78cb7cb&mpshare=1&scene=1&srcid=1215ymXP90FHTMaJ22TMjhSS&pass_ticket=0lhtCWRx6Ep%2Bgy4kgFSURog96NhACLsmycVb105M67xO34ZN5g8K32tNZO%2Fmx6fn#rd">让我看看你的歌单，再决定要不要成为朋友 </a>
-
-<object data="http://www.pdf995.com/samples/pdf.pdf" type="application/pdf" width="700px" height="700px">
-    <embed src="http://www.pdf995.com/samples/pdf.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="http://www.pdf995.com/samples/pdf.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
-
-<img src="http://www.pdf995.com/samples/pdf.pdf" alt="image">
+1
 <img src="http://africau.edu/images/default/sample.pdf" alt="image">
-![Alt](http://africau.edu/images/default/sample.pdf)
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image">
+2
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/1.pdf" alt="image">
 
-<img src="../img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image">
+3
+<img src="../img/blog/1.pdf" alt="image">
+4
+![Alt](https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/1.pdf)
+5
+![Alt](../img/blog/1.pdf)
