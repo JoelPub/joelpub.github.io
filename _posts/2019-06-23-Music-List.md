@@ -19,3 +19,6 @@ tags:	Life							#标签
 <img src="http://www.pdf995.com/samples/pdf.pdf" alt="image">
 <img src="http://africau.edu/images/default/sample.pdf" alt="image">
 ![Alt](http://africau.edu/images/default/sample.pdf)
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image">
+
+<img src="../img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image">
