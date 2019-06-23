@@ -28,3 +28,7 @@ tags:	Life							#标签
 <img src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/2.pdf" alt="pdf">
 9
 ![Alt](https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/3.pdf)
+10
+<embed width="100%" height="100%" name="plugin" id="plugin" src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/2.pdf" type="application/pdf" internalinstanceid="9">
+11
+<embed width="100%" height="100%" name="plugin" id="plugin" src="http://africau.edu/images/default/sample.pdf" type="application/pdf" internalinstanceid="9">
