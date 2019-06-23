@@ -25,6 +25,6 @@ tags:	Life							#标签
 7
 ![Alt](https://www.docdroid.net/WJIbfqM/1.pdf)
 8
-<img src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/1.pdf" alt="pdf">
+<img src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/2.pdf" alt="pdf">
 9
-![Alt](https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/1.pdf)
+![Alt](https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/3.pdf)
