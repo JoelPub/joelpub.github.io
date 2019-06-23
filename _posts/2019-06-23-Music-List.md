@@ -16,3 +16,4 @@ tags:	Life							#标签
     </embed>
 </object>
 
+<img src="http://www.pdf995.com/samples/pdf.pdf" alt="image">
