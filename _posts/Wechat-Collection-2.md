@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      FE			# 标题 
-subtitle:   让我看看你的歌单，再决定要不要成为朋友   #副标题
+title:      Multi screen solution			# 标题
+subtitle:   前端干货 移动端高清、多屏适配方案   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
