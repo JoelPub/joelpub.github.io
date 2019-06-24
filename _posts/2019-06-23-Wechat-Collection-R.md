@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Welcome in English			# 标题
 subtitle:   英语的“不客气”有几种说法？   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      HK Commander education 			# 标题
 subtitle:   香港女特首两个儿子都毕业于剑桥，她的育儿观只有8个字   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

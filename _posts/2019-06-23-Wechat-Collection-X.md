@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Treasure Words			# 标题
 subtitle:   约翰·罗伯茨   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

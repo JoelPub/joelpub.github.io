@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      H5 Chart			# 标题
 subtitle:   为何大多数人做出来的图表只是一坨屎？   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Hotpot			# 标题
 subtitle:   吃火锅的礼仪   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Career			# 标题
 subtitle:   遇到自己喜欢的事，就厚着脸皮一直做下去吧   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

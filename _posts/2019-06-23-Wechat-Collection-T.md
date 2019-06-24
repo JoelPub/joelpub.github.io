@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Memory			# 标题
 subtitle:   九魅 | 了不起的黄桃罐头   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

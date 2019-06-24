@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Thingk about life			# 标题
 subtitle:   我25岁就把自己杀了，只是到75岁才入土   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

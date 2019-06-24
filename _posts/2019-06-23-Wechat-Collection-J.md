@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Film			# 标题
 subtitle:   我不是潘金莲：一个史上最深刻的黄段子   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

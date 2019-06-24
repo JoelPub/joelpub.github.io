@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Iron Mask			# 标题
 subtitle:   厉害了这个妈！63岁拍孕妇照，68岁拍裸照，儿子还要登火星   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

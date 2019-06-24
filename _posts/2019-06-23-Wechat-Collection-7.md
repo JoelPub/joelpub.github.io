@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Chen Nian's lesson			# 标题
 subtitle:   凡客倒下陈年万字忏悔书，创业者不要高兴太早   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

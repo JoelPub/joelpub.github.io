@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Harford 			# 标题
 subtitle:   哈佛真的有歧视亚裔和华人   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

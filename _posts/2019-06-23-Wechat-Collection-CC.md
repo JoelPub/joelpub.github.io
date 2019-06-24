@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      To Rich			# 标题
 subtitle:   赵皓阳：如何打破阶级天花板——三代阶级晋升论   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者

@@ -1,6 +1,6 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Wechat Collection			# 标题 
+title:      Han Han			# 标题
 subtitle:   韩寒养了个乡下妞   #副标题
 date:       2019-06-23 				# 时间
 author:     Joel 						# 作者
