@@ -6,7 +6,7 @@ date:       2016-09-16 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	Program							#标签
 ---
 <h1><a id="macreact_nativecommand_not_found_1"></a>mac环境变量路径设置问题如react native:command not found</h1>
 <p>1st choice:</p>

@@ -6,7 +6,7 @@ date:       2019-05-23 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	web							#标签
+tags:	Web							#标签
 ---
 1.performance 工具栏（在network和memory中间）<br>
 <img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"><br>

@@ -1,12 +1,12 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      child props 				# 标题 
+title:      RN child props 				# 标题
 subtitle:   将变量全部传入子组件的props#副标题
 date:       2016-10-07 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	APP							#标签
 ---
 <h1><a id="props_1"></a>将变量全部传入子组件的props</h1>
 <p>将变量全部传入子组件的props中： {…todo}</p>

@@ -6,7 +6,7 @@ date:       2016-09-27 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	APP							#标签
 ---
 <h1><a id="React_Native_1"></a>React Native组件的生命周期</h1>
 <p><a href="http://www.race604.com/react-native-component-lifecycle/">http://www.race604.com/react-native-component-lifecycle/</a></p>

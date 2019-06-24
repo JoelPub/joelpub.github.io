@@ -6,7 +6,7 @@ date:       2016-09-24 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	APP							#标签
 ---
 <h1><a id="AppRegistryregisterComponent_1"></a>AppRegistry.registerComponent</h1>
 <p><a href="http://www.jianshu.com/p/82a09063e61c">http://www.jianshu.com/p/82a09063e61c</a></p>

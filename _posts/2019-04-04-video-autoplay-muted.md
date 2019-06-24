@@ -6,7 +6,7 @@ date:       2019-04-04 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	program							#标签
+tags:	Web							#标签
 ---
 <h1><a id="autoplay_15"></a>autoplay自动播放策略</h1>
 <a href="https://www.jianshu.com/p/c3c6944eed5a/">https://www.jianshu.com/p/c3c6944eed5a</a>

@@ -1,12 +1,12 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Button communicate Textinput 				# 标题 
-subtitle:   用button获得TextInput的值 #副标题
+title:      RN Button communicate Textinput 				# 标题
+subtitle:   RN用button获得TextInput的值 #副标题
 date:       2016-10-07 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	APP							#标签
 ---
 <h1><a id="buttonTextInput_1"></a>用button获得TextInput的值</h1>
 <p><strong>this.refs.input. _lastNativeText</strong></p>

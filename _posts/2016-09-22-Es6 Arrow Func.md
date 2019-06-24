@@ -6,7 +6,7 @@ date:       2016-09-22 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	Web							#标签
 ---
 <h1><a id="es6__1"></a>es6 箭头函数</h1>
 <p><a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions">http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions</a></p>

@@ -6,7 +6,7 @@ date:       2016-09-17 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	APP							#标签
 ---
 <h1><a id="FetchType_Error_Network_request_failed_1"></a>Fetch—-Type Error: Network request failed</h1>
 <p><a href="http://bbs.reactnative.cn/topic/1668/fetch-api%E6%8A%A5%E9%94%99-type-error-network-request-failed/7">http://bbs.reactnative.cn/topic/1668/fetch-api报错-type-error-network-request-failed/7</a></p>

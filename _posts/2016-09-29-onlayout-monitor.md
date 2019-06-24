@@ -6,7 +6,7 @@ date:       2016-09-29 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	APP							#标签
 ---
 <h1><a id="onLayout_1"></a>onLayout用来检测布局变化</h1>
 <p><a href="http://stackoverflow.com/questions/33770901/how-to-get-size-of-a-component-in-react-native">http://stackoverflow.com/questions/33770901/how-to-get-size-of-a-component-in-react-native</a></p>

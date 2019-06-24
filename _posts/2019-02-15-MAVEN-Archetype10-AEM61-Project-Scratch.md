@@ -6,7 +6,7 @@ date:       2019-02-15 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	web							#标签
+tags:	AEM							#标签
 ---
 <h1><a id="Creating_your_first_Adobe_Experience_Manager_61_Project_using_Adobe_Maven_Archetype_10_1"></a>Creating your first Adobe Experience Manager 6.1 Project using Adobe Maven Archetype 10</h1>
 <p><a href="https://helpx.adobe.com/experience-manager/using/first-arch10.html">https://helpx.adobe.com/experience-manager/using/first-arch10.html</a></p>

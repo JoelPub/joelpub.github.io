@@ -6,7 +6,7 @@ date:       2016-09-21 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	APP							#标签
 ---
 <h1><a id="React_Native_Style_1"></a>React Native Style</h1>
 <p><a href="http://reactnative.cn/docs/0.31/layout-props.html">http://reactnative.cn/docs/0.31/layout-props.html</a></p>

@@ -6,7 +6,7 @@ date:       2018-12-07 				# 时间
 author:     转载 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	web							#标签
+tags:	Web							#标签
 ---
 [为什么要对url进行encode](http://www.blogjava.net/donghang73/archive/2011/08/10/356208.html)
 

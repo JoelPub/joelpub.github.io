@@ -6,7 +6,7 @@ date:       2016-10-09 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	web							#标签
+tags:	Web							#标签
 ---
 <h1><a id="JavaScript_slice_1"></a>JavaScript slice()</h1>
 <pre><code class="language-js"><span class="hljs-keyword">return</span> [

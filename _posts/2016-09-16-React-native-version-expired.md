@@ -6,7 +6,7 @@ date:       2016-09-16 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	React							#标签
+tags:	APP							#标签
 ---
 <h1><a id="React_native__1"></a>处理React native 项目版本过期</h1>
 <p>本站文章均为 <a href="http://baike.baidu.com/link?url=5clRqhZXescnjYUaYWj1OGjyv1rik4h1x_OKo05O_Bkx36NYk3IxRS-nZzbtg5r2mNCCNRMWNehn_d0uJBSqeB_QRyMZGtgpc9zAh6xDBla" title="李华明Himi">李华明Himi</a> 原创,转载务必在明显处注明：&lt;br&gt;</p>
