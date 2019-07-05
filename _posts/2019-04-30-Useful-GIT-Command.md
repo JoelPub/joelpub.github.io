@@ -20,3 +20,7 @@ git diff --name-only OLD_COMMIT_ID_HERE NEW_COMMIT_ID_HERE
 <pre><code>
 git show  COMMIT_ID_HERE --name-only
 </code></pre>
+**将指定文件回滚到指定的版本（消灭修改的痕迹）
+<pre><code>
+git checkout COMMIT_ID_HERE <filename>
+</code></pre>
