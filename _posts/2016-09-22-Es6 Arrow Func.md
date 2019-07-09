@@ -6,18 +6,11 @@ date:       2016-09-22 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	Web							#标签
+tags:	JavaScript							#标签
 ---
 <h1><a id="es6__1"></a>es6 箭头函数</h1>
 <p><a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions">http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions</a></p>
 <h1><a id="ES6_Arrow_Functions_5"></a>深入浅出ES6（七）：箭头函数 Arrow Functions</h1>
-<p>![](./es6 箭头函数 – Joel’s blog_files/20150608102543.jpg)</p>
-<p>作者 <a href="http://www.infoq.com/cn/author/Jason-Orendorff">Jason Orendorff</a> ，译者 <strong><a href="http://www.infoq.com/cn/author/%E5%88%98%E6%8C%AF%E6%B6%9B">刘振涛</a></strong> 发布于 2015年7月27日 <em>|</em> &lt;b&gt;注意:&lt;/b&gt; 挥一挥衣袖，带走满满干货，关注<a href="http://www.geekbang.org/events/?utm_source=infoq&amp;utm_medium=notices&amp;utm_campaign=201605">活动大本营</a>，时不时发福利呦！ <a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#theCommentsSection">1 讨论</a></p>
-<ul>
-<li><a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#">分享到：</a> <a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#" title="分享到微博">微博</a> <a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#" title="分享到微信">微信</a> <a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#" title="分享到Facebook">Facebook</a> <a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#" title="分享到Twitter">Twitter</a> <a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#" title="分享到有道云笔记">有道云笔记</a> <a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#" title="分享到邮件分享">邮件分享</a></li>
-<li><a href="http://www.infoq.com/cn/articles/es6-in-depth-arrow-functions#">&lt;q&gt;稍后阅读&lt;/q&gt;</a></li>
-<li><a href="http://www.infoq.com/cn/showbookmarks.action">&lt;q&gt;我的阅读清单&lt;/q&gt;</a></li>
-</ul>
 <blockquote>
 <p>译者按：ECMAScript 6已经正式发布了，作为它最重要的方言，Javascript也即将迎来语法上的重大变革，InfoQ特开设&quot;<a href="http://www.infoq.com/cn/es6-in-depth/">深入浅出ES6</a>&quot;专栏，来看一下ES6将给我们带来哪些新内容。本专栏文章来自<a href="https://hacks.mozilla.org/category/es6-in-depth/">Mozilla Web开发者博客</a>，由作者授权翻译并发布。</p>
 </blockquote>
@@ -41,10 +34,6 @@ tags:	Web							#标签
 </code></pre>
 <p>上面这段代码<a href="http://codepen.io/anon/pen/oXZaBY?editors=001">可以正常运行</a>，循环会一直重复直到 <code>n</code>趋于0，这当然不是ES6中的新特性，它只不过是将两个你早已熟悉的特性通过一些误导性的手段结合在一起。你能理解么？通常来说，类似这种谜团都可以在<a href="http://stackoverflow.com/questions/1642028/what-is-the-name-of-the-operator">Stack Overflow</a>上找到答案。</p>
 <p>当然，同样地，小于等于操作符 <code>&lt;=</code>也形似箭头，你可以在JS代码、隐藏的图片样式中找到更多类似的箭头，但是我们就不继续寻找了，你应该注意到我们漏掉了一种特殊的箭头。</p>
-<p>| &lt;!– | <code>&amp;#x5355;&amp;#x884C;&amp;#x6CE8;&amp;#x91CA;</code> |<br>
-| –&gt; | <code>&amp;#x201C;&amp;#x8D8B;&amp;#x5411;&amp;#x4E8E;&amp;#x201D;&amp;#x64CD;&amp;#x4F5C;&amp;#x7B26;</code> |<br>
-| &lt;= | <code>&amp;#x5C0F;&amp;#x4E8E;&amp;#x7B49;&amp;#x4E8E;</code> |<br>
-|  =&gt; | <code>&amp;#x8FD9;&amp;#x53C8;&amp;#x662F;&amp;#x4EC0;&amp;#x4E48;&amp;#xFF1F;</code> |</p>
 <p><code>=&gt;</code>到底是什么？我们今天就来一探究竟。</p>
 <p>首先，我们谈论一些有关函数的事情。</p>
 <h2><a id="_58"></a>函数表达式无处不在</h2>
@@ -78,7 +67,7 @@ tags:	Web							#标签
     <span class="hljs-comment">// ES6</span>
     <span class="hljs-keyword">var</span> selected = allJobs.filter(job =&gt; job.isSelected());
 </code></pre>
-<p>当你只需要一个只有一个参数的简单函数时，可以使用新标准中的箭头函数，它的语法非常简单： <code>&amp;#x6807;&amp;#x8BC6;&amp;#x7B26;=&gt;&amp;#x8868;&amp;#x8FBE;&amp;#x5F0F;</code>。你无需输入 <code>function</code>和 <code>return</code>，一些小括号、大括号以及分号也可以省略。</p>
+<p>当你只需要一个只有一个参数的简单函数时，可以使用新标准中的箭头函数，它的语法非常简单： 你无需输入 <code>function</code>和 <code>return</code>，一些小括号、大括号以及分号也可以省略。</p>
 <p>（我个人对于这个特性非常感激，不再需要输入 <code>function</code>这几个字符对我而言至关重要，因为我总是不可避免地错误写成 <code>functoin</code>，然后我就不得不回过头改正它。）</p>
 <p>如果要写一个接受多重参数（也可能没有参数，或者是<a href="http://www.infoq.com/cn/articles/es6-in-depth-rest-parameters-and-defaults">不定参数、默认参数</a>、<a href="http://www.infoq.com/cn/articles/es6-in-depth-destructuring">参数解构</a>）的函数，你需要用小括号包裹参数list。</p>
 <pre><code class="language-javascript">    <span class="hljs-comment">// ES5</span>
