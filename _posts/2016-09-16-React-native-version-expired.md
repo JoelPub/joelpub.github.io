@@ -9,7 +9,6 @@ catalog: true 						# 是否归档
 tags:	APP							#标签
 ---
 <h1><a id="React_native__1"></a>处理React native 项目版本过期</h1>
-<p>本站文章均为 <a href="http://baike.baidu.com/link?url=5clRqhZXescnjYUaYWj1OGjyv1rik4h1x_OKo05O_Bkx36NYk3IxRS-nZzbtg5r2mNCCNRMWNehn_d0uJBSqeB_QRyMZGtgpc9zAh6xDBla" title="李华明Himi">李华明Himi</a> 原创,转载务必在明显处注明：&lt;br&gt;</p>
 <p>转载自【黑米GameDev街区】 原文链接: <a href="http://www.himigame.com/react-native/2288.html">http://www.himigame.com/react-native/2288.html</a><br>
 注意：升级前请先备份项目，以免造成一些文件丢失或者被覆盖的情况</p>
 <p>一：先到项目下打开 package.json 文件，将dependencies下的react-native版本号改成最新（0.33.0）如下图：</p>
