@@ -12,7 +12,8 @@ tags:	JavaScript							#标签
 <p>使用replaceState不跳转改变url</p>
 <pre><code>
 var state={time:new Date().getTime()};
-if(history.replaceState) {&lt;br&gt;
-history.replaceState(state,&quot;,$(e.target).attr(‘href’));&lt;br&gt;
+
+if(history.replaceState) {
+history.replaceState(state,”,$(e.target).attr(‘href’));
 }
 </code><pre>
