@@ -17,7 +17,7 @@ tags:	APP							#标签
 <p>import Todo from ‘./todo’&lt;br&gt;</p>
 <p>export default class TodoList extends Component {</p>
 <p>render() {&lt;br&gt;</p>
-<p>return (&lt;br&gt;</p>
+<p>return (</p>
 <p>&lt;View&gt;&lt;br&gt;</p>
 <p>{this.props.todos.map((todo,index)=&gt; &lt;Todo <strong>{…todo}</strong> key={index} onClick={()=&gt; this.props.onTodoClick(index)} /&gt;&lt;br&gt;</p>
 <p>)&lt;br&gt;</p>
@@ -32,7 +32,7 @@ tags:	APP							#标签
 <p>import {Button} from ‘native-base’&lt;br&gt;</p>
 <p>export default class Todo extends Component {&lt;br&gt;</p>
 <p>render() {&lt;br&gt;</p>
-<p>return (&lt;br&gt;</p>
+<p>return (</p>
 <p>&lt;Button onPress={this.props.onClick}&gt;&lt;br&gt;</p>
 <p>&lt;Text style={{textDecorationLine: <strong>this.props.completed</strong>?‘line-through’:‘none’}}&gt;{ <strong>this.props.text</strong>}&lt;/Text&gt;&lt;br&gt;</p>
 <p>&lt;/Button&gt;&lt;br&gt;</p>
