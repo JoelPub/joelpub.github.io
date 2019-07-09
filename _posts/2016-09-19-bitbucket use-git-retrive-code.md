@@ -6,7 +6,7 @@ date:       2016-09-19 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	Program							#标签
+tags:	Git							#标签
 ---
 <h1><a id="bitbucket__git__1"></a>在bitbucket 使用 git 获取代码</h1>
 <p><a href="http://blog.csdn.net/xyqzki/article/details/23187863">http://blog.csdn.net/xyqzki/article/details/23187863</a></p>
