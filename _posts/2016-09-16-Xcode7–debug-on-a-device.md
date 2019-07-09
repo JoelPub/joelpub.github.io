@@ -15,16 +15,16 @@ tags:	APP							#标签
 <p>iphone手机  这个就不用多说了，真机调试没有手机就白谈了;</p>
 <p>Xcode7  可以从AppStore中下载;</p>
 <p>第二步：打开Xcode 选择屏幕左上角Xcode-&gt; <a href="http://pr.knowsky.com/">PR</a>eferencese</p>
-<p>![](./Xcode7–debug on a device – Joel’s blog_files/gdxob0lds1j15.jpg)</p>
+<img src="//upload-images.jianshu.io/upload_images/2628487-5c049382ceda9edb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/281/format/webp" alt="image">
 <p>第三部：选择Account 点击左下角的+按钮登陆Apple ID</p>
-<p>![](./Xcode7–debug on a device – Joel’s blog_files/o45bugiycnc15.jpg)</p>
+<img src="//upload-images.jianshu.io/upload_images/2628487-3aa5d94dfa521c4f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/415/format/webp" alt="image">
 <p>第四步：登陆你的Apple ID</p>
-<p>![](./Xcode7–debug on a device – Joel’s blog_files/1ur433cnzwh15.jpg)</p>
+<img src="//upload-images.jianshu.io/upload_images/2628487-665bd6bfe7738bc8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/415/format/webp" alt="image">
 <p>第五步:登陆成功之后，在右侧会显示小伙伴的账号在iOS和Mac上都是free的，双击这一列（或者点击选择view details）</p>
-<p>![](./Xcode7–debug on a device – Joel’s blog_files/xdsntp35coy15.jpg)</p>
+<img src="//upload-images.jianshu.io/upload_images/2628487-eaa861a5d8cfe872.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/415/format/webp" alt="image">
 <p>第五步：这里需要一定时间获取你的Apple ID的开发者信息，点击iOS Development 后面的create ，然后稍等片刻，直到create按钮不见了。</p>
-<p>![](./Xcode7–debug on a device – Joel’s blog_files/tkqmkmgrd1b15.jpg)</p>
+<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image">
 <p>第六步：到了这里基本上已经结束—-开始真机测试：打开需要真机测试的项目插上手机（Xcode第一次链接手机会很慢，可以选择Xcode菜单栏中的window-&gt;devices查看手机是否准备就绪了），选择项目文件-&gt; General – &gt; Team -&gt; 选择你属于你的Apple ID ，再点击Team 下面的fix issue修复Team 正下方的警告。</p>
-<p>![](./Xcode7–debug on a device – Joel’s blog_files/uib4vbiir3g15.jpg)</p>
+<img src="//upload-images.jianshu.io/upload_images/2628487-a23d18985edd52a6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/502/format/webp" alt="image">
 <p>第七步：最后一个问题，你最终会发现Xcode会弹出一个框（process launch failed: Security），这里需要打开你手机的设置-&gt;通用- &gt; 描述文件-&gt; 选择你的Apple ID – &gt; 点击信任</p>
 <p>至此，真机调试的过程就搞好了，是不是比以前简单多了？？？</p>
