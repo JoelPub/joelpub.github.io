@@ -6,7 +6,7 @@ date:       2016-10-07 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	Web							#标签
+tags:	JavaScript							#标签
 ---
 <h1><a id="Objectassign_1"></a>Object.assign</h1>
 <p><a href="http://www.tuicool.com/articles/2eAZVfn">http://www.tuicool.com/articles/2eAZVfn</a></p>
