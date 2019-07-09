@@ -6,7 +6,7 @@ date:       2016-09-19				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	Web							#标签
+tags:	CSS							#标签
 ---
 <h1><a id="wordwrapwordbreak_1"></a>word-wrap和word-break的区别</h1>
 <p><a href="http://www.cnblogs.com/2050/archive/2012/08/10/2632256.html">http://www.cnblogs.com/2050/archive/2012/08/10/2632256.html</a></p>
