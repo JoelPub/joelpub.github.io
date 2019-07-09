@@ -6,7 +6,7 @@ date:       2016-09-23 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	Web							#标签
+tags:	JavaScript							#标签
 ---
 <h1><a id="login_validation_1"></a>login validation</h1>
 <p>邮箱不为空：</p>
