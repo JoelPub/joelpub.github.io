@@ -11,36 +11,36 @@ tags:	APP							#标签
 <h1><a id="buttonTextInput_1"></a>用button获得TextInput的值</h1>
 <p><strong>this.refs.input. _lastNativeText</strong></p>
 <p>app.js:</p>
-<p>import React, { Component } from ‘react’&lt;br&gt;</p>
-<p>import { View, Text } from ‘react-native’&lt;br&gt;</p>
+<p>import React, { Component } from ‘react’</p>
+<p>import { View, Text } from ‘react-native’</p>
 <p>import AddTodo from ‘./addtodo’</p>
-<p>export default class App extends Component {&lt;br&gt;</p>
-<p>render () {&lt;br&gt;</p>
-<p>return (&lt;br&gt;</p>
-<p>&lt;View &gt;&lt;br&gt;</p>
-<p>&lt;AddTodo onAddClick = {text =&gt; console.log(‘add todo’,text) } /&gt;&lt;br&gt;</p>
-<p>&lt;/View&gt;&lt;br&gt;</p>
-<p>)&lt;br&gt;</p>
-<p>}&lt;br&gt;</p>
+<p>export default class App extends Component {</p>
+<p>render () {</p>
+<p>return (</p>
+<p>&lt;View &gt;</p>
+<p>&lt;AddTodo onAddClick = {text =&gt; console.log(‘add todo’,text) } /&gt;</p>
+<p>&lt;/View&gt;</p>
+<p>)</p>
+<p>}</p>
 <p>}</p>
 <p>addtodo.js:</p>
-<p>import React, {Component} from ‘react’&lt;br&gt;</p>
-<p>import {View, TextInput, } from ‘react-native’&lt;br&gt;</p>
+<p>import React, {Component} from ‘react’</p>
+<p>import {View, TextInput, } from ‘react-native’</p>
 <p>import {Button} from ‘native-base’</p>
-<p>export default class AddTodo extends Component {&lt;br&gt;</p>
-<p>propTypes:{&lt;br&gt;</p>
-<p>onAddClick : PropTypes.func.isRequired&lt;br&gt;</p>
-<p>}&lt;br&gt;</p>
-<p>render () {&lt;br&gt;</p>
-<p>return (&lt;br&gt;</p>
-<p>&lt;View&gt;&lt;br&gt;</p>
-<p>&lt;TextInput ref=‘input’ style={{height: 40, borderColor: ‘gray’, borderWidth: 1,marginTop:100}} placeholder=‘example name’/&gt;&lt;br&gt;</p>
-<p>&lt;Button onPress={() =&gt; this.handleClick()}&gt; Add &lt;/Button&gt;&lt;br&gt;</p>
-<p>&lt;/View&gt;&lt;br&gt;</p>
-<p>)&lt;br&gt;</p>
+<p>export default class AddTodo extends Component {</p>
+<p>propTypes:{</p>
+<p>onAddClick : PropTypes.func.isRequired</p>
 <p>}</p>
-<p>handleClick() {&lt;br&gt;</p>
-<p>console.log(this.refs.input. _lastNativeText)&lt;br&gt;</p>
-<p>this.props.onAddClick(this.refs.input. _lastNativeText)&lt;br&gt;</p>
-<p>}&lt;br&gt;</p>
+<p>render () {</p>
+<p>return (</p>
+<p>&lt;View&gt;</p>
+<p>&lt;TextInput ref=‘input’ style={{height: 40, borderColor: ‘gray’, borderWidth: 1,marginTop:100}} placeholder=‘example name’/&gt;</p>
+<p>&lt;Button onPress={() =&gt; this.handleClick()}&gt; Add &lt;/Button&gt;</p>
+<p>&lt;/View&gt;</p>
+<p>)</p>
+<p>}</p>
+<p>handleClick() {</p>
+<p>console.log(this.refs.input. _lastNativeText)</p>
+<p>this.props.onAddClick(this.refs.input. _lastNativeText)</p>
+<p>}</p>
 <p>}</p>
