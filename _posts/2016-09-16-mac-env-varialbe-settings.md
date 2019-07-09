@@ -26,7 +26,7 @@ tags:	Infra							#标签
 <p>当然/etc/profile和/etc/paths是系统级别的，系统启动就会加载，后面几个是当前用户级的环境变量。后面3个按照从前往后的顺序读取，如果~/.bash_profile文件存在，则后面的几个文件就会被忽略不读了，如果~/.bash_profile文件不存在，才会以此类推读取后面的文件。~/.bashrc没有上述规则，它是bash shell打开的时候载入的。</p>
 <p>如果没特殊说明,设置PATH的语法都为：</p>
 <p>——————————————————-</p>
-<p>| 1 2 |<code>#&amp;#x4E2D;&amp;#x95F4;&amp;#x7528;&amp;#x5192;&amp;#x53F7;&amp;#x9694;&amp;#x5F00;</code> <code>&amp;#xA0;&amp;#xA0;&amp;#xA0;&amp;#xA0;&amp;#xA0;</code> <code>export PATH=$PATH:&lt;PATH 1&gt;:&lt;PATH 2&gt;:&lt;PATH 3&gt;:------:&lt;PATH N&gt;</code> |</p>
+<p><code>export PATH=$PATH:&lt;PATH 1&gt;:&lt;PATH 2&gt;:&lt;PATH 3&gt;:------:&lt;PATH N&gt;</code> |</p>
 <p>（一）全局设置</p>
 <p>下面的几个文件设置是全局的，修改时需要root权限</p>
 <p>1）/etc/paths （全局建议修改这个文件 ）</p>
