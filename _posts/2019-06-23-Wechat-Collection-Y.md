@@ -95,4 +95,3 @@ tags:	Life							#标签
 <p>2018年3月3日，上海上港在中超首轮主场8比0大胜大连一方，创队史最大比分胜利纪录，改写中超最大分差纪录，追平了中国顶级职业联赛的分差记录（8个球），也是中国顶级职业联赛史上首轮比赛中出现的最大比分胜利和最多进球数比赛。</p>
 <p>11月3日的中超第28轮比赛，上海上港在客场以5比4战胜卫冕冠军广州恒大队，比赛一波三折。最终，上海上港队实现单赛季对广州恒大的主客场双杀，5分的领先优势也宣告，上港终于实现了超越，登上了中国足坛之巅。</p>
 <p><img src="./Y_files/43d3aaa1-3ac9-4fb1-9ee4-1aa43e78150e.jpg" alt="图片"></p>
-<embed width="100%" height="540px" name="plugin" id="plugin" src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/Y.pdf" type="application/pdf" internalinstanceid="9">
