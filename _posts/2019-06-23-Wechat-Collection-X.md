@@ -8,6 +8,7 @@ header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
 tags:	Life							#标签
 ---
+![mdimg](../../../../img/blog/X_files/5615034b2f6343828391206d43babe37_th.png)
 <a href="https://www.sohu.com/a/157016053_809543">约翰·罗伯茨</a>
 <h1><a id="_1"></a>＂我希望你们在未来岁月中，不时遭遇不公的对待…＂家长竟然这样为孩子毕业典礼致辞</h1>
 <p>2017-07-13 20:33 来源:<a href="https://www.sohu.com/?spm=smpc.content.content.1.1562855214299Oei9l9H">讲话艺术</a></p>
