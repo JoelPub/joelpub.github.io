@@ -11,6 +11,10 @@ tags:	MarkDown							#标签
 MD 常用的一些元素
 图片
 <pre><code>
+![mdimg](../../../../img/blog/X_files/5615034b2f6343828391206d43babe37_th.png)
+</code></pre>
+![mdimg](../../../../img/blog/X_files/5615034b2f6343828391206d43babe37_th.png)
+<pre><code>
 &lt;img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"&gt;
 </code></pre>
 PDF
