@@ -48,7 +48,7 @@ tags:	MarkDown							#标签
 weibo: [@joelpub](http://weibo.com/joelpub)
 </code></pre>
 * 如何在`MarkDown`中使用尖括号
-<a href="https://blog.csdn.net/xiangwanpeng/article/details/53149774"&gt;如何在MarkDown中使用尖括号&lt;/a>
+[MarkDown中使用尖括号]("https://blog.csdn.net/xiangwanpeng/article/details/53149774) 
 <pre><code>
 使用转义字符。使用 "& l t ;" 代替 “<” , 使用 "& g t ;" 代替 ">"。 例如要输出<a>，则需要写为& l t ; a & g t ; 
 </code></pre>
