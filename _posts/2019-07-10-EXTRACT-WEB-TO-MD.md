@@ -9,7 +9,7 @@ catalog: true 						# 是否归档
 tags:	MarkDown							#标签
 ---
 
-##保存一般网页
+**保存一般网页**
 
 * 使用windows版的chrome版本
     *  75.0.3770.100（正式版本） （64 位） 打开网页
@@ -20,10 +20,4 @@ tags:	MarkDown							#标签
 * 把MD中的./Y_files批量替换成/img/blog/Y_files
 
 
-* weibo: [@joelpub](http://weibo.com/joelpub)
-```javascript
-  var ihubo = {
-    nickName  : "joel",
-    site : "https://joelpub.github.io"
-  }
-```
+
