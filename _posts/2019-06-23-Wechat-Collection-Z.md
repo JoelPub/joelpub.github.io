@@ -75,4 +75,3 @@ tags:	APP							#标签
 
 　　实际上，安卓的生态已经近似于恶性循环，流氓App们不断找方法驻留后台，而各种ROM为了对付流氓App，对后台限制又日益收紧，这令安卓渐渐缺失了最初的卖点。为此，业界也在想办法解决流氓App的问题，例如就有开发者提出了Android绿色应用公约，国内也打算联合开发者们建立统一的App推送机制，减少App后台驻留的必要性，希望安卓的生态最终还是可以越来越好吧。
 
-<embed width="100%" height="540px" name="plugin" id="plugin" src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/Z.pdf" type="application/pdf" internalinstanceid="9">
