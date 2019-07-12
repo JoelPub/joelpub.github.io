@@ -1,0 +1,190 @@
+
+// this plugin encapsualtes the functionality for a marketplace rating control
+// it expects certain dom to already be in place, as per /awards/plugins/rating/includes/rating_inc.asp
+
+(function ($) {
+    $.fn.rating = function (options) {
+
+        return this.each(function () { jRating(this, options); });
+    }
+    var jRating = window.jRating = function (elem, options) {
+        if (elem.jquery) {
+            return jRating(elem[0]);
+        }
+        if (elem.$jqRating) {
+            return elem.$jqRating;
+        } else {
+            return new jRating.fn.init(elem, options);
+        }
+    };
+
+    jRating.fn = jRating.prototype = {
+        jRating: "0.1.0",
+        current_state: null,
+        values: {
+            rating: null,
+            user_id: null,
+            user_type: null,
+            user_position: null,
+            nomination_id: null,
+            account_ref: null
+        },
+        $slider: null,
+        $elemRating: null,
+        init: function (elem, options) {
+            var opts = $.extend({}, jRating.defaultOptions, options);
+
+            // make "this" jQuery object avialable via the DOM: $([dom selector]).$jqRating
+            elem.$jqRating = this; // "this" is the jQuery jRating object.  "elem" is a DOM object.  Therefore, the jQuery object is being made available via the DOM container object.  
+
+            // make the DOM element via the jQuery object: this.$elemRating
+            var $elemRating = this.$elemRating = $(elem);
+
+            this.values.user_id = opts.user_id;
+            this.values.user_type = opts.user_type;
+            this.values.user_position = opts.user_position;
+            this.values.nomination_id = opts.nomination_id;
+            this.values.account_ref = opts.account_ref;
+
+            // initialise slider
+            this.$slider = $(".slider.marketplace").slider({
+                value: 1,
+                min: 1,
+                max: 5,
+                step: 1,
+                start: function () {
+                    var $rating = $(this).data('jRating');
+                    //$rating.set_state('edit');
+                },
+                stop: function (event, ui) {
+                    var $rating = $(this).data('jRating');
+                    //$rating.set_rating($(this).slider('value'));
+                },
+                slide: function (event, ui) {
+                    event
+                    var $rating = $(this).data('jRating');
+                    $rating.set_quality(ui.value);
+                    $rating.set_state('edit');
+                    $rating.set_rating(ui.value);
+                }
+            });
+            
+            $(elem).find('*').data('jRating', this);
+            this.qualities = opts.qualities;
+
+            $('.marker.rating_1 span').data('rating', 1);
+            $('.marker.rating_2 span').data('rating', 2);
+            $('.marker.rating_3 span').data('rating', 3);
+            $('.marker.rating_4 span').data('rating', 4);
+            $('.marker.rating_5 span').data('rating', 5);
+
+            $('.jRating .marker span').click(function () {
+                var $jRating = $(this).data('jRating');
+                $jRating.set_rating($(this).data('rating'));
+                $jRating.set_state('edit');
+            });
+
+            if (opts.ratings && opts.ratings['0'] && opts.ratings['0'].rating) {
+                this.set_rating(opts.ratings['0'].rating);
+                this.set_state('saved');
+            } else {
+                this.set_rating(0);
+                this.set_state('initial');
+                $elemRating.addClass('overlay');
+            }
+
+            // ASSIGN HANDLERS
+            $elemRating.find('[name="save-rating"]').click(this.save);
+            $elemRating.find('.edit_container a').click(function () {
+                var $jRating = $(this).data('jRating');
+                $jRating.start_edit();
+                return false;
+            });
+            $elemRating.find('[name = "start-rating"]').click(function () {
+                var $jRating = $(this).data('jRating');
+                $jRating.remove_overlay();
+                $jRating.start_edit();
+                //this.$slider.find('.ui-slider-handle').focus();
+
+                return false;
+            });
+
+            // HOLD: bind handler to edit link??
+
+        },
+        remove_overlay: function () {
+            this.$elemRating.removeClass('overlay');
+            return false;
+        },
+        set_state: function (state) {
+            arrStates = ['initial', 'edit', 'saving', 'saved', 'error'];
+            for (var i = 0; i < arrStates.length; i++) {
+                $(this.$elemRating).hasClass(arrStates[i]) && state != arrStates[i] && $(this.$elemRating).removeClass(arrStates[i]);
+            };
+            $(this.$elemRating).addClass(state);
+            this.current_state = state;
+        },
+        set_rating: function (rating) {
+            if (!rating) {
+                rating = 0;
+            } 
+            this.$elemRating.find('.judge_overall_rating').text(rating);
+
+            this.values.rating = rating;
+
+            this.$elemRating[0].$jqRating.$slider.slider('value', rating)
+
+            // show rating description
+            this.set_quality(rating);
+        },
+        set_quality: function (rating) {
+            if (this.qualities && this.qualities[rating]) {
+                $(this.$elemRating).find('.quality').html(this.qualities[rating]);
+            }
+        },
+        save: function () {
+            var $jRating = $(this).data('jRating');
+            $jRating.set_state('saving');
+
+            // save rating
+            $.getJSON(
+                '/awards/plugins/rating/ajax-save-rating.asp',
+                $jRating.values,
+                function (data) {
+                    // note: $jRating is still in scope from save() function definition
+                    if (data['error']) {
+                        $jRating.set_state('edit');
+                        if (data['message']) {
+                            alert(data['message']);
+                        }
+                    } else {
+                        $jRating.set_state('saved');
+                    }
+                });
+        },
+        start_edit: function () {
+            var $this;
+            if (this.jRating) {
+                $this = this;
+            } else {
+                $this = $(this).data('jRating');
+            }
+            $this.set_state('edit');
+        },
+    };
+
+    jRating.fn.init.prototype = jRating.fn;
+
+    jRating.defaultOptions = {
+        "user_id": 0,
+        "user_type": "",
+        "user_position": "",
+        "ratings": { "0": { "factor": "0", "rating": 0 } },
+        "default_rating": 2,
+        "nomination_id": 0,
+        "category_id": 0,
+        "qualities": [],
+        "account_ref": ""
+    };
+
+})(jQuery);

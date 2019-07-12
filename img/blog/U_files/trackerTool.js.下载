@@ -1,0 +1,78 @@
+/**
+ * 天眼埋点上报通用js方法
+ */
+var trackerTool = function () {
+
+    /**
+     * 初始化PC端appName
+     */
+    this.initPcAppName = function () {
+        T8TTracker.init({
+            app_name: 'shejiben_pc'
+        });
+    };
+
+    /**
+     * 初始化H5端appName
+     */
+    this.initH5AppName = function () {
+        T8TTracker.init({
+            app_name: 'shejiben_h5'
+        });
+    };
+
+    /**
+     * 天眼手动曝光
+     *
+     * @return  [type]  [return description]
+     */
+    this.manualShow = function () {
+        document.onreadystatechange = function () { //页面加载状态变更事件
+            if (document.readyState !== "complete") { //页面dom元素未加载完成则跳过
+                return false;
+            }
+            var informed = new Array();
+            var widgetUid = '';
+
+            setTimeout(function () { //加个三秒定时--因异步的广告图片会有延迟
+                var dealEle = $(document).find('a.widget-ad-click');
+                if (dealEle.length <= 0) {
+                    return false;
+                }
+                for (var i = 0; i < dealEle.length; i++) {
+                    widgetUid = dealEle.eq(i).attr("widget_uid");
+                    var isFirstNode = false;
+                    if (i !=0 && dealEle.eq(0).attr("widget_uid") == widgetUid) {
+                        isFirstNode = true;
+                    }
+                    if (informed.length > 0 && $.inArray(widgetUid, informed) > -1 && !isFirstNode) {
+                        continue;
+                    }
+                    informed.push(widgetUid);
+                    console.log("已曝光元素，widget_uid为：" + widgetUid);
+                    T8TTracker.watch(dealEle.get(i))
+                }
+            }, 3000)
+        }
+    };
+
+    /**
+     * 天眼点击手动上报
+     *
+     * @return  [type]  [return description]
+     */
+    // this.manualClick = function () {
+    //     //     var event = 'webWidgetClick'; // 使用的事件名称
+    //     //     $('body').on('click', '.widget-ad-click', function () {
+    //     //         console.log("天眼点击 成功");
+    //     //         var self = $(this);
+    //     //         T8TTracker.send(event, {
+    //     //             widget_uid: self.attr('widget_uid'),
+    //     //             widget_href: self.attr('widget_href'),
+    //     //             ad_src: self.attr('data-ad_src'),
+    //     //             ad_type: "ad",
+    //     //             ad_id: self.attr('data-ad_id')
+    //     //         });
+    //     //     })
+    //     // };
+};

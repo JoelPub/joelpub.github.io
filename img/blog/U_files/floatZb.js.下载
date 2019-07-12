@@ -1,0 +1,494 @@
+/* h5站悬浮的底部招标 */
+$(function(){
+    if($('.topHot').length > 0 && $('.works-type').length > 0){
+        $('.works-type').css('top','50px');
+    }
+    // 图集详情页,招标页以及预约页不需要推送
+    if($('.botFloatBar').length > 0 || $('.no_app_push').length > 0 || $('.float-yuyue').length > 0 || $('#zbForm').length > 0 || getUrlParam('bd') || (getUrlParam('showFloatZb') && getUrlParam('showFloatZb')==0)){
+        // $('.container').css('height',$(window).height());
+        return false;
+    }
+    // floatZbSwitch = {
+    //     'baidu_auto_up':0,
+    //     'baidu_click_up':1,
+    //     'other_auto_up':0,
+    //     'other_click_up':1,
+    //     'direct_auto_up':0,
+    //     'direct_click_up':1
+    // }
+    // console.log(floatZbSwitch);
+    var baiduSeo = getCookie('baiduSeo', 1);
+    var otherSeo = getCookie('otherSeo', 1);
+    var doucUtm = document.location.href.indexOf('utm_from'),
+        refer = document.referrer,
+        // refer = 'www.sougou.com',
+        badiReferer = refer.indexOf('baidu.com'),
+        badiReferer2 = refer.indexOf('baiducontent.com'),
+        isBaiduSeo = (refer != '' && (badiReferer != -1 || badiReferer2 != -1)) ? true : false,
+        isOtherSeo = (refer != '' && badiReferer == -1 && badiReferer2 == -1 && refer.indexOf('shejiben.com') == -1 ) ? true : false,
+        isDirectInput = ((refer == '' || refer.indexOf('shejiben.com') != -1) && doucUtm == -1) ? true : false ;
+
+        var isbaidu = true;
+        if(baiduSeo){
+            isbaidu = true;
+        }
+        else if(!otherSeo && isBaiduSeo){
+            isbaidu = true;
+        }
+        else{
+           isbaidu = false; 
+        }
+        var isOther = true;
+        if(otherSeo){
+            isOther = true;
+        }
+        else if(!baiduSeo && isOtherSeo){
+            isOther = true;
+        }
+        else{
+           isOther = false; 
+        }
+        var isbaidu = true;
+        if(baiduSeo){
+            isbaidu = true;
+        }
+        else if(!otherSeo && isBaiduSeo){
+            isbaidu = true;
+        }
+        else{
+           isbaidu = false; 
+        }
+
+        var isDirect = true;
+        if(!otherSeo && !baiduSeo && !isOtherSeo && !isBaiduSeo){
+            isDirect = true;
+        }
+        else{
+           isDirect = false; 
+        }
+
+        var scrollTop = 0;
+        var flag = 0;
+        var zbNum = 0;
+        var zbHeight = 0;
+        var screenWidth = $(window).width();
+        var screenHeight = $(window).height();
+        var peopleImgHeight = 184*screenWidth/750;
+            zbHeight = 352+45+peopleImgHeight;
+    // console.log(isBaiduSeo);  
+    // console.log(isOtherSeo); 
+    // console.log(isDirectInput); 
+    if(floatZbSwitch['baidu_auto_up'] == 0 && floatZbSwitch['baidu_click_up'] == 0 && floatZbSwitch['other_auto_up'] == 0 && floatZbSwitch['other_click_up'] == 0 && floatZbSwitch['direct_auto_up'] == 0 && floatZbSwitch['direct_click_up'] == 0){
+        $('.topHot a').attr('href',adUrl);
+        return false;
+    }
+    // 添加或删除cookie
+    if(baiduSeo){
+        showBaiduZbBox();  
+    }
+    else if(otherSeo){
+        showOtherZbBox();
+    }
+    else{
+        if(isBaiduSeo){
+            setCookie('baiduSeo',1,'24*3600*1000','baiduSeo','shejiben.com');
+            showBaiduZbBox();
+        }
+        else if(isOtherSeo){
+            setCookie('otherSeo',1,'24*3600*1000','otherSeo','shejiben.com');
+            showOtherZbBox();
+        }
+        else{
+            showDirectZbBox();
+        }
+    } 
+    function showBaiduZbBox () {
+        if(floatZbSwitch['baidu_auto_up'] == 1 || floatZbSwitch['baidu_click_up'] == 1){
+            if(floatZbSwitch['baidu_click_up'] == 0){
+                $('.topHot a').attr('href',adUrl);
+            }
+            insertZbHtml();
+        }
+        else{
+            if(floatZbSwitch['baidu_click_up'] == 0){
+                $('.topHot a').attr('href',adUrl);
+            }
+            return false;
+        }
+    }
+    function showOtherZbBox () {
+        if(floatZbSwitch['other_auto_up'] == 1 || floatZbSwitch['other_click_up'] == 1){
+            if(floatZbSwitch['other_click_up'] == 0){
+                $('.topHot a').attr('href',adUrl);
+            }
+            insertZbHtml();
+        }
+        else{
+            if(floatZbSwitch['other_click_up'] == 0){
+                $('.topHot a').attr('href',adUrl);
+            }
+            return false;
+        }
+    }
+    function showDirectZbBox () {
+        if(floatZbSwitch['direct_auto_up'] == 1 || floatZbSwitch['direct_click_up'] == 1){
+            if(floatZbSwitch['direct_click_up'] == 0){
+                $('.topHot a').attr('href',adUrl);
+            }
+            insertZbHtml();
+        }
+        else{
+            if(floatZbSwitch['direct_click_up'] == 0){
+                $('.topHot a').attr('href',adUrl);
+            }
+            return false;
+        }
+    }
+    function insertZbHtml () {
+        var screenWidth = $(window).width();
+        var screenHeight = $(window).height();
+        var peopleImgHeight = 184*screenWidth/750;
+        var str='<div class="float_zb">'+
+                    '<div class="tips">'+
+                        '<img class="icon_pig" src="//www.shejiben.com/wap/img/flootZb/icon_pig.png?20170410" />'+
+                        '<div class="tips_img"><h2><span>找到好设计 花对每分钱</span></h2></div>'+       
+                        '<span class="close close_up">'+
+                            '<i class="arrow_0"></i>'+
+                            '<i class="arrow_1"></i>'+
+                            '<i class="arrow_2"></i>'+
+                            '<i class="arrow_3"></i>'+
+                        '</span>'+
+                    '</div>'+
+                    '<div class="float_form">'+
+                        '<img src="//www.shejiben.com/wap/img/flootZb/icon_people.png?20170410" height='+peopleImgHeight+'>'+
+                        '<form name="flootZb" action="//m.shejiben.com/zb/confirmMobile" method="post" id="flootZb">'+
+                            '<p class="zb_tips">申请定制设计</p>'+
+                            '<p class="zb_total">已有<span class="total">'+
+                                '<em class="num_top num1">0</em><em class="num_bottom num1_1"></em>'+
+                                '<em class="num_top num2">0</em><em class="num_bottom num2_1"></em>'+
+                                '<em class="num_top num3">0</em><em class="num_bottom num3_1"></em><em class="dot dot_right">,</em>'+
+                                '<em class="num_top num4">0</em><em class="num_bottom num4_1"></em>'+
+                                '<em class="num_top num5">0</em><em class="num_bottom num5_1"></em>'+
+                                '<em class="num_top num6">0</em><em class="num_bottom num6_1"></em></span>位业主申请</p>'+
+                            '<input type="hidden" id="referer" value="">'+
+                            '<div class="user-frame">'+
+                                '<input id="flootZbName" type="text" placeholder="您的称呼">'+
+                            '</div>'+
+                            '<div class="user-frame">'+
+                                '<input id="flootZbTel" type="tel" name="mobile" pattern="1[3|4|5|7|8|][0-9]{9}" placeholder="手机号码">'+
+                            '</div>'+
+                            '<div class="user-frame select_city">'+
+                                '<input class="row mfsj-area" id="flootZbArea" readonly="" placeholder="您所在城市">'+
+                            '</div>'+   
+                            '<div class="user-frame after-arrow" id="project-yusuan">'+
+                                '<select id="select-itme-yusuan-bottom-zb">'+
+                                    '<option>设计预算</option>'+
+                                    '<option value="1">3000元以下</option>'+
+                                    '<option value="2">3000-6000元</option>'+
+                                    '<option value="3">6000-10000元</option>'+
+                                    '<option value="4">10000-50000元</option>'+
+                                    '<option value="5">50000-100000元</option>'+
+                                    '<option value="6">100000元以上</option>'+
+                                '</select>'+
+                                '<label id="yusuanTextBottomZb">设计预算</label>'+
+                            '</div>'+
+                            '<input type="button" class="submitBtn" id="floatZbBtn" value="马上申请">'+
+                            '<div class="our_promise clearfix">'+
+                                '<em></em>'+
+                                '<p>我们承诺：为了您的利益以及我们的口碑，您的隐私将被严格保密，请放心填写</p>'+
+                            '</div>'+
+                        '</form>'+  
+                    '</div>'+    
+                '</div>';  
+        jQuery('body').append(str);
+        getZbNum();
+        if(zbHeight>screenHeight){
+            $('.float_zb .float_form img').hide();
+            zbHeight = zbHeight-peopleImgHeight;
+        }
+
+        if((floatZbSwitch['baidu_auto_up'] == 0 && floatZbSwitch['baidu_click_up'] == 1 && isbaidu ) || (floatZbSwitch['other_auto_up'] == 0 && floatZbSwitch['other_click_up'] == 1 && isOther ) || (floatZbSwitch['direct_auto_up'] == 0 && floatZbSwitch['direct_click_up'] == 1 && isDirectInput && isDirect )){
+            $('.float_zb').css({'bottom':-zbHeight,'display':'block','height':zbHeight}); 
+        }
+        else{
+            $('.float_zb').css({'bottom':-(zbHeight-45),'display':'block','height':zbHeight}); 
+        }
+        if(jQuery('#scrollButton').length > 0){
+           jQuery('#scrollButton').css({'bottom':'70px'}); 
+        } 
+        // 初始化省市选择器
+        ProvincesSelect.initialize({targetDom: '#flootZbArea',callback:function(){
+            var city =  $("#flootZbArea").val().split(" ")[1];
+        }});
+        $('#flootZbArea').on('touchstart',function(){
+            $('#flootZb input').blur();
+        });
+    }
+    // 小猪动画
+    var pigAnimate = 0;
+    $('.float_zb .icon_pig').animate({
+        top:11
+    },500);
+    showPigAnimate();
+    // 每隔一秒执行一次小猪上下跳动的动画
+    function showPigAnimate(){
+        clearInterval(pigAnimate);
+        pigAnimate = setInterval(function(){
+            $('.float_zb .icon_pig').animate({
+                top:9
+            },500,function(){
+                $('.float_zb .icon_pig').animate({
+                    top:11
+                },500);
+            });
+        },1000);
+    }
+    // 每隔1200ms执行一次箭头滚动的动画
+    var arrowAnimate = 0;
+    showArrowAnimate();
+    function showArrowAnimate(){
+        clearInterval(arrowAnimate);
+        var i = 0;
+        arrowAnimate = setInterval(function(){
+            $('.close_up i').eq(i).show().siblings().hide();
+            i++;
+            if(i==4){
+                i=0;
+            }
+        },400);
+    }
+    // 动态获取招标人数
+    function getZbNum(){
+        jQuery.ajax({
+            url: '//m.shejiben.com/zb/GetTotalzbNums',
+            type: 'POST',
+            dataType: 'json',
+            data: {},
+            success: function (result) {
+                if(result.errorCode == 0){
+                    var arrNum = [];
+                    zbNum = result.data.replace(',','');
+                    for(var i=0;i<zbNum.length;i++){
+                        arrNum[i] = zbNum.charAt(i);
+                        $('.total .num_bottom').eq(i).html(arrNum[i]);
+                    }
+                    $('.total .num_bottom').addClass('num_bottom_ready');
+                    if($('.num_bottom_ready').length>0){
+                        for(var i = 0;i< $('.num_bottom_ready').length;i++){
+                            if(i==0 || i==3 || i==5){
+                                $('.num_bottom').eq(i).addClass('bottom_animate_800');   
+                                $('.num_top').eq(i).addClass('top_animate_1000');  
+                            }
+                            else{
+                                $('.num_bottom_ready').eq(i).addClass('bottom_animate_1000'); 
+                                $('.num_top').eq(i).addClass('top_animate_800'); 
+                            }    
+                        }
+                    }
+                    $('.top_animate_1000').animate({
+                        top:'-22px'
+                    },1000);
+                    $('.top_animate_800').animate({
+                        top:'-22px'
+                    },800);
+                    $('.bottom_animate_1000').animate({
+                        top:0
+                    },1000);
+                    $('.bottom_animate_800').animate({
+                        top:0
+                    },800);                                
+                }
+                else{
+                    alert('请求失败');
+                }
+            }
+        }); 
+    }     
+    // 展开收起动效
+    $('.float_zb .tips').on('touchstart',function(event){
+        showFloatZb(event);
+    });
+    if((floatZbSwitch.baidu_click_up == 1 && isbaidu) ||(floatZbSwitch.other_click_up == 1 && isOther) || (floatZbSwitch.direct_click_up == 1 && isDirect) ){
+        $('.topHot').on('touchstart',function(event){
+            showFloatZb(event);
+        });
+    }
+    function showFloatZb(event) {
+        event.preventDefault();
+        if($('.close_up').length>0){
+            if($('.wrap').length>0 || $('.container').length>0){
+                scrollTop = $('body').scrollTop();
+                $('body,html').css({'height':$(window).height(),'overflow':'hidden'});
+                $('.wrap ,.container').css('margin-top',-scrollTop);
+            }
+            $('.float_zb').animate({
+                bottom:0
+            },500,function(){
+                $('.float_zb .tips .close').addClass('close_down').removeClass('close_up');
+                clearInterval(arrowAnimate);
+                if(zbNum == 0){
+                    getZbNum();
+                }
+                else{
+                    if($('.num_bottom_ready').length>0){
+                        for(var i = 0;i< $('.num_bottom_ready').length;i++){
+                            if(i==0 || i==3 || i==5){
+                                $('.num_bottom').eq(i).addClass('bottom_animate_800');   
+                                $('.num_top').eq(i).addClass('top_animate_1000');  
+                            }
+                            else{
+                                $('.num_bottom_ready').eq(i).addClass('bottom_animate_1000'); 
+                                $('.num_top').eq(i).addClass('top_animate_800'); 
+                            }    
+                        }
+                    }
+                    $('.top_animate_1000').animate({
+                        top:'-22px'
+                    },1000);
+                    $('.top_animate_800').animate({
+                        top:'-22px'
+                    },800);
+                    $('.bottom_animate_1000').animate({
+                        top:0
+                    },1000);
+                    $('.bottom_animate_800').animate({
+                        top:0
+                    },800);  
+                }
+            });
+            if($('.zb_success_msg').length>0){
+                $('.zb_success_msg').remove();
+                $('.float_form form').show();
+            }
+        }
+        if($('.close_down').length>0){
+            if($('.wrap').length>0 || $('.container').length>0){
+                $('.wrap,.container').css('margin-top',0);
+                $('body,html').removeAttr('style');
+                $('body').scrollTop(scrollTop);
+            }
+            var bottom_zb_h5 = getCookie('bottom_zb_h5', 1);
+            if(!bottom_zb_h5){
+                setCookie('bottom_zb_h5',1,'3600*24*1000','bottom_zb_h5','shejiben.com');
+            }
+            if((floatZbSwitch['baidu_auto_up'] == 0 && floatZbSwitch['baidu_click_up'] == 1 && isbaidu) || (floatZbSwitch['other_auto_up'] == 0 && floatZbSwitch['other_click_up'] == 1 && isOther) || (floatZbSwitch['direct_auto_up'] == 0 && floatZbSwitch['direct_click_up'] == 1 && isDirect)){
+                var scrollHeight = zbHeight;
+            }
+            else{
+                var scrollHeight = zbHeight-45;
+            }
+            $('.float_zb').animate({
+                bottom:-scrollHeight
+            },500,function(){
+                $('.float_zb .tips .close').removeClass('close_down').addClass('close_up');
+                showArrowAnimate();
+                $('.zb_total .num_top').removeClass('top_animate_1000').removeClass('top_animate_800').css('top','0');
+                $('.zb_total .num_bottom').removeClass('bottom_animate_1000').removeClass('bottom_animate_800').css('top','22px');
+            });
+        }
+    }
+    // 页面滑至页面的1/2区域且没有关闭过招标框时自动展开招标框
+    if((floatZbSwitch['baidu_auto_up'] == 1 && isbaidu) || (floatZbSwitch['other_auto_up'] == 1 && isOther) || (floatZbSwitch['direct_auto_up'] == 1 && isDirect)){
+        var documentHeight = $(document).height();
+        var flag = 0;
+        // if($('.container').length>0) {
+        //     var obj = $('.container');
+        // }
+        // else{
+            var obj = $(window);
+        // }   
+        obj.on('scroll',function(){
+            if(flag == 1){
+                return false;
+            }
+                var bottom_zb_h5 = getCookie('bottom_zb_h5', 1);
+                var scrollHeight = obj.scrollTop();
+                if(scrollHeight >= (documentHeight-$(window).height())/2 && !bottom_zb_h5){
+                    flag = 1; 
+                    $('.float_zb').animate({
+                        bottom:0
+                    },1000,function(){
+                        getZbNum();
+                        $('.float_zb .tips .close').addClass('close_down').removeClass('close_up');
+                    });
+                }         
+        }); 
+    }
+
+    // 表单提交验证
+    $('#floatZbBtn').on('touchstart',function(){
+        if($('.float_zb .close_up').length>0){
+            return false;
+        }
+        var name = $('#flootZbName'),
+            tel = $('#flootZbTel'),
+            province = $('#flootZbArea');
+        var srctype = getUrlParam('from');//着陆页来源信息
+        if($.trim(name.val())==""){
+            alert('请填写您的称呼');
+            name.focus();
+            return false;
+        }
+        if($.trim(name.val()).length > 20){
+            alert('称呼不能多于20个字符');
+            name.focus();
+            return false;
+        }
+        if($.trim(tel.val())==''){
+            alert('请填写您的手机号码，方便设计师第一时间联系您');
+            tel.focus();
+            return false;
+        }
+        var telRegexp = /^(1[3|4|5|7|8|9][0-9]{9}$)/;
+        if(!telRegexp.test($.trim(tel.val()))){
+            alert('请填写正确的中国大陆11位手机号码');
+            tel.focus();
+            return false;
+        }
+        if($.trim(province.val()) == ''){
+            alert('请选择您所在的城市');
+            return false;
+        }
+        if($.trim($('#select-itme-yusuan-bottom-zb').val()) == '' || $.trim($('#select-itme-yusuan-bottom-zb').val()) == '设计预算'){
+            alert('请选择项目预算');
+            return false;
+        }
+        else{
+            if($(this).attr('clicking') == 1){
+                return false;
+            }
+            $('#floatZbBtn').attr('clicking',1);
+            $('#floatZbBtn').val('提交中...');
+            var provinceArr = province.val().split(" ");
+            shen = provinceArr[0];
+            city = provinceArr[1];          
+            jQuery.ajax({
+                url: '//m.shejiben.com/zb/post',
+                type: 'POST',
+                dataType: 'json',
+                data: {"chenghu": $.trim(name.val()),"phone":$.trim(tel.val()),"User_Shen":shen,"User_City":city,'yusuan':$('#select-itme-yusuan-bottom-zb').val(),'sourceid':'125','act':'floatzb','srctype':srctype},
+                success: function (result) {
+                    $('#floatZbBtn').attr('clicking',0);
+                    if( result.errorCode == 0)
+                    {
+                        flootZb.reset();
+                        $('#yusuanTextBottomZb').html('设计预算');
+                        $('#floatZbBtn').val('马上申请');
+                        var successMsg = '<div class="zb_success_msg" style="height:'+(zbHeight-45)+'px">'+
+                                            '<span class="icon_success"><img src="//www.shejiben.com/wap/img/flootZb/icon_success.png?20170410" /></span>'+
+                                            '<p class="tips_b">提交成功</p>'+
+                                            '<p class="tips_s">设计本客服会在24小时内电话联系您</p>'+
+                                            '<p class="tips_s">确认您的设计需求</p>'+
+                                        '</div>';
+                        $('.float_form form').hide();                
+                        $('.float_form').append(successMsg);  
+                    }
+                    else
+                    {
+                        alert(result.errMsg);
+                    }
+                }
+            });
+        }
+    });
+});

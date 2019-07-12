@@ -1,0 +1,295 @@
+// 截取地址中的参数
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+    if (r != null) return unescape(r[2]); return null; //返回参数值
+}
+// 设置cookie
+function setCookie(name, value, expire, pre, domain) {
+    if (!expire) {
+        expire = 5000
+    };
+    if (pre) {
+        name = 'to8to_' + name
+    };
+    var expiry = new Date();
+    expiry.setTime(expiry.getTime() + expire);
+    var domain_url = '';
+    if (domain) domain_url = 'domain=' + domain + ';';
+    document.cookie = name + '=' + value + ';expires=' + expiry.toGMTString() + ';path=/;' + domain_url
+};
+// 获取cookie
+function getCookie(name, pre) {
+    if (pre) {
+        name = 'to8to_' + name
+    };
+    var r = new RegExp("(\\b)" + name + "=([^;]*)(;|$)");
+    var m = document.cookie.match(r);
+    return (!m ? "": decodeURIComponent(m[2]))
+};
+//删除cookie
+function clearCookie(name,pre) {
+    var exp = new Date();
+    exp.setTime(exp.getTime() - 1);
+    var cval = getCookie(name);
+    if (pre) {
+        name = 'to8to_' + name
+    };
+    if (cval != null){
+        document.cookie = name + "=" + cval + ";expires=" + exp.toGMTString();
+    }
+}
+//通过IP获取城市名称
+function getCityFromIp() {
+    if (getCookie('cityFromIp') !='') {
+        return getCookie('cityFromIp');
+    }else{
+        $.ajax({
+            type: "GET",
+            url: '//www.to8to.com/api/getAreaInfo.php',
+            // async:false, //同步调用
+            dataType : "jsonp",//数据类型为jsonp
+            jsonpCallback: "jsonpCallback",//服务端用于接收callback调用的function名的参数
+            success: function (ret) {
+                var to8to_tname = encodeURIComponent(ret.data.to8to_tname);
+                setCookie('cityFromIp',to8to_tname,9999999999999);
+                return ret.data.to8to_tname;
+            },
+            error: function(){
+                return '北京';
+            }
+        });
+    }
+}
+//动态加载JS
+function loadScript(url) {
+    var ahead   = document.head || document.getElementsByTagName( "head" )[0] || document.documentElement;
+    var ascript = document.createElement('script');
+    ascript.src = url;
+    ascript.type= 'text/javascript';
+    ahead.appendChild(ascript);
+    ascript.onload = ascript.onreadystatechange = function() {
+        if( !ascript.readyState || /loaded|complete/.test( ascript.readyState ) ) {
+            ahead.removeChild(ascript);
+        }
+    }
+}
+//动态加载CSS
+function loadCss(url) {
+    var myLink = document.createElement("link");
+    myLink.rel = "stylesheet",
+        myLink.type = "text/css";
+    myLink.href = url;
+    document.getElementsByTagName("head")[0].appendChild(myLink);
+}
+
+//H5页面被转码跳回原网页(SEO andy.xiang)
+$(function() {  
+    eval(window.atob("dmFyIGN1cnJlbnRIcmVmPWxvY2F0aW9uLmhyZWY7aWYoL3RyYWRhcXVhbi5jb20vZ2kudGVzdChjdXJyZW50SHJlZikpe2xvY2F0aW9uLmhyZWY9ICQoIm1ldGFbcHJvcGVydHk9J29nOnVybCddIikuYXR0cigiY29udGVudCIpO30="));
+});
+
+// 弹层
+var myLayer = {
+    type:1,
+    time:0,
+    btn:[],
+    content:'',
+    title:'',
+    area:['70%','auto'],
+    yes:'',
+    cancel:'',
+    open: function(data){
+        var _this = this;
+        _this.type = data.type ? data.type : 1;
+        _this.countDownTime = data.time ? data.time : 0;
+        _this.btn = data.btn ? data.btn : ['好的'];
+        _this.content = data.content ? data.content : '';
+        _this.title = data.title ? data.title : '';
+        _this.area = data.area ? data.area : ['70%','auto'];
+        _this.yes = data.yes ? data.yes : function(){};
+        _this.cancel = data.cancel? data.cancel : function(){};
+        var btn = '';
+        var title = '';
+        if(_this.title != ''){
+            var title = '<div class="title">'+_this.title+'</div>'
+        }
+        if(_this.btn.length == 1){
+            btn = '<div class="btn btn_one"><input type="button" class="btn_red btn_ok" value="'+_this.btn[0]+'"/></div>';
+        }
+        else if(_this.btn.length == 2){
+            btn = '<div class="btn btn_two"><input type="button" class="btn_grey btn_cancel" value="'+_this.btn[0]+'"/><input type="button" class="btn_red btn_ok" value="'+_this.btn[1]+'"/></div>';
+        }
+        if(_this.type == 1){
+            _this.content = '<div class="layer_mask"></div><div class="my_layer">'+title+_this.content+btn+'</div>'; 
+        }
+        $(document.body).append(_this.content); 
+
+        if(_this.countDownTime != 0){
+            _this.autoClose(_this.countDownTime);
+        }
+
+        $('.btn_ok').click(function(){
+            _this.close();
+            _this.yes();  
+        });
+
+        $('.btn_cancel').click(function(){
+            _this.close();
+            _this.cancel();  
+        });
+    },
+    close: function(){
+        $('.layer_mask,.my_layer').remove();
+    },
+    autoClose:function(time){
+        setTimeout(function(){
+            $('.my_layer,.layer_mask').remove();
+        },time);
+    }
+}
+$(function(){
+    //判断是否在app中打开m站，隐藏头尾模板
+    var app_source = getCookie('app_source',1);
+    if(app_source == 1)
+    {
+       $(".headerBar").hide();
+       $(".footerBar").hide();
+    }else{
+        $(".headerBar").show();
+        $(".footerBar").show();
+    }
+    // 判断用户是否登录并给底部“我的”连接赋值
+    $.ajax({
+        url:'//m.shejiben.com/user/activehead?'+Date.parse(new Date()),
+        type:'POST',
+        data:{'act':'sjbhead'},
+        dataType:'html',
+        success:function (data){
+            jQuery('.copyright .my').remove();
+            if(data.indexOf('请登录')>-1){
+                jQuery('.copyright .link').prepend(data.replace('请登录','我的'));
+            }
+            else{
+                var start = data.indexOf('http'); 
+                var end = data.indexOf("' class=");
+                data = data.substring(start,end);
+                jQuery('.copyright .link').prepend('<a href='+data+'>我的</a>');
+            }
+        }
+    });
+    // 头部搜索
+    $('.search').on('touchstart',function(){
+        if($('.search-layer').length == 0){
+            var html = '<div class="search-layer">'+
+                            '<form name="searchForm" id="searchForm" action="javascript:void();">'+
+                                '<div class="box">'+
+                                    '<input type="search" placeholder="请输入搜索关键词" />'+
+                                '</div>'+
+                                '<span class="btn-search-cancel">取消</span>'+
+                            '</form>'+    
+                        '</div>';
+            $('body').append(html);   
+        }
+        else{
+            $('.search-layer').show();
+        } 
+        $('.search-layer input').focus(); 
+        if($('.wrap').length>0){
+            $('.search-layer').css('height',$('.wrap')[0].scrollHeight-44);
+        }
+        else if($('.container').length>0){
+            $('.search-layer').css('height',$('.container')[0].scrollHeight-44);
+        }
+    });
+    $('body').on('touchstart','.btn-search-cancel',function(e){
+        $('.search-layer input').blur();
+       $('.search-layer').hide(); 
+        e.preventDefault();
+    });
+    $('body').on('keydown','#searchForm',function(event){
+        if($('.search-tab').length == 0){
+            var searchReferer = $('.search').attr('referer');
+            setCookie('searchReferer',searchReferer,'3600*5*1000','searchReferer','shejiben.com');  
+        }
+        if(event.keyCode == 13){
+            var url = $('.search').attr('data-url');
+            if(url==undefined){
+                url = '';
+            }
+            var val = $('#searchForm input').val();
+            $('#searchForm').attr('action',url+val);
+        }
+    });
+    // 返回顶部
+    $(window).on('scroll',function(){
+        var scrollTop = $('body').scrollTop();
+        var windowHeight = $(window).height();
+        if(scrollTop>=windowHeight/2){
+           $('#backToTop').show(); 
+        }
+        else{
+            $('#backToTop').hide(); 
+        }
+    });
+    $('#backToTop').on('click',function(){
+        $('body').scrollTop(0);
+    });
+    // 是否需要显示底部的400电话 (提供给金立等第三方的推广连接，不允许引导用户招标或进行400电话咨询)
+    if(getUrlParam('show400') && getUrlParam('show400')== 0){
+        $('.tel_400').hide();
+    }
+    if(getUrlParam('showHeadApp') && getUrlParam('showHeadApp')== 0){
+        $('.download').hide();
+    }
+    if((getUrlParam('showFloatYuyue') && getUrlParam('showFloatYuyue')== 0 ) || getUrlParam('bd')){
+        $('.float-yuyue').hide();
+    } 
+    else{
+       $('.float-yuyue').show(); 
+    }
+    /**
+     * 微信分享配置
+     * @param  settings
+     */
+    shareWechat = function(options) {
+        var settings = $.extend({
+            titleConfig: '',
+            titleQuan: '',
+            descConfig: '',
+            url: '',
+            imgUrl: ''
+        },options)
+        $.getScript('https://res.wx.qq.com/open/js/jweixin-1.0.0.js',function(){
+            $.getScript('//m.to8to.com/js/wx.js?20150210',function(){
+                /*********** 微信分享 ************/
+                try {
+                    var shareConfig = {
+                        title: settings.titleConfig, //分享标题
+                        desc: settings.descConfig, //分享文案
+                        link: settings.url, // 分享链接
+                        imgUrl: settings.imgUrl // 分享图标
+                    };
+                    var shareQuan = {
+                        title: settings.titleQuan, //分享朋友圈文案
+                        link: settings.url, // 分享链接
+                        imgUrl: settings.imgUrl // 分享图标
+                    };
+                    to8toWx && to8toWx.init({
+                        onReady: function() {
+                            // 分享到朋友圈
+                            to8toWx.exec('onMenuShareTimeline', shareQuan);
+
+                            // 发送给朋友
+                            to8toWx.exec('onMenuShareAppMessage', shareConfig);
+
+                            // 分享到QQ
+                            to8toWx.exec('onMenuShareQQ', shareConfig);
+                        }
+                    });
+                } catch (e) {}
+                /*********** 微信分享 ************/
+            })
+        })
+    };
+});
+

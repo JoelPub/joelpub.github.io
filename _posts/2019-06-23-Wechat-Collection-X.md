@@ -6,7 +6,7 @@ date:       2019-06-23 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	Life							#标签
+tags:	Education							#标签
 ---
 <a href="https://www.sohu.com/a/157016053_809543">约翰·罗伯茨</a>
 <h1><a id="_1"></a>＂我希望你们在未来岁月中，不时遭遇不公的对待…＂家长竟然这样为孩子毕业典礼致辞</h1>

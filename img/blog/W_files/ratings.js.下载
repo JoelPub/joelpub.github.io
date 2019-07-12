@@ -1,0 +1,284 @@
+
+// this plugin encapsualtes the functionality for a marketplace rating control
+// it expects certain dom to already be in place, as per /awards/plugins/rating/includes/rating_inc.asp
+(function ($) {
+    $.fn.ratings = function (options) {
+
+        return this.each(function () { jRatings(this, options); });
+    }
+    var jRatings = window.jRatings = function (elem, options) {
+        if (elem.jquery) {
+            return jRatings(elem[0]);
+        }
+        if (elem.$jqRatings) {
+            return elem.$jqRatings;
+        } else {
+            return new jRatings.fn.init(elem, options);
+        }
+    };
+
+    jRatings.fn = jRatings.prototype = {
+        jRatings: "0.1.0",
+        current_state: null,
+        current_factor: null,
+        values: {
+            ratings: {
+                '1': { factor: '1', rating: null },
+                '2': { factor: '2', rating: null },
+                '3': { factor: '3', rating: null },
+                '4': { factor: '4', rating: null },
+                '5': { factor: '5', rating: null }
+            },
+            user_id: null,
+            user_type: null,
+            user_position: null,
+            nomination_id: null,
+            account_ref: null
+        },
+        $slider: null,
+        $elemRating: null,
+        init: function (elem, options) {
+            var opts = $.extend({}, jRatings.defaultOptions, options);
+
+            // make "this" jQuery object avialable via the DOM: $([dom selector]).$jqRatings
+            elem.$jqRatings = this; // "this" is the jQuery jRatings object.  "elem" is a DOM object.  Therefore, the jQuery object is being made available via the DOM container object.  
+
+            // make the DOM element via the jQuery object: this.$elemRating
+            var $elemRating = this.$elemRating = $(elem);
+
+            // data
+            this.values.user_id = opts.user_id;
+            this.values.user_type = opts.user_type;
+            this.values.user_position = opts.user_position;
+            this.values.nomination_id = opts.nomination_id;
+            this.values.account_ref = opts.account_ref;
+            this.values.ratings = opts.ratings;
+            this.challenges = opts.challenges;
+            this.qualities = opts.qualities;
+
+            $('.marker.rating_1 span').data('rating', 1);
+            $('.marker.rating_2 span').data('rating', 2);
+            $('.marker.rating_3 span').data('rating', 3);
+            $('.marker.rating_4 span').data('rating', 4);
+            $('.marker.rating_5 span').data('rating', 5);
+
+            $('.jRatings .marker span').click(function () {
+                var $jRatings = $(this).data('jRatings');
+                $jRatings.set_rating($jRatings.current_factor, $(this).data('rating'));
+                $jRatings.set_state('edit');
+            });
+
+            // put jq plugin references on all DOM elements
+            $(elem).find('*').data('jRatings', this);
+
+            var sRating = this.get_rating_average();
+            if (sRating == '0') {
+                this.set_state('initial');
+            } else {
+                this.set_state('saved');
+            }
+            this.update_rating_average();
+
+            var domRating;
+            var sFactor;
+            var sRating;
+            var dblRating;
+            for (var iFactor = 1; iFactor <= 5; iFactor++) {
+                sFactor = String(iFactor);
+                dblRating = this.values.ratings[sFactor].rating;
+                if (dblRating) {
+                    sRating = String(Math.round(10 * dblRating) / 10);
+                } else {
+                    sRating = '0';
+                }
+                domRating = $($elemRating.find('.judge_rate_outer')[iFactor - 1]);
+                if (domRating) {
+                    domRating.data('factor', iFactor);
+                    domRating.find('.rating_inner').text(sRating);
+                    domRating.click(function () {
+                        var iFactor = $(this).data('factor');
+                        $this = $(this).data('jRatings');
+                        $this.select_factor(iFactor);
+                        return false;
+                    });
+                    sTitle = this.challenges[iFactor].title;
+                    domRating.find('h4').text(sTitle);
+
+                }
+            }
+
+            // ASSIGN HANDLERS
+            $elemRating.find('[name="save-rating"]').click(this.save);
+            $elemRating.find('.edit_rating a').click(function () {
+                var $this = $(this).data('jRatings');
+                $this.start_edit();
+                return false;
+            });
+            /*
+            $elemRating.find('[name="previous_rating"]').click(this.prev_factor);
+            $elemRating.find('[name="next_rating"]').click(this.next_factor);
+            */
+            $elemRating.find('[name="previous_rating"]').click(function () {
+                var $this = $(this).data('jRatings');
+                $this.prev_factor();
+                return false;
+            });
+            $elemRating.find('[name="next_rating"]').click(function () {
+                var $this = $(this).data('jRatings');
+                $this.next_factor();
+                return false;
+            });
+            $elemRating.find('[name = "start-rating"]').click(function () {
+                var $this = $(this).data('jRatings');
+                $this.start_edit();
+                return false;
+            });
+            
+        },
+        start_edit: function () {
+            this.set_state('edit');
+            this.select_factor(1);
+            return false;
+        },
+        select_factor: function (factor) {
+            var sFactor = String(factor);
+            this.$elemRating.find('.judge_rate_outer').removeClass('selected');
+            $(this.$elemRating.find('.judge_rate_outer')[factor - 1]).addClass('selected');
+
+            this.current_factor = factor;
+
+            var oRating = this.values.ratings[sFactor];
+            var dblRating;
+            if (oRating && oRating.rating) {
+                dblRating = oRating.rating;
+                this.set_quality(dblRating);
+            } else {
+                dblRating = 1;
+                this.set_quality(null);
+            }
+            this.$slider = this.$elemRating.find(".slider").slider({
+                value: dblRating,
+                min: 1,
+                max: 5,
+                step: 0.5,
+                slide: function (event, ui) {
+                    var $rating = $(this).data('jRatings');
+                    $rating.set_rating($rating.current_factor, ui.value);
+                    $rating.update_rating_average();
+                }
+            });
+            this.set_state('edit');
+        },
+        get_rating_average: function () {
+            var dblRating = null;
+            var iRatedItems = 0;
+
+            for (var property in this.values.ratings) {
+                if (this.values.ratings.hasOwnProperty(property)) {
+                    if (this.values.ratings[property] && this.values.ratings[property].rating){
+                        dblRating += this.values.ratings[property].rating;
+                        iRatedItems++;
+                    }
+                }
+            }
+            if (iRatedItems > 0) {
+                return String(Math.round(10 * dblRating / iRatedItems) / 10);
+            } else {
+                return '0';
+            }
+        },
+        update_rating_average: function () {
+            this.$elemRating.find('.judge_overall_rating').text(this.get_rating_average());
+        },
+        set_rating: function (factor, rating) {
+            var sFactor = String(factor);
+            
+            if (this.values.ratings[sFactor]) {
+                this.values.ratings[sFactor].rating = rating;
+                $(this.$elemRating.find('.judge_rate_outer')[this.current_factor - 1]).find('.rating_inner').text(rating);
+                this.set_quality(rating);
+                this.$elemRating[0].$jqRatings.$slider.slider('value', rating)
+            }
+        },
+        set_quality: function (rating) {
+            if (rating && this.qualities && this.qualities[rating]) {
+                $(this.$elemRating).find('.quality').html(this.qualities[rating]);
+            } else if (this.qualities && this.qualities[0]) {
+                $(this.$elemRating).find('.quality').html(this.qualities[0]);
+            } else {
+                $(this.$elemRating).find('.quality').html('&nbsp;');
+            }
+        },
+        next_factor: function () {
+            if (this.current_factor < 5) {
+                this.select_factor(this.current_factor + 1);
+            }
+            return false;
+        },
+        prev_factor: function () {
+            if (this.current_factor > 1) {
+                this.select_factor(this.current_factor - 1);
+            }
+            return false;
+        },
+        // OLD BELOW - review then move above this line
+
+        set_state: function (state) {
+            arrStates = ['initial', 'edit', 'saving', 'saved', 'error'];
+            for (var i = 0; i < arrStates.length; i++) {
+                $(this.$elemRating).hasClass(arrStates[i]) && state != arrStates[i] && $(this.$elemRating).removeClass(arrStates[i]);
+            };
+            $(this.$elemRating).addClass(state);
+            this.current_state = state;
+            if (state != 'edit') {
+                this.$elemRating.find('.judge_rate_outer').removeClass('selected');
+            }
+        },
+        save: function () {
+            var $jRatings = $(this).data('jRatings');
+            $jRatings.set_state('saving');
+
+            // save rating
+            $.getJSON(
+                '/awards/plugins/rating/ajax-save-ratings.asp',
+                $jRatings.values,
+                function (data) {
+                    // note: $jRatings is still in scope from save() function definition
+                    if (data['error']) {
+                        $jRatings.start_edit();
+                        if (data['message']) {
+                            alert(data['message']);
+                        } else {
+                            alert('Oops, an unexpected error occurred on our end.  Please reload the page and try again.');
+                        }
+                    } else {
+                        $jRatings.set_state('saved');
+                    }
+                });
+        },
+        edit: function () {
+            // show save button
+            // enable slider
+        }
+    };
+
+    jRatings.fn.init.prototype = jRatings.fn;
+
+    jRatings.defaultOptions = {
+        "user_id": 0,
+        "user_type": "",
+        "user_position": "",
+        "ratings": {
+            '1': { factor: '1', rating: null },
+            '2': { factor: '2', rating: null },
+            '3': { factor: '3', rating: null },
+            '4': { factor: '4', rating: null },
+            '5': { factor: '5', rating: null } },
+        "default_rating": 2,
+        "nomination_id": 0,
+        "category_id": 0,
+        "qualities": [],
+        "account_ref": ""
+    };
+
+})(jQuery);
