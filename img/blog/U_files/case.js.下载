@@ -1,0 +1,162 @@
+$(function(){
+    $('img.lazy').lazyload({
+        effect : "fadeIn",
+        failurelimit : 10 ,
+        threshold : 10
+    });
+    $('.works-type p').on('touchstart',function(){
+        $('.works-type .type').toggle();
+    });
+    // 案例列表页的筛选框
+    $('.filter .tab li').on('touchstart',function(){
+    	var index = $(this).index();
+    	var maskHeight = $('.wrap')[0].scrollHeight-95;
+    	if($('.filter .filter-select').eq(index).is(':visible')){
+    		$('.filter .filter-select').eq(index).hide();
+    		$(this).removeClass('on');
+    		$('.filter .mask').hide();
+    	}
+    	else{
+	    	$(this).addClass('on').siblings().removeClass('on');
+	    	$('.filter .filter-select').eq(index).show().siblings('.filter-select').hide();
+	    	$('.filter .mask').show().css('height',maskHeight);
+    	}
+    });
+    //更新案例浏览数
+	var id = $("#updateCaseId").val();
+	$.ajax({
+		url: '//m.shejiben.com/Cases/UpdateView',
+		type: 'POST',
+		dataType: 'json',
+		data:{'filter':'updateCase','id':id},
+		success:function(res){
+		}
+	});
+	setTimeout(function() {
+		$('.tumax-img-box span').show()
+	}, 1000);
+
+    // 案例投票
+    $(function(){
+        if($('.case-detail-pic').length>0){
+            var domain = window.location.host;
+            var href = 'www.shejiben.com/shejidasai/list.php';
+            if (domain == 'm.shejiben.com') {
+                href = 'm.shejiben.com/shejidasai/list';
+            }
+            $.ajax({
+                url: '//m.shejiben.com/shejidasai/isJoin',
+                type: 'get',
+                dataType: 'json',
+                data: {'id': $("#updateCaseId").val()},
+                success:function(result) {
+                    if(result.errCode == 403){
+                        var html = '<div class="vote-box">'+
+                                        '<a href="//'+ href +'" target="_blank">参赛中</a>'+
+                                        '<input type="button" class="btn-vote" cid='+result.data.id+' activityId='+result.data.activity_id+' value="投票"/>'+
+                                    '</div>';
+                        $('.wrap').append(html);   
+                    }
+                }
+            });        
+
+            var voteFlag = false;
+            $('body').on('click','.btn-vote',function(){
+                if(voteFlag){
+                    return false;
+                }
+                voteFlag = true;
+                var cid = $(this).attr('cid'),
+                    isApp = getCookie('appversion')? 1 : 0,
+                    activityId = $(this).attr('activityId');
+                var index = $(this).parents('li').index();
+                var voteTotal = $('.case-list li').eq(index).find('.vote-num i').html();
+                $.ajax({
+                    url: '//m.shejiben.com/shejidasai/vote',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {'id': cid , 'isApp': isApp, 'activityId':activityId},
+                    success:function(result) {
+                        voteFlag = false;
+                        if(result.errCode == 200){
+                            if(getCookie('to8to_uid')==''){
+                                $('.case-list li').eq(index).find('.vote-num i').html(parseInt(voteTotal)+1);
+                                var surplusNum = (isApp==1) ? 10:3;
+                                myLayer.open({
+                                    type:1,
+                                    btn:['好的'],
+                                    content:'<em class="iconfont icon-chenggongx"></em><p class="tips_b">投票成功</p><p>登录后每天可以投<em>'+surplusNum+'</em>票哦</p>'
+                                });
+                            }
+                            else{
+                                var surplusNum = (isApp==1) ? 10-result.data.totalVoteNums : result.data.totalVoteNums>7?10-result.data.totalVoteNums:3-result.data.otherVoteNums;
+                                if(surplusNum ==0 && result.data.totalVoteNums!=10){
+                                    myLayer.open({
+                                        type:1,
+                                        btn:['取消','去下载APP'],
+                                        content:'<em class="iconfont icon-chenggongx"></em><p class="tips_b">已为其投票3次</p><p>去设计本APP还可以继续为TA投<em>'+(10-result.data.totalVoteNums)+'</em>票哦</p>',
+                                        yes:function(){
+                                            window.location.href = '//m.shejiben.com/app/';
+                                        }                                
+                                    });
+                                }
+                                else if(surplusNum ==0 && result.data.totalVoteNums==10){
+                                    myLayer.open({
+                                        type:1,
+                                        btn:['好的'],
+                                        content:'<em class="iconfont icon-chenggongx"></em><p class="tips_b">今日已为其投票10次</p><p>明天再来继续为TA投票吧</p>'
+                                    });
+                                }
+                                else{
+                                    $('.case-list li').eq(index).find('.vote-num i').html(parseInt(voteTotal)+1);
+                                    myLayer.open({
+                                        type:1,
+                                        time:1500,
+                                        btn:0,
+                                        content:'<em class="iconfont icon-chenggongx"></em><p class="tips_b">投票成功</p><p>今日还可以为ta投<em>'+surplusNum+'</em>票哦</p>'
+                                    });
+                                }
+                            }
+                        }
+                        else if(result.errCode == 405){
+                            if(getCookie('to8to_uid')==''){
+                                var surplusNum = (isApp==1) ? 10:3;
+                                myLayer.open({
+                                    type:1,
+                                    // time:1500,
+                                    btn:['取消','去登录'],
+                                    content:'<em class="iconfont icon-chenggongx"></em><p class="tips_b">你已投过票了</p><p>登录后你还可以继续为ta投<em>'+surplusNum+'</em>票哦</p>',
+                                    yes:function(){
+                                        window.location.href="//m.shejiben.com/user/login";
+                                    }
+                                });
+                            }
+                            else{
+                                var surplusNum = (isApp==1) ? 10-result.data.totalVoteNums : result.data.totalVoteNums>7?10-result.data.totalVoteNums:3-result.data.otherVoteNums;
+                                var voteNum = (isApp==1) ? result.data.totalVoteNums : result.data.otherVoteNums;
+                                myLayer.open({
+                                    type:1,
+                                    btn:['取消','去下载APP'],
+                                    content:'<em class="iconfont icon-chenggongx"></em><p class="tips_b">已为其投票'+result.data.otherVoteNums+'次</p><p>去设计本APP还可以继续为TA投<em>'+(10-result.data.totalVoteNums)+'</em>票哦</p>',
+                                    yes:function(){
+                                        window.location.href = '//m.shejiben.com/app/';
+                                    }                                
+                                });
+                            }
+                        }
+                        else{
+                            myLayer.open({
+                                type:1,
+                                btn:['好的'],
+                                content:'<p>'+result.errMsg+'</p>'
+                            });
+                        }
+                    },
+                    error:function(){
+                        voteFlag = false;
+                    }
+                });  
+            });
+        }
+    });
+});

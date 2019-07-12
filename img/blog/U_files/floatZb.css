@@ -1,0 +1,280 @@
+html{ height: 100%;}
+body{position: relative;}
+.container{
+/*	  position: absolute;
+	  top: 0;
+	  bottom: 0;
+	  overflow-y: scroll;
+	  -webkit-overflow-scrolling: touch;
+	  width: 100%;*/
+}
+/* 悬浮招标 */
+.float_zb{
+	width: 100%; 
+	max-width: 640px;
+	height:auto; 
+	position: fixed; 
+	display: none; 
+	bottom: 0; 
+	z-index: 1011;
+	background: rgba(0, 0, 0, 0.7);
+}
+.float_zb .tips {
+	position: relative;
+	width: 100%;
+	height: 45px; 
+	overflow: hidden;
+	float: left; 
+}
+.float_zb .tips .img{ 
+	width: 100%;
+	height: auto; 
+	display: block;
+}
+.float_zb .tips .close{ 
+	width: 25px; 
+	height: 25px; 
+	position: absolute; 
+	display: block; 
+	right:10px; 
+	top: 10px;
+	overflow: hidden;
+	z-index: 10;  
+	transition: all 0.5s;
+	-webkit-transition: all 0.5s; 
+}
+.float_zb .tips .close_down{
+	background: url('//www.shejiben.com/wap/img/flootZb/icon_close_top.png?20170410');background-size: 100% 100%;
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.close_up i{	
+	width: 25px; 
+	height: 25px; 
+	display: block;
+}
+.close_up .arrow_0{
+	background: url('//www.shejiben.com/wap/img/flootZb/icon_close_top.png?20170410');background-size: 100% 100%;
+}
+.close_up .arrow_1{
+	background: url('//www.shejiben.com/wap/img/flootZb/icon_close_top_01.png?20170410');background-size: 100% 100%;
+}
+.close_up .arrow_2{
+	background: url('//www.shejiben.com/wap/img/flootZb/icon_close_top_02.png?20171410');background-size: 100% 100%;
+}
+.close_up .arrow_3{
+	background: url('//www.shejiben.com/wap/img/flootZb/icon_close_top_03.png?20170410');background-size: 100% 100%;
+}
+
+.float_zb .tips .icon_pig{ width:50px; height: 34px;position: absolute;top:-34px;left:4px;}
+
+.float_zb .tips .tips_img{ 
+	width:250px; 
+	height: 25px;
+	position: absolute;
+	top: 10px;
+	left: 65px;
+	line-height: 25px;
+}
+.tips_img h2 {
+	height: 25px;
+	padding: 0;
+	width: 200%;
+	line-height: 25px;
+	background: -moz-linear-gradient(left, #ffcc00, 0.1, #ffcc00, 0.1, white, 0.1, #ffcc00, #ffcc00); 
+	background: -webkit-gradient(linear,left top,right top,color-stop(0, #ffcc00),color-stop(0.4, #ffcc00),color-stop(0.5, #fff),color-stop(0.6, #ffcc00),color-stop(1, #ffcc00)); 
+	-moz-background-clip: text;
+	-webkit-background-clip: text;
+	-moz-text-fill-color: transparent;
+	-webkit-text-fill-color: transparent; 
+	-webkit-animation: slidetounlock 8s;
+	font-size: 20px;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	font-weight: bold;
+	font-family: '微软雅黑';
+	font-style: normal;
+	-webkit-text-size-adjust: none;
+}
+.tips_img h2 span{  font-weight: bold;}
+@-webkit-keyframes slidetounlock {
+	0% {
+		background-position: -720px 0;
+	}
+	100%{
+		background-position: 720px 0;
+	}
+}
+.float_zb .float_form{
+	width: 100%;
+	height: auto; 
+	margin-top: 0; 
+	float: left;
+}
+.float_zb .float_form img{ 
+	width: 100%; 
+	height: auto;
+	margin: 0;
+	padding:0; 
+	border:none;
+	display: block; 
+	outline: none; 
+	vertical-align:baseline; 
+}
+.float_zb .float_form form{
+	padding: 0;
+	margin: 0; 
+	padding-bottom: 3px;
+	background: #fff;
+}
+.float_zb .float_form form .zb_tips{
+	padding-top: 10px; 
+	margin: 0; 
+	font-size: 18px;
+	text-align: center; 
+	color: #333;
+}
+.float_zb .float_form form .zb_total{
+	height: 28px; 
+	width: 100%; 
+	margin-top: 5px; 
+	display: block; 
+	margin-bottom:10px; 
+	color: #999; 
+	font-size: 14px; 
+	text-align: center; 
+	overflow: hidden;
+	line-height: 28px;
+}
+.float_zb .user-frame{
+	height: 38px;
+}
+.float_zb .user-frame input{
+	margin-top: 10px;
+	height: 20px;
+	line-height: 20px;
+	border: none;
+	outline: none;
+}
+.float_zb .user-frame #yusuanTextBottomZb{
+	position: absolute;
+	padding-left: 10px;
+    color: #333;
+    z-index: 100;
+    font-size: 16px;
+    line-height: 44px;
+	line-height: 34px;
+}
+.float_zb .after-arrow:after{
+	top: 13px;
+}
+.float_zb .btn_red{ height: 38px; }
+.float_zb .float_form form .zb_total .total{
+	display: inline-block; 
+	position: relative;
+	width: 75px;
+	height: 16px;
+  	margin-bottom: 2px;
+}
+.zb_total em{
+	padding: 5 1px 0; 
+	position: absolute; 
+	font-style: normal; 
+	color: #dd4f50; 
+	font-weight: bold;
+}
+.zb_total .dot_left{
+	left: 13px;
+}
+.zb_total .dot_right{
+	left: 37px;
+}
+.zb_total .num_top{
+	top: 0;
+}
+.zb_total .num_bottom{ 
+	top: 22px;
+}
+.zb_total .num1,.zb_total .num1_1{
+	left: 3px;
+}
+.zb_total .num2,.zb_total .num2_1{
+	left: 15px;
+}
+.zb_total .num3,.zb_total .num3_1{
+	left: 26px;
+}
+.zb_total .num4,.zb_total .num4_1{
+	left: 43px;
+}
+.zb_total .num5,.zb_total .num5_1{
+	left: 54px;
+}
+.zb_total .num6,.zb_total .num6_1{
+	left: 64px;
+}
+.zb_total .num7,.zb_total .num7_1{
+	left: 77px;
+}
+.select_city:after{  
+	content: " ";
+	display: inline-block;
+	width: 8px;
+	height: 8px;
+	position: absolute;
+	right: 15px;
+	top: 15px;
+	z-index: 200;
+	border-bottom: solid 1px #999;
+	border-right: solid 1px #999;
+	-webkit-transform: rotate(-45deg);
+}
+.float_zb .our_promise p{ 
+	display: block;
+	padding-bottom: 5px;
+	font-size: 12px;
+    padding: 0 5px;
+    margin-bottom: 5px;
+    line-height: 16px;
+    color: #999;
+}
+.float_zb .our_promise em{
+	float: left;
+    width: 18px;
+    height: 18px;
+    background: url(//img.shejiben.com/wap/new_wap/login_icon.png) no-repeat;
+    margin: 2px 0 0 10px;
+    padding-left: 17px;
+    background-position: -6px -324px;
+    background-size: 90px;
+}
+.float_zb .zb_success_msg{ 
+	background: #fff;
+}
+.float_zb .zb_success_msg .icon_success{
+	width: 50px; 
+	margin: 0 auto;
+	display: block; 
+	padding-top: 60px;
+}
+.float_zb .zb_success_msg .icon_success img{
+	width: 50px;
+	height: 50px;
+}
+.float_zb .zb_success_msg .tips_b{ 
+	padding: 10px 0;
+	text-align: center;
+	font-size: 18px; 
+	font-weight: bold; 
+}
+.float_zb .zb_success_msg .tips_s{ 
+	padding-bottom: 5px;
+	text-align: center; 
+	font-size: 12px; 
+	color: #999; 
+}
+.float_zb .submitBtn{
+	margin:10px auto 5px; 
+}
