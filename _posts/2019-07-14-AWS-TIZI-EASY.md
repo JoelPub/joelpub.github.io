@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Save HTML To Local 				# 标题 
-subtitle:   保存一般网页   #副标题
+title:      Easy way to setup VPN 				# 标题 
+subtitle:   搭梯子简易版   #副标题
 date:       2019-07-10 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
@@ -13,10 +13,10 @@ tags:	VPN							#标签
 ## 亚马逊云AWS搭建软件VPN（Client VPN）教程
 [官方指导](https://openvpn.net/vpn-server-resources/amazon-web-services-ec2-tiered-appliance-quick-start-guide/)
 两个点：
-1.要使用aunch through ec2配置，不要用launch from website配置，否则无法新建security group导致无法用putty连接
-![](/img/blog/Capture-11.png)
-2.不要配置elastic ip，原因暂时不明
-## OpenVPN服务器的配置
+1.要使用aunch through ec2配置，不要用launch from website配置，否则无法新建security group导致无法用putty连接  
+![](/img/blog/Capture-11.png)  
+2.不要配置elastic ip，原因暂时不明  
+## OpenVPN服务器的配置 
 
 然后就可以通过putty远程登录到这台OpenVPN Access Server上了（具体的连接和秘钥的设置就不在这里详细阐述了），缺省的root账号是 **openvpnas**。
 
