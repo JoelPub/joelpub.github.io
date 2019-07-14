@@ -14,7 +14,7 @@ tags:	VPN							#标签
 [官方指导](https://openvpn.net/vpn-server-resources/amazon-web-services-ec2-tiered-appliance-quick-start-guide/) 
 两个点： 
 1.要使用aunch through ec2配置，不要用launch from website配置，否则无法新建security group导致无法用putty连接  
-![](/img/blog/Capture-11.png)  
+![](/img/blog/Capture-11.PNG)  
 2.不要配置elastic ip，原因暂时不明  
 ## OpenVPN服务器的配置 
 
