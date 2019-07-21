@@ -23,7 +23,7 @@ tags:	javaScript							#标签
 
         其实JavaScript Hijacking和CSRF攻击的思想很类似，关于CSRF攻击可以参考我之前写的《[浅谈CSRF攻击方式](https://www.cnblogs.com/hyddd/archive/2009/04/09/1432744.html)》，关于JavaScript Hijacking的攻击模型，见下图：
 
-![](./20190721JSHijacking_files/2009070218500674.jpg)
+![](/img/blog/20190721JSHijacking_files/2009070218500674.jpg)
 
 （1）.你正常访问信任站点（[http://www.Bank.com](http://www.bank.com/)），然后登陆信任站点。
 
