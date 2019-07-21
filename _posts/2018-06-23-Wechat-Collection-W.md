@@ -11,3 +11,7 @@ tags:	Career							#标签
 <a href="https://drivenxdesign.com/MEL18/project.asp?ID=16742">British & Irish Lions New Zealand Tour 2017 </a>
 
 <embed width="100%" height="540px" name="plugin" id="plugin" src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/W.pdf" type="application/pdf" internalinstanceid="9">
+
+<a href="https://www.ey.com/gl/en/newsroom/news-releases/news-ey-creates-app-to-give-rugby-fans-enhanced-interactive-digital-experience-during-the-lions-tour-of-new-zealand">British & Irish Lions New Zealand Tour 2017 </a>
+
+<embed width="100%" height="540px" name="plugin" id="plugin" src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/W1.pdf" type="application/pdf" internalinstanceid="9">
