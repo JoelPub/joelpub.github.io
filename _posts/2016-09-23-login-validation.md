@@ -13,6 +13,11 @@ tags:	JavaScript							#标签
 <p>this.state.email.replace(/(^\s+)|(\s+$)/g,&quot;)==&quot;</p>
 <p>密码不为空：</p>
 <p>this.state.password.replace(/(^\s+)|(\s+$)/g,&quot;)==&quot;</p>
+
+<p>手机格式：</p>
+<pre><code>
+/^[1][3,4,5,7,8][0-9]{9}$/.test($("#mobileNo-form input[name='mobile']").val())==false
+</code><pre>
 <p>邮箱格式：</p>
 <p>/<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>+@[A-Z0-9.-]+.[A-Z]{2,4}$/i.test(this.state.email)==false</p>
 <hr class="footnotes-sep">
