@@ -24,3 +24,8 @@ git show  COMMIT_ID_HERE --name-only
 <pre><code>
 git checkout COMMIT_ID_HERE <filename>
 </code></pre>
+**跨repo做cherry pick(命令后用Tower查看)
+<pre><code>
+git remote add projectB ~/Documents/Ford/LincolnAEM
+git fetch projectB
+</code></pre>
