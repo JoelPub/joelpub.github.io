@@ -10,7 +10,7 @@ tags:	AEM							#标签
 ---
 # [Common Patterns with HTL](https://docs.adobe.com/content/help/en/experience-manager-htl/using/getting-started/getting-started.html) 
 
-遇到 
+当仅在wcmmode=disabled的模式下（6.4only)遇到 
 ```
 org.apache.sling.api.SlingException: Cannot get DefaultSlingScript:  
 org.apache.sling.api.SlingException: Cannot get DefaultSlingScript:  
