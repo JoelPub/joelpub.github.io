@@ -21,7 +21,7 @@ Cannot serve request to /content/ford/cn/zh_cn/home/Copy%20of%20ttt.html on this
 首先查看
 <pre><code>
 data-sly-use.clientlib="/libs/granite/sightly/templates/clientlib.html"
-</code><pre>
+</code></pre>
 
 This declares a “clientlib” object, which is imple­ment­ed as a tem­plate.
 
