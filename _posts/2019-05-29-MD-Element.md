@@ -23,7 +23,7 @@ tags:	MarkDown							#标签
 * 代码
 <pre><code>
 &lt;pre&gt;&lt;code&gt;
-&lt;/code&gt;&lt;pre&gt;
+&lt;/code&gt;&lt;/pre&gt;
 </code></pre>
 <pre><code>
 ```javascript
