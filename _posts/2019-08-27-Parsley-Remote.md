@@ -10,13 +10,15 @@ tags:	JavaScript							#标签
 ---
 # [Parsley Remote](https://parsleyjs.org/doc/#remote-custom)  
 [JSFiddle](http://jsfiddle.net/tnp2kz4m/) 
-HTML:
+HTML: 
 <pre><code>
-<form method="post" id="myForm">
-    <input name="mobile" type="text" class="form-control number parsley-error" required="true" minlength="1" maxlength="11" data-parsley-required-message="请输入你的手机号码" data-parsley-pattern="^[0-9]{11}$" data-parsley-pattern-message="请确保你的手机号码包含11位数字" data-parsley-trigger="focusout" data-parsley-date-of-birth="DD.MM.YYYY" data-parsley-remote="" data-parsley-remote-validator="mycustom" data-parsley-remote-options="{ &quot;type&quot;: &quot;GET&quot; }" data-parsley-id="11">
-</form>
-</code><pre> 
-JS: 
+& l t ;form method="post" id="myForm"& g t ;
+    & l t ;input name="mobile" type="text" class="form-control number parsley-error" required="true" minlength="1" maxlength="11" data-parsley-required-message="请输入你的手机号码" data-parsley-pattern="^[0-9]{11}$" data-parsley-pattern-message="请确保你的手机号码包含11位数字" data-parsley-trigger="focusout" data-parsley-date-of-birth="DD.MM.YYYY" data-parsley-remote="" data-parsley-remote-validator="mycustom" data-parsley-remote-options="{ &quot;type&quot;: &quot;GET&quot; }" data-parsley-id="11"& g t ;
+& l t ;/form& g t ;
+</code><pre>  
+ 
+JS:   
+
 <pre><code>
         Parsley.addMessages('en', {
             defaultMessage: "This field is not valid."
