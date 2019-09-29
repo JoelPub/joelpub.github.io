@@ -10,7 +10,7 @@ tags:	MarkDown							#标签
 ---
 **MD 常用的一些元素**
 
-## CATALOG
+## 锚点
 <pre><code>
 ## 关键知识点
 </code></pre>
@@ -59,15 +59,17 @@ tags:	MarkDown							#标签
 </code></pre>
 <pre><code>
 weibo: [@joelpub](http://weibo.com/joelpub)
-</code></pre>
-* 如何在`MarkDown`中使用尖括号
-[MarkDown中使用尖括号]("https://blog.csdn.net/xiangwanpeng/article/details/53149774) 
-<pre><code>
-使用转义字符。使用 "& l t ;" 代替 “<” , 使用 "& g t ;" 代替 ">"(记得去掉空格）。 例如要输出<a>，则需要写为& l t ; a & g t ; 
-</code></pre>
+</code></pre> 
+
 ## 序号
 <pre><code>
 1\.使用windows版的chrome版本
 2\.右键另存为Y 网页，全部
 3\.把Y_files文件夹放到`img\blog`
+</code></pre> 
+
+* 如何在`MarkDown`中使用尖括号
+[MarkDown中使用尖括号]("https://blog.csdn.net/xiangwanpeng/article/details/53149774) 
+<pre><code>
+使用转义字符。使用 "& l t ;" 代替 “<” , 使用 "& g t ;" 代替 ">"(记得去掉空格）。 例如要输出<a>，则需要写为& l t ; a & g t ; 
 </code></pre>
