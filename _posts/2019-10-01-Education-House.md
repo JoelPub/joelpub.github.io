@@ -9,9 +9,10 @@ catalog: true 						# 是否归档
 tags:	Education							#标签
 ---
 # 在上海买学区房是否无比重要？
+<embed width="100%" min-height="540px" name="plugin" id="plugin" src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/HouseEdu.pdf" type="application/pdf" internalinstanceid="9">
 [在上海买学区房是否无比重要](https://www.zhihu.com/question/31583274/answer/156934894?from=timeline) 
 
-很重要吗？很重要吗？很重要吗？... 关注者 **4,957** 被浏览 **2,440,399** [查看全部 175 个回答](https://www.zhihu.com/question/31583274) [大余](https://www.zhihu.com/people/dayudayudayu) 链家 | 健康 | 猫
+
 
 借此宝地聊聊我对上海学区房的一点点了解。
 
@@ -27,23 +28,6 @@ tags:	Education							#标签
 
 另外，以下聊到的大部分数据、政策信息来自于2016年的各区教委、学校官网，以及家长微信群、论坛等渠道，不做任何入学、升学等承诺。（少部分信息来自2017年）
 
-<br>
-
-目录：
-
--上海优质高中/初中/小学有哪些
-
--好的升学规划路线有哪些
-
--什么是学区房
-
--上海学区房现状如何
-
--学区房的政策及风险
-
--学区房在售行情预览
-
-<br>
 
 #上海优质高中/初中/小学有哪些#
 
