@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      MAC Cert 				# 标题 
-subtitle:      #副标题
+title:      Father Education 				# 标题 
+subtitle:   教育中的付清   #副标题
 date:       2019-10-01				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
