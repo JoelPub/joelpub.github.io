@@ -1,12 +1,12 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Easy way to setup VPN 				# 标题 
+title:      Easy way to setup Tizi 				# 标题 
 subtitle:   搭梯子简易版   #副标题
 date:       2019-07-10 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	VPN							#标签
+tags:	Life							#标签
 ---
 
 
@@ -115,10 +115,14 @@ Getting web user account...
 
 ## 登陆OpenVPN管理员UI以及下载VPN客户端软件
 
-通过https://<Elastic IP Address>:943/admin地址可以访问OpenVPN服务端的管理页面，在这个页面你可以设置VPN的参数，创建/编辑VPN用户，编辑VPN客户端所在的网段，添加双重认证功能等等。
+通过https://54.205.112.34:943/admin地址可以访问OpenVPN服务端的管理页面(openvpn/5418none)，在这个页面你可以设置VPN的参数，创建/编辑VPN用户，编辑VPN客户端所在的网段，添加双重认证功能等等。 
 
-然后可以访问https://docs.openvpn.net/connecting/，根据提示下载相应的OpenVPN客户端软件。下载完成后，输入正确的用户名密码即可连接到VPN服务器了！
-
+#Configuration->Network Settings更改hostname or IP Address为54.205.112.34
+然后可以访问https://docs.openvpn.net/connecting/，根据提示下载相应的OpenVPN客户端软件。下载完成后，输入正确的用户名密码即可连接到VPN服务器了！ 
+#Open VPN 客户端 删除access server profiles并新建 
+#server地址为54.205.112.34 
+#Port不填 
+#用户名密码openvpn/5418none
 
 
 
