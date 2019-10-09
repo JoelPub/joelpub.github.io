@@ -42,11 +42,17 @@ SSLCertificateFile /etc/pki/tls/certs/2903423_evw.wiki_public.crt
 SSLCertificateKeyFile /etc/pki/tls/private/2903423_evw.wiki.key
 sudo service httpd restart
 ```  
+* request:fail ssl hand shake error 微信小程序 调试预览失败  
+[OpenSSL在线生成合成PEM文件](https://www.myssl.cn/tools/merge-pem-cert.html)  
+```javascript  
+sudo nano /etc/httpd/conf.d/ssl.conf
+SSLCertificateFile /etc/pki/tls/private/2903423_evw.wiki.pem
+sudo service httpd restart
+```   
 * 查看Apache版本  
 ```javascript  
 apachetl -v
 httpd -v
-  
 ```  
 * 使用 chkconfig 命令配置 Apache Web 服务器，使其在每次系统启动时启动   
 ```javascript  
@@ -67,6 +73,6 @@ ProxyPass /litemallsl http://localhost:8080/
 ProxyPassReverse /litemallsl http://localhost:8080/
 ```  
 * 访问
-http://18.215.228.3:8080/wx/index/index
-http://18.215.228.3/litemallsl/wx/index/index 
-https://www.evw.wiki/litemallsl/wx/index/index
+http://18.215.228.3:8080/wx/index/index  
+http://18.215.228.3/litemallsl/wx/index/index   
+https://www.evw.wiki/litemallsl/wx/index/index  
