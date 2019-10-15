@@ -24,7 +24,7 @@ tags:	Web							#标签
 另外几个有用的帮助测试性能的工具：
 https://www.webpagetest.org/result/190517_87_05dca81e68ca59c41f0e498e836c652d/1/details/#waterfall_view_step1
 
-docker run --rm -v "$(pwd)":/sitespeed.io sitespeedio/sitespeed.io:8.15.2 -b chrome https://www.ford.com.cn/ -n 2 --mobile
+docker-compose run sitespeed.io https://www.ford.com.cn/ --graphite.host=graphite
 
 https://developers.google.com/speed/pagespeed/insights/?url=https%3A%2F%2Fwww.india.ford%2F
 
