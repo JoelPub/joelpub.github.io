@@ -68,7 +68,8 @@ weibo: [@joelpub](http://weibo.com/joelpub)
 3\.把Y_files文件夹放到`img\blog`
 </code></pre> 
 
-* 如何在`MarkDown`中使用尖括号
+* 如何在`MarkDown`中使用尖括号  
+仅当使用pre code的方法注释需要，使用三个点的注释就不用了
 [MarkDown中使用尖括号]("https://blog.csdn.net/xiangwanpeng/article/details/53149774) 
 <pre><code>
 使用转义字符。使用 "& l t ;" 代替 “<” , 使用 "& g t ;" 代替 ">"(记得去掉空格）。 例如要输出<a>，则需要写为& l t ; a & g t ; 
