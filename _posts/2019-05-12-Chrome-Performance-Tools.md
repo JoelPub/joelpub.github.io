@@ -20,6 +20,15 @@ tags:	Web							#标签
 <img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.13.55 PM.png?raw=true" alt="image"><br>
 不止阻止第三方请求，可以过滤一些东西便于查看这些东西占了多少时间<br>
 <img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.46.46 PM.png?raw=true" alt="image"><br>
+Performance 工具栏的使用方法
+https://developers.google.com/web/tools/chrome-devtools/rendering-tools
+https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/timeline-tool?hl=zh-CN#profile-js
+https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/performance-reference
+https://developers.google.com/web/tools/chrome-devtools/network/resource-loading
+
+4. AEM调优建议
+https://helpx.adobe.com/experience-manager/kb/optimize-aem-site-performance.html
+
 
 另外几个有用的帮助测试性能的工具：
 https://www.webpagetest.org/result/190517_87_05dca81e68ca59c41f0e498e836c652d/1/details/#waterfall_view_step1
