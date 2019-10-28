@@ -29,7 +29,7 @@ emulator @Pixel_2_API_26 -dns-server 192.168.43.1
 
 
 **调试工具**  
-1\.[Chrome](chrome://inspect/#devices)   
+1\.Chrome chrome://inspect/#devices   
 2\.TBS Studio  
 3\.微信web开发者工具  
 
