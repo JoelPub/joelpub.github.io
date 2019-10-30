@@ -9,6 +9,18 @@ catalog: true 						# 是否归档
 tags:	App							#标签
 ---
 ## 利用Android Studio自带的模拟器联网   
+[Mac OS X下Android系统无法连接问题之解决方案](https://www.jianshu.com/p/8c19fb78a680)   
+
+```javascript
+system_profiler SPUSBDataType
+Vendor ID："0x2717"
+echo "0x2717" > ~/.android/adb_usb.ini
+adb kill-server
+adb start-server
+adb devices
+```
+
+## 利用Android Studio自带的模拟器联网   
 [方案二](https://blog.csdn.net/qq_33945246/article/details/79908298)   
 
 [建议换到8.0及以下](https://blog.csdn.net/weixin_42306122/article/details/82563925)  
