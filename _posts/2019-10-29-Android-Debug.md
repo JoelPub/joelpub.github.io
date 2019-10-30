@@ -1,12 +1,12 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      AWS NETWORKIN/OUT 				# 标题 
-subtitle:   AWS流量   #副标题
-date:       2019-10-01				# 时间
+title:      Android Debug 				# 标题 
+subtitle:   真机调试   #副标题
+date:       2019-10-29				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	Infra							#标签
+tags:	App							#标签
 ---
 ## 利用Android Studio自带的模拟器联网   
 [方案二](https://blog.csdn.net/qq_33945246/article/details/79908298)   
