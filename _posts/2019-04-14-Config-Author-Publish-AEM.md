@@ -24,7 +24,8 @@ cd /Users/nimda/Documents/wordpress-amazon/aem/amp_project/
 mvn clean install -PautoInstallPackage
 ```
   
-**整体激活（页面激活页可以）**   
+## 本地配置author和publisher并同步   
+**replication工具激活**   
 http://localhost:4502/etc/replication/treeactivation.html  
 * 取消勾选选项    
 Activate Tree
@@ -34,8 +35,21 @@ Activate Tree
 * 依次点Dry Run/Activate   
 * 查看是否已经同步
 http://localhost:4503/crx/de  
-以admin登陆就可以查看了   
+以admin登陆就可以查看了     
+**单个页面激活** 
+* 前端  
+AEM Sidekick-->Page-->Activate Page   
+* 后端
+http://localhost:4502/crx/de/index.jsp#/apps/amp_app/install/amp_project.core-1.0-SNAPSHOT.jar
+Replication-->Replicate
 
+**包激活**   
+http://localhost:4502/crx/packmgr/index.jsp
+* 前端  
+amp_project.ui.content-1.0-SNAPSHOT.zip   
+* 后端  
+amp_project.ui.apps-1.0-SNAPSHOT.zip
+More-->Replicate
 
 ## 相关资料：   
 [http://www.tothenew.com/blog/configuring-dispatcher-author-and-publish-instance-of-adobe-experience-manager-aem/](http://www.tothenew.com/blog/configuring-dispatcher-author-and-publish-instance-of-adobe-experience-manager-aem/)
