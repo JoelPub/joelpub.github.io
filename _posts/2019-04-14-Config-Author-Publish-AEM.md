@@ -35,7 +35,8 @@ Activate Tree
 * 依次点Dry Run/Activate   
 * 查看是否已经同步   
 http://localhost:4503/crx/de  
-以admin登陆就可以查看了       
+以admin登陆就可以查看了   
+
 **单个页面激活** 
 * 前端   
 AEM Sidekick-->Page-->Activate Page   
