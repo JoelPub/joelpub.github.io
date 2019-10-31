@@ -25,10 +25,16 @@ mvn clean install -PautoInstallPackage
 ```
   
 **整体激活（页面激活页可以）**   
-http://localhost:4502/etc/replication/treeactivation.html   
-Activate Tree   
+http://localhost:4502/etc/replication/treeactivation.html  
+* 取消勾选选项    
+Activate Tree
 /apps/amp_app   
 /content/amp_pages   
+/etc/designs/amp_app   
+* 依次点Dry Run/Activate   
+* 查看是否已经同步
+http://localhost:4503/crx/de  
+以admin登陆就可以查看了   
 
 
 ## 相关资料：   
