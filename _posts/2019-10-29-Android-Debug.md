@@ -6,7 +6,7 @@ date:       2019-10-29				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	App							#标签
+tags:	APP							#标签
 ---
 ## 利用Android Studio自带的模拟器联网   
 [Mac OS X下Android系统无法连接问题之解决方案](https://www.jianshu.com/p/8c19fb78a680)   
