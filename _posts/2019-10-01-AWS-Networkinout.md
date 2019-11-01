@@ -21,7 +21,7 @@ Actions-->Add to dashboard
 AWS-->Service-->CloudWatch-->Dashboard  
 ![Screen_Shot_2019_09_29_at_4_29_33_PM](/img/blog/NETWORKINOUT_files/06c4fe8d6b805d8238a35f5fc21693666fe7acec.png)  
 ## 价格
-$0.000 per GB - data transfer in per month 26.078 GB                                         $0.00 
-$0.000 per GB - data transfer out under the monthly global free tier15 GB                    $0.00
-$0.000 per GB - regional data transfer under the monthly global free tier0.276 GB            $0.00
-$0.090 per GB - first 10 TB / month data transfer out beyond the global free tier11.440 GB   $1.03
+$0.000 per GB - data transfer in per month     26.078 GB                                         $0.00   
+$0.000 per GB - data transfer out under the monthly global free tier    15 GB                    $0.00  
+$0.000 per GB - regional data transfer under the monthly global free tier    0.276 GB            $0.00  
+$0.090 per GB - first 10 TB / month data transfer out beyond the global free tier    11.440 GB   $1.03  
