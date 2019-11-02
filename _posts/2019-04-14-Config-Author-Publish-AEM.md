@@ -11,16 +11,24 @@ tags:	AEM							#标签
 ## 本地配置author和publisher   
 **启动author和publisher**   
 ```javascript
-cd /users/nimda/documents/aem61/author   
+cd /users/nimda/documents/aem61/author 
+cd /home/ec2-user/haidan/AEM/author   
 java -jar cq5-author-p4502.jar
+cd crx-quickstart/bin
+./start
 
 cd /users/nimda/documents/aem61/publish   
+cd /home/ec2-user/haidan/AEM/publish   
 java -jar cq5-publish-p4503.jar -r publish
+cd crx-quickstart/bin
+CQ_PORT=4503 ./start  
+
 ```
   
 **编译代码**   
 ```javascript
 cd /Users/nimda/Documents/wordpress-amazon/aem/amp_project/   
+cd /var/www/html/aem/amp_project   
 mvn clean install -PautoInstallPackage
 ```
   
@@ -28,10 +36,11 @@ mvn clean install -PautoInstallPackage
 **replication工具激活**   
 http://localhost:4502/etc/replication/treeactivation.html  
 * 取消勾选选项    
-Activate Tree
+Activate Tree   
 /apps/amp_app   
 /content/amp_pages   
 /etc/designs/amp_app   
+/content/dam/amp_pages   
 * 依次点Dry Run/Activate   
 * 查看是否已经同步   
 http://localhost:4503/crx/de  
