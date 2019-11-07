@@ -9,9 +9,9 @@ catalog: true 						# 是否归档
 tags:	AEM							#标签
 ---
 ## 配置Dispatcher   
-[https://www.tothenew.com/blog/configuring-dispatcher-author-and-publish-instance-of-adobe-experience-manager-aem/](https://www.tothenew.com/blog/configuring-dispatcher-author-and-publish-instance-of-adobe-experience-manager-aem/)
-[https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html](https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html)
-[https://docs.adobe.com/content/help/en/experience-manager-dispatcher/using/dispatcher.html](https://docs.adobe.com/content/help/en/experience-manager-dispatcher/using/dispatcher.html)
+[https://www.tothenew.com/blog/configuring-dispatcher-author-and-publish-instance-of-adobe-experience-manager-aem/](https://www.tothenew.com/blog/configuring-dispatcher-author-and-publish-instance-of-adobe-experience-manager-aem/)   
+[https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html](https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html)   
+[https://docs.adobe.com/content/help/en/experience-manager-dispatcher/using/dispatcher.html](https://docs.adobe.com/content/help/en/experience-manager-dispatcher/using/dispatcher.html)   
 
 **配置dispatcher**  
 **下载** 
