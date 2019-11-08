@@ -92,35 +92,26 @@ http://18.215.228.3/phpMyAdmin/
 
 root/5xxxnxxx  
 wordpress-user/5xxxNxxx  
-database:wordpress-db  
-## 点餐系统：
-
-* 访问入口： 
-http://www.evw.wiki/order/mobile.php?act=channel&name=index&weid=1&wxref=mp.weixin.qq.com#wechat_redirect 
-* 管理入口： 
-http://evw.wiki/order/index.php  
-axxxn/axxxn888  
+database:wordpress-db 
 
 ## 小程序后台:
+https://linlinjava.gitbook.io/litemall/project   
 
 ```javascript
 cd /var/www/html/litemall/litemall-all
 mvn spring-boot:run
+或者（启动脚本）
+cd /var/www/html/litemall/litemall-admin
+npm install
+npm run build:dep
+cd ..
+mvn clean package
+cp -f ./litemall-all/target/litemall-all-*-exec.jar ./deploy/litemall/litemall.jar
+/var/www/html/litemall/deploy/litemall/litemall.jar start
 ```  
 * 测试是否启动成功：
 http://18.215.228.3:8080/wx/index/index  
 https://www.evw.wiki/litemallsl/wx/index/index  
-
-## UserPoint:
-
-```javascript
-cd /var/www/html/works/userPoints
-npm install
-npm run dev
-```  
-
-* 浏览器访问http://18.215.228.3:8081(得使用ip访问因为阿里云的A解析不支持8081端口)
-
 ## Apache下开启SSI配置使shtml支持include：
 
 	1.sudo nano /etc/httpd/conf.d/ssl.conf
@@ -147,6 +138,33 @@ npm run dev
 		/home/ec2-user/AEM/author/crx-quickstart/bin    
         
 		./start  
+**启动author和publisher**    
+
+```javascript
+	cd /users/nimda/documents/aem61/author 
+	cd /home/ec2-user/haidan/AEM/author   
+	java -jar cq5-author-p4502.jar
+或者（启动脚本）
+	cd crx-quickstart/bin
+	./start
+
+	cd /users/nimda/documents/aem61/publish   
+	cd /home/ec2-user/haidan/AEM/publish   
+	java -jar cq5-publish-p4503.jar -r publish
+或者（启动脚本）
+	cd crx-quickstart/bin
+	CQ_PORT=4503 ./start
+```  
+
+**MVN:**  
+```javascript
+	cd /var/www/html/aem/myproject
+	mvn clean install -PautoInstallPackage
+	cd /Users/nimda/Documents/wordpress-amazon/aem/amp_project/   
+	cd /var/www/html/aem/amp_project   
+	mvn clean install -PautoInstallPackage
+```  
+
 
 **垃圾清理：**  
 ```javascript
@@ -188,11 +206,25 @@ vlt --credentials admin:admin co  --force http://www.evw.wiki:4502/crx/server/-/
 ```  
 
 
-**MVN:**  
+**访问：**  
+    http://www.evw.wiki:4502/      
+    http://www.evw.wiki:4503/crx/de/index.jsp   
+
+## UserPoint:
+
 ```javascript
-	cd /var/www/html/aem/myproject
-	mvn clean install -PautoInstallPackage
+cd /var/www/html/works/userPoints
+npm install
+npm run dev
 ```  
 
-**访问：**  
-    evw.wiki:4502
+* 浏览器访问http://18.215.228.3:8081(得使用ip访问因为阿里云的A解析不支持8081端口)
+
+    
+## 点餐系统：
+
+* 访问入口： 
+http://www.evw.wiki/order/mobile.php?act=channel&name=index&weid=1&wxref=mp.weixin.qq.com#wechat_redirect 
+* 管理入口： 
+http://evw.wiki/order/index.php  
+axxxn/axxxn888  
