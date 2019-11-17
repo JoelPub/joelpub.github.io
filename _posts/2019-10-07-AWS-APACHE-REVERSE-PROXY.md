@@ -56,11 +56,10 @@ httpd -v
 ```  
 * 使用 chkconfig 命令配置 Apache Web 服务器，使其在每次系统启动时启动   
 ```javascript  
-sudo chkconfig httpd on
-chkconfig --list httpd
-  
+sudo chkconfig httpd on   
+chkconfig --list httpd   
 ```  
-在运行级别 2、3、4 和 5 下，httpd 为 on (您希望看到的状态) 
+在运行级别 2、3、4 和 5 下，httpd 为 on (您希望看到的状态)  
 
 ## 通过设置AWS Apache反向代理将二级域名指向不同的端口 
 ```javascript
@@ -72,7 +71,8 @@ sudo nano /etc/httpd/conf/httpd.conf
 ProxyPass /litemallsl http://localhost:8080/
 ProxyPassReverse /litemallsl http://localhost:8080/
 ```  
-* 访问
+* 访问     
+
 http://18.215.228.3:8080/wx/index/index  
 http://18.215.228.3/litemallsl/wx/index/index   
 https://www.evw.wiki/litemallsl/wx/index/index  
