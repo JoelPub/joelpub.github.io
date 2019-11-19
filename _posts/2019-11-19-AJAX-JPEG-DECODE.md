@@ -18,7 +18,7 @@ tags:	Web							#标签
 ```javascript
 $.ajax({
                         method: "GET",
-                        url: envConfigObj.domain.utility + '/v1/captcha/jpeg?key=' + src,
+                        url: 'http://image-net.org/index_files/logo.jpg',
                         mimeType: "text/plain; charset=x-user-defined",
 
                         success: function(data) {
