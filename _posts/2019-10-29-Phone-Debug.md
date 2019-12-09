@@ -9,7 +9,7 @@ catalog: true 						# 是否归档
 tags:	APP							#标签
 ---
 ## IOS 
-**微信网页调试方法   **      
+**微信网页调试方法**   
 [Testing Web Applications Running on Localhost With an iPhone](https://ebaytech.berlin/testing-web-applications-running-on-localhost-with-an-iphone-7db6258b8f2)   
 
 
@@ -19,7 +19,7 @@ tags:	APP							#标签
 3\.微信打开local的IP     
 
 ## Android 
-**微信网页调试方法   **      
+**微信网页调试方法**   
 [官方链接](https://developers.google.com/web/tools/chrome-devtools/remote-debugging)   
 [微信H5移动端真机调试--vConsole](https://blog.csdn.net/weixin_36934930/article/details/79870240)  
 ![http://debugx5.qq.com/](/img/blog/NETWORKINOUT_files/2.png)  
@@ -31,7 +31,8 @@ tags:	APP							#标签
 3\.微信web开发者工具  
 
 
-**利用Android Studio自带的模拟器联网  **    
+**利用Android Studio自带的模拟器联网**   
+
 * [Mac OS X下Android系统无法连接问题之解决方案](https://www.jianshu.com/p/8c19fb78a680)   
 
 ```javascript
