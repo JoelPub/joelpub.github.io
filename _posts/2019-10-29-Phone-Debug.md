@@ -19,10 +19,14 @@ tags:	APP							#标签
 3\.微信打开local的IP      
 
 **微信网页调试方法**   
-1\.微信web开发者工具      
-2\.https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/Web_Developer_Tools.html#5    
-3\.移动调试 → 普通调试  → 设置手机代理（http://192.168.43.63 端口： 9973） → 微信打开（http://192.168.43.63:8080/）   
- 
+1\.[微信web开发者工具](https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/Web_Developer_Tools.html#5 )       
+2\.移动调试 → 普通调试  → 设置手机代理（http://192.168.43.63 端口： 9973） → 微信打开（http://192.168.43.63:8080/）    
+3\.spy-debugger   
+```javascript
+sudo npm -g install spy-debugger
+spy-debugger -p 9973
+``` 
+设置手机代理（http://192.168.43.63 端口： 9973） → 微信打开（http://192.168.43.63:8080/）     
 
 ## Android 
 **微信网页调试方法**   
@@ -35,9 +39,7 @@ tags:	APP							#标签
 1\.Chrome chrome://inspect/#devices   
 2\.TBS Studio  
 3\.微信web开发者工具  
-下载地址    
-https://developers.weixin.qq.com/doc/offiaccount/OA_Web_Apps/Web_Developer_Tools.html#5    
-移动调试 → 普通调试  → 设置手机代理 → 开始调试     
+移动调试 → 普通调试  → 设置手机代理（http://192.168.43.63 端口： 9973） → 微信打开（http://192.168.43.63:8080/）     
 
 **利用Android Studio自带的模拟器联网**   
 
