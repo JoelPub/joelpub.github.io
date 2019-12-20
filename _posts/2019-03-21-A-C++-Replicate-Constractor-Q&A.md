@@ -41,7 +41,30 @@ int main()
 </code></pre>
 
 **关键在于复制构造函数P(P &q){x=q.x+1;y=q.y+1;}
-c会被调用复制构造函数是因为这个对象是以值传递的方式传入函数fun**
+c会被调用复制构造函数是因为这个对象传递入函数fun**
+
+```javascript  
+#include <iostream>
+using namespace std; 
+class P
+{
+   	 int x,y;
+	 public:
+	  P(int m, int n){x=m;y=n;}
+	  void printxy(){cout<<x<<y<<endl;}
+	  P(P &q){x=q.x+1;y=q.y+1;}
+};
+void fun(P x)//当该类型的对象传递给函数或从函数返回该类型的对象时，将隐式调用复制构造函数
+{
+ x.printxy();    //23
+}
+int main()
+{ 
+ P c(1,2);
+ fun(c);//值传递，改变的是c在内存复制出的空间的属性，不会改变c的属性
+ c.printxy();     //12
+}
+``` 
 
 相关资料：
 复制构造函数 [https://www.cnblogs.com/raichen/p/4752025.html](https://www.cnblogs.com/raichen/p/4752025.html)
