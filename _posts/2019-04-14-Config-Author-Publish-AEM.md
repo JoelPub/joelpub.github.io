@@ -71,7 +71,11 @@ LoadModule dispatcher_module /etc/httpd/modules/mod_dispatcher.so
   }
 }
 ```
-
+**修改docroot，让dispatcher使用apache的/var/www/html目录做缓存**  
+[https://www.cnblogs.com/xiadongqing/p/5866732.html](https://www.cnblogs.com/xiadongqing/p/5866732.html)    
+```javascript
+/docroot "/var/www/html"
+```
 **编辑/var/www/html/index.html跳转首页** 
 ```javascript
 <head>
