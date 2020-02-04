@@ -103,7 +103,8 @@ CQ_PORT=4503 ./start
 ```javascript
 cd /Users/nimda/Documents/wordpress-amazon/aem/amp_project/   
 cd /var/www/html/aem/amp_project   
-mvn clean install -PautoInstallPackage
+mvn clean install -PautoInstallPackage(编译author）
+mvn clean install -PautoInstallPackagePublish（编译publisher）
 ```
   
 ## author和publisher并同步   
