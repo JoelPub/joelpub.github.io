@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Creating your first AEM SLING SERVLET 				# 标题 
-subtitle:   AEM Servlet   #副标题
+title:      Creating your first AEM SLING Servlet/Service 				# 标题 
+subtitle:   AEM Servlet/Servcie   #副标题
 date:       2020-02-08 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
@@ -85,4 +85,63 @@ NewsServlet.java
 
 ```javascript
     http://localhost:4502/bin/getMorningNews?tags=Adobe|IBM|Apple|Facebook
+```  
+## Creating your first AEM SLING Service:
+https://helpx.adobe.com/experience-manager/using/first-osgi.html
+
+core/services/KeyService.java
+
+```javascript
+  
+        package io.github.joelpub.core.services;
+
+        public interface KeyService {
+
+            public void setKey(int val);
+            public String getKey();
+
+        }
+```  
+core/impl/KeyServiceImpl.java
+
+```javascript
+  
+        package io.github.joelpub.core.impl;
+
+        import io.github.joelpub.core.services.KeyService;
+
+        import org.apache.felix.scr.annotations.Component;
+        import org.apache.felix.scr.annotations.Service;
+
+
+        //This is a component so it can provide or consume services
+        @Component
+
+        @Service
+        public class KeyServiceImpl implements KeyService {
+
+
+            //Define a class member named key
+            private int key = 0 ;
+
+            @Override
+            //A basic setter method that sets key
+            public void setKey(int val)
+            {
+                //Set the key class member
+                this.key = val ;
+
+            }
+
+            @Override
+            //A basic getter that gets key
+            public String getKey()
+            {
+                //return the value of the key class member
+
+                //Convert the int to a String to display it within an AEM web page
+                String strI = Integer.toString(this.key);
+                return strI;
+            }
+        }
 ```  
