@@ -25,7 +25,8 @@ tags:	JavaScript							#标签
 ```
 
 
-image.png
+
+![](/img/blog/fs-extra-error_files/12561655-c2bea4376d42a266.png)
 
 ```dart
 在node_modules/.../fs-extra/....copy-sync.js 中有这个提示 注释掉，build成功。
@@ -36,7 +37,7 @@ image.png
 ```
 
 
-image.png
+![](/img/blog/fs-extra-error_files/12561655-1c3941c54d234449.png)
 1人点赞[随笔](https://www.jianshu.com/nb/26313512) "小礼物走一走，来简书关注我"共1人赞赏[jacky_8897](https://www.jianshu.com/u/d0984f76d9f0 "jacky_8897")总资产1 (约0.08元)共写了4096字获得3个赞共6个粉丝
 
 ### 全部评论1 只看作者 按时间倒序 按时间正序
