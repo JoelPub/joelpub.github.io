@@ -1,16 +1,17 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      Creating your first AEM SLING Servlet/Service 				# 标题 
-subtitle:   AEM Servlet/Servcie   #副标题
-date:       2020-02-08 				# 时间
+title:      react npm run build error 				# 标题 
+subtitle:   Source and destination must not be the same   #副标题
+date:       2020-03-21 				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
-tags:	AEM							#标签
+tags:	JavaScript							#标签
 ---
-<svg></svg>[登录](https://www.jianshu.com/sign_in) [注册](https://www.jianshu.com/sign_up) [写文章](https://www.jianshu.com/writer) [首页](https://www.jianshu.com/) [下载APP](https://www.jianshu.com/apps?utm_medium=desktop&utm_source=navbar-apps)
+
 
 # react 项目，npm run build 构建失败，Source and destination must not be the same.
+[https://www.jianshu.com/p/5b162c8a7b6d](https://www.jianshu.com/p/5b162c8a7b6d)   
 
 [![](/img/blog/fs-extra-error_files/816134b5-acd5-41b7-a85c-f4172661afa6_004.jpg)jacky_8897](https://www.jianshu.com/u/d0984f76d9f0)
 
