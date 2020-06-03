@@ -10,7 +10,7 @@ tags:	AEM							#标签
 ---
 
 [9 JCR-SQL2 Queries Every AEM Developer Should Know](http://www.6dglobal.com/blog/9-jcr-sql-2-queries-every-aem-dev-should-know-2014-10-07)   
-
+[JCR Query Cheat Sheet](https://wiki.magnolia-cms.com/display/WIKI/JCR+Query+Cheat+Sheet)   
 
 
 ## 9 JCR-SQL2 Queries Every AEM Developer Should Know
