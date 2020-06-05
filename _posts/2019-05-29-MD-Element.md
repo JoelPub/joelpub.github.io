@@ -24,14 +24,14 @@ tags:	MarkDown							#标签
 </code></pre>
 ## 图片
 <pre><code>
-![mdimg](../../../../img/blog/X_files/5615034b2f6343828391206d43babe37_th.png)
+![mdimg](/img/blog/X_files/5615034b2f6343828391206d43babe37_th.png)
 </code></pre>
 <pre><code>
-&lt;img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"&gt;
+&lt;img src="/img/blog/Screen Shot 2019-05-29 at 3.20.11 PM.png?raw=true" alt="image"&gt;
 </code></pre>
 ## PDF
 <pre><code>
-&lt;embed width="100%" min-height="540px" name="plugin" id="plugin" src="https://raw.githubusercontent.com/JoelPub/joelpub.github.io/master/img/blog/2.pdf" type="application/pdf" internalinstanceid="9"&gt;
+&lt;embed width="100%" min-height="540px" name="plugin" id="plugin" src="/img/blog/2.pdf" type="application/pdf" internalinstanceid="9"&gt;
 </code></pre>
 ## 代码
 <pre><code>

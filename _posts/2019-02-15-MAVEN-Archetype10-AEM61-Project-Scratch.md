@@ -26,37 +26,37 @@ tags:	AEM							#标签
 </ol>
 <p><strong>groupId</strong>– io.github.joelpub</p>
 <p>maven group id : for me it’s io.github.joelpub <br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-300x59.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-300x59.png?raw=true" alt="image"><br>
 <strong>artifactId</strong>– amp_project</p>
 <p>1. created folder name</p>
 <p>2. maven project artifactid<br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-1-300x65.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-1-300x65.png?raw=true" alt="image"><br>
 <strong>version</strong>– 1.0-SNAPSHOT</p>
 <p><strong>package</strong>– io.github.joelpub</p>
 <p>java class package name</p>
 <p><strong>appsFolderName</strong>– amp_app</p>
 <p>/apps folder name and /etc/designs folder name<br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-2-188x300.png?raw=true" alt="image"><br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-3-208x300.png?raw=true" alt="image"><br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-7.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-2-188x300.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-3-208x300.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-7.png?raw=true" alt="image"><br>
 <strong>artifactName</strong>– AMPProject</p>
 <p>maven project description<br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-4-300x60.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-4-300x60.png?raw=true" alt="image"><br>
 <strong>componentGroupName</strong>– amp_components</p>
 <p>AEM component group name , for the value of property ‘component’ in some nodes, for details to be continue…<br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-5-300x56.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-5-300x56.png?raw=true" alt="image"><br>
 <strong>contentFolderName</strong>– amp_pages</p>
 <p>/content folder name<br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-6.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-6.png?raw=true" alt="image"><br>
 <strong>cssId</strong>– ampcss</p>
 <p>define name of client lib category css <br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-8-300x45.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-8-300x45.png?raw=true" alt="image"><br>
 <strong>packageGroup</strong>-amp_package</p>
 <p>maven configuration for vlt? to be continue<br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-9-300x267.png?raw=true" alt="image"><br>
+<img src="/img/blog/Capture-9-300x267.png?raw=true" alt="image"><br>
 <strong>siteName</strong>– amp_site</p>
 <p>for value of property ‘title’ in some nodes<br>
-<img src="https://github.com/JoelPub/joelpub.github.io/blob/master/img/blog/Capture-10-300x35.png?raw=true" alt="image"></p>
+<img src="/img/blog/Capture-10-300x35.png?raw=true" alt="image"></p>
 <ol start="4">
 <li>
 <p>When prompted, specify Y.</p>
