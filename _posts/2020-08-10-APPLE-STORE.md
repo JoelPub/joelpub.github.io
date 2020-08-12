@@ -35,7 +35,7 @@ Xcode Setup -
 * [iOS TestFlight](https://dev-yakuza.github.io/en/react-native/ios-testflight/ ) 
 
 ```javascript
-        
+     在配置文件Info.plist中添加属性IApp Uses Non-Exempt Encryption并设置值为NO   
   
 ```  
 
