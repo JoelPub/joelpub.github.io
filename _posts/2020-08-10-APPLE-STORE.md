@@ -11,6 +11,7 @@ tags:	APP							#标签
 
 ## 注册付费:
 * [https://developer.apple.com/](https://developer.apple.com/ ) 
+* [https://appstoreconnect.apple.com/](https://appstoreconnect.apple.com/ ) 
 * [Deploy a React Native App to TestFlight](https://www.boorje.com/deploy-react-native-app/ )  
 
 ```javascript

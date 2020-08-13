@@ -468,7 +468,7 @@ tags:	Education							#标签
 [深圳市福田区学区房使用情况查询](https://link.zhihu.com/?target=http%3A//ftjyk.sz.edu.cn%3A8008/ftzsjz/xwfcx.html) [深圳市南山区学区房使用情况查询](https://link.zhihu.com/?target=http%3A//nsjyk.sz.edu.cn%3A8008/nszsjz/xwf.html)
 
 ——上海教委看过来。南山区的这个网站最近老是崩，我贴一张福田区的截图吧，查询过之后令人惊叹！
-![](https://pic1.zhimg.com/50/v2-729c163390153ca8d373de780ba5d707_hd.jpg)![](/img/blog/HouseEdu_files/v2-729c163390153ca8d373de780ba5d707_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-729c163390153ca8d373de780ba5d707_hd.jpg)
 
 <br>
 
