@@ -13,7 +13,7 @@ tags:	Education							#标签
 [在上海买学区房是否无比重要](https://www.zhihu.com/question/31583274/answer/156934894?from=timeline) 
 
 
-![](/img/blog/a1.jpg)
+![](/img/blog/a3.jpg)
 借此宝地聊聊我对上海学区房的一点点了解。
 
 「问」什么时候关注学区房更合适？
@@ -36,7 +36,7 @@ tags:	Education							#标签
 要知道学区房是体制内产物，而体制内绕不开高考，因此采取从"高中-初中-小学"倒推逻辑来聊学区房似乎也没毛病，即普遍观念会认为好的高中会影响初中，好的初中会影响小学。至于"<i>为什么学历不一定值钱，但学区房却非常值钱</i>"这种世纪难题不在本文讨论范畴，知乎上就有这个问题，有兴趣的盆友可以查查。
 
 高中。以下根据2016年清华、北大、复旦、上交的录取人数罗列的上海高中名单。
-![](https://pic2.zhimg.com/50/v2-8d93a5883dfff70733fc9354febb2b12_hd.jpg)![](/img/blog/HouseEdu_files/v2-8d93a5883dfff70733fc9354febb2b12_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-8d93a5883dfff70733fc9354febb2b12_hd.jpg)
 
 <br>
 
@@ -59,7 +59,7 @@ tags:	Education							#标签
 那么这些牛校的生源是从哪里来的呢？来看看上海的初中。
 
 通过刚刚说到的四大八大对初中的预录人数为参考，罗列出了各区优质的初中。
-![](https://pic1.zhimg.com/50/v2-fe88bf1d9389335a3fec5dc8f8572744_hd.jpg)![](/img/blog/HouseEdu_files/v2-fe88bf1d9389335a3fec5dc8f8572744_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-fe88bf1d9389335a3fec5dc8f8572744_hd.jpg)
 
 上海初中有一个特点，民办初中整体比公办要强。四大八大总预录人数的前10名里公办初中就只有静安的市北，总预录人数101人，这些数据几乎都是市北的理科班贡献的。
 
@@ -76,7 +76,7 @@ tags:	Education							#标签
 以上为上海顶尖初中和高中派系的大体情况，同样关于数据较靠后的同等学校，列表中存在少许遗漏。
 
 接下来看看小学。这里仅呈现了各区顶尖的小学，更多优质校详见后文附表。
-![](https://pic4.zhimg.com/50/v2-5b946bdba7f3c1a4766052ae1d159b91_hd.jpg)![](/img/blog/HouseEdu_files/v2-5b946bdba7f3c1a4766052ae1d159b91_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-5b946bdba7f3c1a4766052ae1d159b91_hd.jpg)
 
 讨论小学没有初中高中那样清晰的数据，小学的升学数据是不公开的，全市也没有统考，就没有了统一的标准。这份表单主要是通过家长的关注度，搜索热度，学校本身的实力来评判。可能有人会说上海的四大杯赛可以作为评判标准。确实，四大杯赛算是统考，我也参考了部分数据，但不得不说的有两点。
 
@@ -121,7 +121,7 @@ tags:	Education							#标签
 接下来我们梳理一下以上谈到的高中、初中、小学比较清晰的升学规划路线。
 
 #好的升学规划路线有哪些#
-![](https://pic4.zhimg.com/50/v2-36dbf5465038b5d85fb8365525a7116e_hd.jpg)![](/img/blog/HouseEdu_files/v2-36dbf5465038b5d85fb8365525a7116e_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-36dbf5465038b5d85fb8365525a7116e_hd.jpg)
 
 <br>
 
@@ -148,7 +148,7 @@ tags:	Education							#标签
 那我接下来就详细讲讲学区房。
 
 #什么是学区房#
-![](https://pic1.zhimg.com/50/v2-5e3ac44e2873b26774aeb52ed309be04_hd.jpg)![](/img/blog/HouseEdu_files/v2-5e3ac44e2873b26774aeb52ed309be04_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-5e3ac44e2873b26774aeb52ed309be04_hd.jpg)
 
 <br>
 
@@ -163,7 +163,7 @@ tags:	Education							#标签
 总结一下，我们所讲到的学区房就是，对口公办的，热门的，小学的房子。
 
 以下为学区房更直观的一种表现形式。
-![](https://pic3.zhimg.com/50/v2-03a43a22b002d2a74c61c61c13e1d3c0_hd.jpg)![](/img/blog/HouseEdu_files/v2-03a43a22b002d2a74c61c61c13e1d3c0_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-03a43a22b002d2a74c61c61c13e1d3c0_hd.jpg)
 
 <br>
 
@@ -172,28 +172,28 @@ tags:	Education							#标签
 敲黑板，这里需要注意一种特殊情况，静安艺庭和静安晶华园，有人会说这不是两个商住楼吗，怎么会是学区房呢？特殊情况就在于这种楼是双拼属性，一部分是办公产权，一部分是住宅产权，而住宅产权的房子能落户，是学区房，不管房子里放的是床和沙发还是放的办公桌，主要看产权属性。我们了解到静安艺庭11层及以上是住宅产权，静安晶华园除了底商，上面也是住宅产权，是学区房。这种楼的优劣势也非常明显 ，优势在于能落户，能上学，均价偏低；劣势在于得房率低，居住品质一般，大部分没有小区环境。后文中"学区房在售行情预览"我们会看到更多这种具有住宅产权的商住楼。
 
 为了更加直观的了解学区房，我做了一张老静安区13所公办小学学区划片总图（2016版）
-![](https://pic1.zhimg.com/50/v2-01da47e87a627a6a3fbe98a1a4f48b98_hd.jpg)![](/img/blog/HouseEdu_files/v2-01da47e87a627a6a3fbe98a1a4f48b98_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-01da47e87a627a6a3fbe98a1a4f48b98_hd.jpg)
 
 <br>
 
 每一所学校都有其独立的划片范围，若上海"单校划片"政策（即房子与学校一对一的关系）不变动，我计划把全上海800多所公办小学都画出来，这样大家就可以直观且方便地查询到魔都每个房子所对口的小学了（但个人资源和时间及其有限....）。这点深圳政府做的很到位，深圳福田区和南山区教委做了一个在线学区查询的地图。链接详见文末附录。目前上海画了129所，覆盖全上海各区优质的公办小学，我们来看看这些学校的分布情况。
 
 #上海学区房现状如何#
-![](https://pic2.zhimg.com/50/v2-1e91e8ddc39a0d3758ff773a1d6eb255_hd.jpg)![](/img/blog/HouseEdu_files/v2-1e91e8ddc39a0d3758ff773a1d6eb255_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-1e91e8ddc39a0d3758ff773a1d6eb255_hd.jpg)
 
 <br>
 
 环线分布。内环内45%，占比遥遥领先，中环到内环间23.3%，外环中环间10.9%，外环外也有1/5的占比。相对于北京，上海的优质教育资源分布没那么极端，要知道北京的四个主城区，东城、西城、海淀、朝阳就把全北京90%以上的好学校占了。
 
 我们再来看看板块分布情况。
-![](https://pic3.zhimg.com/50/v2-a61ffae03383338eec09bbf270239976_hd.jpg)![](/img/blog/HouseEdu_files/v2-a61ffae03383338eec09bbf270239976_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-a61ffae03383338eec09bbf270239976_hd.jpg)
 
 <br>
 
 129所优质校所在板块的分布情况。需要注意跨区域对比意义不大，譬如宝山的淞宝板块，有5所优质校，但由于宝山的小学整体不突出，所以数量最多并不代表其价值最大，顶多说明在宝山区内有优势。各位关注的板块中具体是什么学校，详见文末各区地图附录。
 
 看完板块，我们再来看看上海优质教育资源的占比情况。
-![](https://pic2.zhimg.com/50/v2-cceef47b5f3be3ff8bc0c6e2f146ce93_hd.jpg)![](/img/blog/HouseEdu_files/v2-cceef47b5f3be3ff8bc0c6e2f146ce93_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-cceef47b5f3be3ff8bc0c6e2f146ce93_hd.jpg)
 
 <br>
 
@@ -216,7 +216,7 @@ tags:	Education							#标签
 2、优质资源占比1/5，也就是10个小孩，有8个无法享用优质资源；
 
 另一个现实是，似乎孩子的竞争对手也会越来越多，我们接下来看看上海过去这些年的新生儿数量。
-![](https://pic2.zhimg.com/50/v2-0b2ef615ba85a85cc6a41ce362004714_hd.jpg)![](/img/blog/HouseEdu_files/v2-0b2ef615ba85a85cc6a41ce362004714_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-0b2ef615ba85a85cc6a41ce362004714_hd.jpg)
 
 <br>
 
@@ -231,7 +231,7 @@ tags:	Education							#标签
 学区房的概念及现状我们先聊到这，接下来我们看看学区房的入学政策。
 
 #学区房的政策及风险#
-![](https://pic3.zhimg.com/50/v2-27e2ba9b9509a8552d9b0086a548ffba_hd.jpg)![](/img/blog/HouseEdu_files/v2-27e2ba9b9509a8552d9b0086a548ffba_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-27e2ba9b9509a8552d9b0086a548ffba_hd.jpg)
 
 <br>
 
@@ -247,7 +247,7 @@ tags:	Education							#标签
 
 <br>
 
-![](https://pic2.zhimg.com/50/v2-2db118c8ca40589570c83b7c9de214bf_hd.jpg)![](/img/blog/HouseEdu_files/v2-2db118c8ca40589570c83b7c9de214bf_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-2db118c8ca40589570c83b7c9de214bf_hd.jpg)
 
 <br>
 
@@ -272,7 +272,7 @@ tags:	Education							#标签
 这里补充一点，有些落户时间是按整年来算的，会有一个截止日期，譬如老静安截止日期是4月30日，也就是说若户口本上标注的落户时间为5月1日，就意味着到第二年4月30日还不到一年，到时候学校就有理由卡你，建议最好不要在这种时间点上落户，尽量提前一些。有些区域可能不是4月30日，因校而定。
 
 我们来汇总一下入学排队顺序。
-![](https://pic2.zhimg.com/50/v2-d4e443f71253e0961cb0d097d0d7291d_hd.jpg)![](/img/blog/HouseEdu_files/v2-d4e443f71253e0961cb0d097d0d7291d_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-d4e443f71253e0961cb0d097d0d7291d_hd.jpg)
 
 <br>
 
@@ -287,7 +287,7 @@ tags:	Education							#标签
 <br>
 
 下面我们来讲讲学区房的风险有哪些？
-![](https://pic4.zhimg.com/50/v2-68699b9631d951ad61d92e7c3b8ecefc_hd.jpg)![](/img/blog/HouseEdu_files/v2-68699b9631d951ad61d92e7c3b8ecefc_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-68699b9631d951ad61d92e7c3b8ecefc_hd.jpg)
 
 <br>
 
@@ -296,11 +296,7 @@ tags:	Education							#标签
 学区划片范围每年存在细微的变动，变动的概率和范围不大，但对于变动的小区来讲都是不小的考验。原因有很多，学校扩建、新建校、超负荷、招不满。譬如，2017年3月15日各区教委公布的最新政策，静安区的一师附小学区就变动了，原本一师附小只对口三和、四和居委，今年把武南居委和叶庆居委一部分也划入到了一师附小，划入的居委之前对口的分别是万航渡路小学和静安二中心，要知道这和一师附小比还是有挺大差距的，尤其是二中心（详见下图）。很快，我们便看到了这种新闻：[一涨再涨 少则60万多则120万 静安二手房怎么了？](https://link.zhihu.com/?target=http%3A//m.leju.com/news-sh-6251435599665084589.html%3Fsource%3Dm_sina_ljnews2%26source_ext%3Dsina%26from%3Dsinglemessage%26isappinstalled%3D0)
 
 另外，我们还发现黄浦区也有学区变动，原本对口新凌小学的民立、黄浦新苑、制造居委被划入到了上师大附属卢湾实验小学，而原本对口上师大附属卢湾实验小学的徐一、徐二居委被划入到了卢湾一中心（详见下图）。对谁利好，大家自有判断。
-![](https://pic1.zhimg.com/50/v2-ab336bae2d7ccd4ee569b90d9d17b7e6_hd.jpg)![](/img/blog/HouseEdu_files/v2-ab336bae2d7ccd4ee569b90d9d17b7e6_hd.jpg)
-
-<br>
-
-![](https://pic2.zhimg.com/50/v2-54a7d6fee1b7aa154724f6eda8930314_hd.jpg)![](data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1440' height='1080'></svg>)
+![](/img/blog/HouseEdu_files/v2-ab336bae2d7ccd4ee569b90d9d17b7e6_hd.jpg)
 
 <br>
 
@@ -345,43 +341,43 @@ tags:	Education							#标签
 这里展示的是2017年3月11日上海链家网的部分在售数据，这部分大家比我更专业，我就不班门弄斧了。楼主懒，一个月前的数据，大家凑合的看吧，想看新鲜的，自己搜一下。
 
 精力有限，这里只整理了徐汇、杨浦、浦东、闵行四个区的一梯队个别校。注意，部分数据由于在售房源较少，不代表市场情况，望理性看待。另外"2016年成交量"为市场总成交量。（图中下栏有亮点）
-![](https://pic1.zhimg.com/50/v2-88b0f6b476c62d6c07154b6d10049715_hd.jpg)![](/img/blog/HouseEdu_files/v2-88b0f6b476c62d6c07154b6d10049715_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-88b0f6b476c62d6c07154b6d10049715_hd.jpg)
 
 <br>
 
-![](https://pic3.zhimg.com/50/v2-c21c5b4e5efd2955c4492d1cd249a790_hd.jpg)![](/img/blog/HouseEdu_files/v2-c21c5b4e5efd2955c4492d1cd249a790_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-c21c5b4e5efd2955c4492d1cd249a790_hd.jpg)
 
 <br>
 
-![](https://pic4.zhimg.com/50/v2-5dfb9fc6f1e58f35d704c3f44c222d18_hd.jpg)![](/img/blog/HouseEdu_files/v2-5dfb9fc6f1e58f35d704c3f44c222d18_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-5dfb9fc6f1e58f35d704c3f44c222d18_hd.jpg)
 
 <br>
 
-![](https://pic4.zhimg.com/50/v2-c9693b82b4ca267997a97271bd20bc3a_hd.jpg)![](/img/blog/HouseEdu_files/v2-c9693b82b4ca267997a97271bd20bc3a_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-c9693b82b4ca267997a97271bd20bc3a_hd.jpg)
 
 <br>
 
-![](https://pic2.zhimg.com/50/v2-07a7acfe25871e2accabbafdc7e26197_hd.jpg)![](/img/blog/HouseEdu_files/v2-07a7acfe25871e2accabbafdc7e26197_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-07a7acfe25871e2accabbafdc7e26197_hd.jpg)
 
 <br>
 
-![](https://pic2.zhimg.com/50/v2-6233b5b71db4313f3f3ed32dc8c1d332_hd.jpg)![](/img/blog/HouseEdu_files/v2-6233b5b71db4313f3f3ed32dc8c1d332_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-6233b5b71db4313f3f3ed32dc8c1d332_hd.jpg)
 
 <br>
 
-![](https://pic3.zhimg.com/50/v2-13a4242fc8c34e2a397d27782107ef46_hd.jpg)![](/img/blog/HouseEdu_files/v2-13a4242fc8c34e2a397d27782107ef46_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-13a4242fc8c34e2a397d27782107ef46_hd.jpg)
 
 <br>
 
-![](https://pic1.zhimg.com/50/v2-aaffbe5f60f0ee189de7c71c0b2691d7_hd.jpg)![](/img/blog/HouseEdu_files/v2-aaffbe5f60f0ee189de7c71c0b2691d7_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-aaffbe5f60f0ee189de7c71c0b2691d7_hd.jpg)
 
 <br>
 
-![](https://pic4.zhimg.com/50/v2-d6d85fcf9ed297c8914e5d9597279438_hd.jpg)![](/img/blog/HouseEdu_files/v2-d6d85fcf9ed297c8914e5d9597279438_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-d6d85fcf9ed297c8914e5d9597279438_hd.jpg)
 
 <br>
 
-![](https://pic1.zhimg.com/50/v2-f56802b381194835d15020cbcbd5c65b_hd.jpg)![](/img/blog/HouseEdu_files/v2-f56802b381194835d15020cbcbd5c65b_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-f56802b381194835d15020cbcbd5c65b_hd.jpg)
 
 <br>
 
@@ -390,42 +386,42 @@ tags:	Education							#标签
 附录：
 
 129所热门公办小学列表 ↓（排序不分先后）
-![](https://pic1.zhimg.com/50/v2-3cbf1523f554d1cbd1f856e78b0d0404_hd.jpg)![](/img/blog/HouseEdu_files/v2-3cbf1523f554d1cbd1f856e78b0d0404_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-3cbf1523f554d1cbd1f856e78b0d0404_hd.jpg)
 
 <br>
 
 徐汇15所热门公办小学地图 ↓
-![](https://pic1.zhimg.com/50/v2-5be75b6ffe8177f7833a487b01c7f385_hd.jpg)![](/img/blog/HouseEdu_files/v2-5be75b6ffe8177f7833a487b01c7f385_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-5be75b6ffe8177f7833a487b01c7f385_hd.jpg)
 
 <br>
 
 黄浦区全区划片图 ↓（此图过大，建议电脑下载后查看）
-![](https://pic3.zhimg.com/50/v2-b937e6ea88747614cfddc82a3e994c94_hd.jpg)![](/img/blog/HouseEdu_files/v2-b937e6ea88747614cfddc82a3e994c94_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-b937e6ea88747614cfddc82a3e994c94_hd.jpg)
 
 <br>
 
 129所小学地理分布图 ↓（此图过大，建议电脑下载后查看）
-![](https://pic3.zhimg.com/50/v2-f0bf7c9640bf581f10e2b26ef2d1ac03_hd.jpg)![](/img/blog/HouseEdu_files/v2-f0bf7c9640bf581f10e2b26ef2d1ac03_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-f0bf7c9640bf581f10e2b26ef2d1ac03_hd.jpg)
 
 <br>
 
 控江二村小学学区图（2017） ↓
-![](https://pic2.zhimg.com/50/v2-f3718489aaf798f014ca9871dfde02f6_hd.jpg)![](/img/blog/HouseEdu_files/v2-f3718489aaf798f014ca9871dfde02f6_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-f3718489aaf798f014ca9871dfde02f6_hd.jpg)
 
 <br>
 
 明珠小学A、B校区学区图（2017） ↓
-![](https://pic2.zhimg.com/50/v2-2d9036f53d0b9b8f05c235e3836cd472_hd.jpg)![](/img/blog/HouseEdu_files/v2-2d9036f53d0b9b8f05c235e3836cd472_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-2d9036f53d0b9b8f05c235e3836cd472_hd.jpg)
 
 <br>
 
 明珠小学C校区学区图（2017） ↓
-![](https://pic4.zhimg.com/50/v2-992ece784cf218844d44f54b4cb80eb9_hd.jpg)![](/img/blog/HouseEdu_files/v2-992ece784cf218844d44f54b4cb80eb9_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-992ece784cf218844d44f54b4cb80eb9_hd.jpg)
 
 <br>
 
 汇师小学学区图（2017） ↓
-![](https://pic4.zhimg.com/50/v2-f5b41fc60cdc4703e9a61bf5321d8a28_hd.jpg)![](/img/blog/HouseEdu_files/v2-f5b41fc60cdc4703e9a61bf5321d8a28_hd.jpg)
+![](/img/blog/HouseEdu_files/v2-f5b41fc60cdc4703e9a61bf5321d8a28_hd.jpg)
 
 <br>
 
