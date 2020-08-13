@@ -13,7 +13,7 @@ tags:	Education							#标签
 [在上海买学区房是否无比重要](https://www.zhihu.com/question/31583274/answer/156934894?from=timeline) 
 
 
-![](/img/blog/englishEdu.jpg)
+![](/img/blog/a1.jpg)
 借此宝地聊聊我对上海学区房的一点点了解。
 
 「问」什么时候关注学区房更合适？
