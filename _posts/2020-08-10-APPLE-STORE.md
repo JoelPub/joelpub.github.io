@@ -16,10 +16,12 @@ tags:	APP							#标签
 
 ```javascript
 Bundle ID - Choose “Explicit” and create bundle ID com.haidanmm.video
-App Icons and Launch Images - You’ll need to add an app icon, otherwise you’ll run into an error later on. You can use https://makeappicon.com/
+App Icons and Launch Images - You’ll need to add an app icon, otherwise you’ll run into an error later on. You can use https://makeappicon.com/  
+将生成的AppIcon.appiconset拷贝到Images.xcassets下，拖动图标直到没有黄色提示
 Xcode Setup - 
-    You can find the file inside the /ios folder name of yourprojectname.xcodeworkspace(prevent YogaKit.modulemap' not found error). 
-    Identity - Update the Bundle Identifier with the bundle ID that we created earlier com.haidanmm.video.
+    You can find the file inside the /ios folder name of yourprojectname.xcworkspace(prevent YogaKit.modulemap' not found error).   
+    Identity - Update the Bundle Identifier with the bundle ID that we created earlier com.haidanmm.video.  
+      
 ```  
 
 ## ios-certification:
@@ -36,7 +38,8 @@ Xcode Setup -
 * [iOS TestFlight](https://dev-yakuza.github.io/en/react-native/ios-testflight/ ) 
 
 ```javascript
-     在配置文件Info.plist中添加属性IApp Uses Non-Exempt Encryption并设置值为NO   
+     如果这里有缺少出口合规证明的警告,只需要在Xcode的info.plist中增加键值对，ITSAppUsesNonExemptEncryption 设置为NO即可.
+     或者点警告，回答问题后警告消失。
   
 ```  
 
