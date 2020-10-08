@@ -11,7 +11,7 @@ tags:	MarkDown							#标签
 
 **保存一般网页**  
 
-1\.使用windows版的chrome版本  
+1\.使用firefox或者windows版的chrome版本  
     *  75.0.3770.100（正式版本） （64 位） 打开网页  
     *  [SIPG](https://www.shobserver.com/toutiao/html/115104.html?group_id=6621114274582364680&app=)   
 2\.右键另存为Y 网页，全部  
