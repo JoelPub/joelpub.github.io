@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en"><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-1', data: data });
+			}
+			const DATA_LAYER_LOCAL_STORAGE_KEY = 'com.adobe.experiencePlatformDebugger.dataLayer.key';
+const dataLayerKey = window.localStorage.getItem(DATA_LAYER_LOCAL_STORAGE_KEY);
+
+if (dataLayerKey) {
+	// sindresorhus/on-change
+	// MIT - License
+	// https://github.com/sindresorhus/on-change
+	const PATH_SEPARATOR = '.';
+	const TARGET = Symbol('target');
+	const UNSUBSCRIBE = Symbol('unsubscribe');
+
+	const isPrimitive = value =>
+		value === null || (typeof value !== 'object' && typeof value !== 'function');
+
+	const isBuiltinWithoutMutableMethods = value =>
+		value instanceof RegExp || value instanceof Number;
+
+	const isBuiltinWithMutableMethods = value => value instanceof Date;
+
+	const concatPath = (path, property) => {
+		if (property && property.toString) {
+			if (path) {
+				path += PATH_SEPARATOR;
+			}
+
+			path += property.toString();
+		}
+
+		return path;
+	};
+
+	const walkPath = (path, callback) => {
+		let index;
+
+		while (path) {
+			index = path.indexOf(PATH_SEPARATOR);
+
+			if (index === -1) {
+				index = path.length;
+			}
+
+			callback(path.slice(0, index));
+
+			path = path.slice(index + 1);
+		}
+	};
+
+	const shallowClone = value => {
+		if (Array.isArray(value)) {
+			return value.slice();
+		}
+
+		return Object.assign({}, value);
+	};
+
+	const onChange = (object, onChange, options = {}) => {
+		const proxyTarget = Symbol('ProxyTarget');
+		let inApply = false;
+		let changed = false;
+		let applyPath;
+		let applyPrevious;
+		let isUnsubscribed = false;
+		const equals = options.equals || Object.is;
+		let propCache = new WeakMap();
+		let pathCache = new WeakMap();
+		let proxyCache = new WeakMap();
+
+		const handleChange = (path, property, previous, value) => {
+			if (isUnsubscribed) {
+				return;
+			}
+
+			if (!inApply) {
+				onChange(concatPath(path, property), value, previous);
+				return;
+			}
+
+			if (
+				inApply &&
+				applyPrevious &&
+				previous !== undefined &&
+				value !== undefined &&
+				property !== 'length'
+			) {
+				let item = applyPrevious;
+
+				if (path !== applyPath) {
+					path = path.replace(applyPath, '').slice(1);
+
+					walkPath(path, key => {
+						item[key] = shallowClone(item[key]);
+						item = item[key];
+					});
+				}
+
+				item[property] = previous;
+			}
+
+			changed = true;
+		};
+
+		const getOwnPropertyDescriptor = (target, property) => {
+			let props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				return props;
+			}
+
+			props = new Map();
+			propCache.set(target, props);
+
+			let prop = props.get(property);
+			if (!prop) {
+				prop = Reflect.getOwnPropertyDescriptor(target, property);
+				props.set(property, prop);
+			}
+
+			return prop;
+		};
+
+		const invalidateCachedDescriptor = (target, property) => {
+			const props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				props.delete(property);
+			}
+		};
+
+		const buildProxy = (value, path) => {
+			if (isUnsubscribed) {
+				return value;
+			}
+
+			pathCache.set(value, path);
+
+			let proxy = proxyCache.get(value);
+
+			if (proxy === undefined) {
+				proxy = new Proxy(value, handler);
+				proxyCache.set(value, proxy);
+			}
+
+			return proxy;
+		};
+
+		const unsubscribe = target => {
+			isUnsubscribed = true;
+			propCache = null;
+			pathCache = null;
+			proxyCache = null;
+
+			return target;
+		};
+
+		const ignoreChange = property => {
+			return isUnsubscribed || (options.ignoreSymbols === true && typeof property === 'symbol');
+		};
+
+		const handler = {
+			get(target, property, receiver) {
+				if (property === proxyTarget || property === TARGET) {
+					return target;
+				}
+
+				if (property === UNSUBSCRIBE && pathCache.get(target) === '') {
+					return unsubscribe(target);
+				}
+
+				const value = Reflect.get(target, property, receiver);
+				if (
+					isPrimitive(value) ||
+					isBuiltinWithoutMutableMethods(value) ||
+					property === 'constructor' ||
+					options.isShallow === true
+				) {
+					return value;
+				}
+
+				// Preserve invariants
+				const descriptor = getOwnPropertyDescriptor(target, property);
+				if (descriptor && !descriptor.configurable) {
+					if (descriptor.set && !descriptor.get) {
+						return undefined;
+					}
+
+					if (descriptor.writable === false) {
+						return value;
+					}
+				}
+
+				return buildProxy(value, concatPath(pathCache.get(target), property));
+			},
+
+			set(target, property, value, receiver) {
+				if (value && value[proxyTarget] !== undefined) {
+					value = value[proxyTarget];
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property, receiver);
+				const result = Reflect.set(target[proxyTarget] || target, property, value);
+
+				if (!ignore && !equals(previous, value)) {
+					handleChange(pathCache.get(target), property, previous, value);
+				}
+
+				return result;
+			},
+
+			defineProperty(target, property, descriptor) {
+				const result = Reflect.defineProperty(target, property, descriptor);
+
+				if (!ignoreChange(property)) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, undefined, descriptor.value);
+				}
+
+				return result;
+			},
+
+			deleteProperty(target, property) {
+				if (!Reflect.has(target, property)) {
+					return true;
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property);
+				const result = Reflect.deleteProperty(target, property);
+
+				if (!ignore) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, previous);
+				}
+
+				return result;
+			},
+
+			apply(target, thisArg, argumentsList) {
+				const compare = isBuiltinWithMutableMethods(thisArg);
+
+				if (compare) {
+					thisArg = thisArg[proxyTarget];
+				}
+
+				if (!inApply) {
+					inApply = true;
+
+					if (compare) {
+						applyPrevious = thisArg.valueOf();
+					}
+
+					if (Array.isArray(thisArg) || toString.call(thisArg) === '[object Object]') {
+						applyPrevious = shallowClone(thisArg[proxyTarget]);
+					}
+
+					applyPath = pathCache.get(target);
+					applyPath = applyPath.slice(0, Math.max(applyPath.lastIndexOf(PATH_SEPARATOR), 0));
+
+					const result = Reflect.apply(target, thisArg, argumentsList);
+
+					inApply = false;
+
+					if (changed || (compare && !equals(applyPrevious, thisArg.valueOf()))) {
+						handleChange(applyPath, '', applyPrevious, thisArg[proxyTarget] || thisArg);
+						applyPrevious = null;
+						changed = false;
+					}
+
+					return result;
+				}
+
+				return Reflect.apply(target, thisArg, argumentsList);
+			}
+		};
+
+		const proxy = buildProxy(object, '');
+		onChange = onChange.bind(proxy);
+
+		return proxy;
+	};
+
+	onChange.target = proxy => proxy[TARGET] || proxy;
+	onChange.unsubscribe = proxy => proxy[UNSUBSCRIBE] || proxy;
+
+	let proxy;
+	let previousDataLayer;
+
+	function _serialize(dataLayer) {
+		try {
+			return JSON.stringify({ ...dataLayer }, null, 2);
+		} catch (e) {
+			return JSON.stringify(dataLayer, null, 2);
+		}
+	}
+
+	function _notify(dataLayer) {
+		contentScriptEventTrigger({
+			data: {
+				dataLayer
+			},
+			timestamp: Date.now(),
+			timeSincePageLoad: window.performance.now()
+		});
+	}
+
+	function onDataLayerUpdate() {
+		const dataLayer = _serialize(this);
+
+		if (previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	function onDataLayerSet(newDataLayer) {
+		const dataLayer = _serialize(newDataLayer);
+		if (!previousDataLayer || previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	Object.defineProperty(window, dataLayerKey, {
+		get() {
+			return proxy;
+		},
+		set(newDataLayer) {
+			onDataLayerSet(newDataLayer);
+			proxy = onChange(newDataLayer, onDataLayerUpdate);
+		},
+		enumerable: true,
+		configurable: true
+	});
+
+	const oldObjectDefine = Object.defineProperty.bind(Object);
+	Object.defineProperty = function(obj, prop, descriptor) {
+		if (prop === dataLayerKey) {
+			console.debug(
+				'Data layer being overwritten by Object.defineProperty(). Falling back to polling...'
+			);
+
+			function pollForChanges() {
+				const dataLayer = _serialize(window[dataLayerKey]);
+				if (previousDataLayer !== dataLayer) {
+					previousDataLayer = dataLayer;
+					_notify(dataLayer);
+				}
+				window.requestAnimationFrame(pollForChanges);
+			}
+
+			window.requestAnimationFrame(pollForChanges);
+		}
+		return oldObjectDefine(obj, prop, descriptor);
+	};
+}
+ 
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-2', data: data });
+			}
+			/**
+ * Hooks into both DTM's and Launch's logging mechanisms in order to capture all log messages and
+ * send them to the UI to display to the user
+ */
+function notifyContentScript(log) {
+	contentScriptEventTrigger({
+		data: log,
+		timestamp: Date.now(),
+		timeSincePageLoad: window.performance.now()
+	});
+}
+
+window._satellite = window._satellite || {
+	notify: function() {
+		// TODO: if we have sdsat_debug set to true, then console log
+	},
+	track: function() {
+		// TODO: implement notifications
+	},
+	getVar: function() {
+		// TODO: implement notifications
+	},
+	setVar: function() {
+		// TODO: implement notifications
+	},
+	getVisitorId: function() {
+		// TODO: implement notifications
+		return null;
+	},
+	setCookie: function() {
+		// TODO: implement cookie setting
+	},
+	readCookie: function() {
+		// TODO: implement cookie reading
+	},
+	removeCookie: function() {
+		// TODO: implement cookie deletion
+	},
+	isLinked: function() {
+		// TODO: figure out what this is
+	},
+	pageBottom: function() {
+		// TODO: implement notifications
+	}
+};
+
+window._satellite.override = window._satellite.override || {};
+
+onSatelliteInit = function() {
+	let _satellite = window._satellite;
+	if (_satellite.Logger) {
+		_satellite.Logger.keepLimit = 9999;
+	}
+
+	// override notify
+	// Reason: we want to intercept messages that go through here
+	// without worrying about limits or messing anything up internally
+	let originalNotify = _satellite.notify;
+	_satellite.notify = function(message, level) {
+		const logLevel = ['log', 'log', 'log', 'info', 'warn', 'error'];
+
+		// call original
+		originalNotify(message, level);
+
+		const log = {
+			solution: 'dtm',
+			solutions: ['dtm'],
+			level: logLevel[level] || 'log',
+			message: ''
+		};
+
+		// make sure that we have a message
+		if (message && typeof message === 'string') {
+			// only add it
+			log.message = message;
+
+			// check to see what solution it came from
+			if (message.indexOf('Adobe Analytics:') !== -1) {
+				log.solutions.push('analytics');
+			} else if (message.indexOf('Test & Target:') !== -1) {
+				log.solutions.push('target');
+			} else if (message.indexOf('Visitor ID:') !== -1) {
+				log.solutions.push('visitorService');
+			} else if (message.indexOf('AdLens:') !== -1) {
+				log.solutions.push('mediaOptimizer');
+			}
+		}
+		notifyContentScript(log);
+	};
+};
+
+function _overrideConsoleLogFunction(prefix, solution, level) {
+	const originalFunction = console[level];
+	const previousMessages = [];
+	console[level] = function() {
+		const argsAsArray = Array.prototype.slice.call(arguments);
+		originalFunction.apply(console, argsAsArray);
+		const mappedArgs = argsAsArray.map(arg => {
+			let result = '';
+			if (arg && typeof arg.toString === 'function') {
+				result = arg.toString();
+			}
+			if (!result || result === '[object Object]') {
+				try {
+					result = JSON.stringify(arg);
+				} catch (e) {
+					return '';
+				}
+			}
+			return result;
+		});
+
+		const message = mappedArgs.join(' ');
+
+		if (typeof message === 'string') {
+			if (message.indexOf(prefix) === 0) {
+				const log = {
+					solution: solution,
+					solutions: [solution],
+					level: level,
+					message: message,
+					searchIndex: message,
+					params: mappedArgs
+				};
+
+				// check to see what solution it came from
+				if (message.indexOf('[Adobe Analytics]') !== -1) {
+					log.solutions.push('analytics');
+				} else if (message.indexOf('[Adobe Target]') !== -1) {
+					log.solutions.push('target');
+				} else if (message.indexOf('[Experience Cloud ID Service]') !== -1) {
+					log.solutions.push('visitorService');
+				} else if (message.indexOf('[Adobe Media Optimizer]') !== -1) {
+					log.solutions.push('mediaOptimizer');
+				}
+				previousMessages.unshift(message);
+				if (previousMessages.length >= 10) {
+					previousMessages.pop();
+					if (previousMessages.every(m => m === message)) {
+						// We've caught the same message 10 times in a row. We're probably in a loop of some kind...
+						// Just bail out and don't send it up to the debugger UI
+						return;
+					}
+				}
+				notifyContentScript(log);
+			}
+		}
+	};
+}
+
+/**
+ * Overrides the various console.* methods in order to intercept messages that
+ * are sent to the console by launch. A message was sent be launch if it starts
+ * with the rocket emoji 🚀. Note that this is a somewhat brittle solution
+ * since if the emoji ever changes this integration will break. However this
+ * is the only solution that works for now.
+ *
+ * Any messages that are not prefixed with the rocket emoji are ignored and passed
+ * through to the original console function
+ */
+function _overrideConsoleForLaunch() {
+	const prefix = '\uD83D\uDE80';
+	['error', 'info', 'log', 'warn'].forEach(
+		_overrideConsoleLogFunction.bind(null, prefix, 'launch')
+	);
+}
+
+/**
+ * Intercepts console messages made by alloy (prefixed with [alloy]) and notifies content script about each one.
+ * Note that this is a brittle solution and should not be used long term.
+ *
+ * Ideally there will be some debugging hooks built into alloy itself that we can connect to
+ */
+function _overrideConsoleForAlloy() {
+	window.__alloyNS = [];
+	const originalPush = window.__alloyNS.push;
+	window.__alloyNS.push = function(namespace) {
+		['error', 'info', 'log', 'warn'].forEach(
+			_overrideConsoleLogFunction.bind(null, `[${namespace}]`, 'alloy')
+		);
+
+		originalPush.apply(window.__alloyNS, Array.prototype.slice.call(arguments));
+	};
+}
+
+_overrideConsoleForLaunch();
+_overrideConsoleForAlloy();
+
+// find a good place to hook into _satellite object
+if (window.Object && window.Object.defineProperty) {
+	// DTM hook
+	window.Object.defineProperty(
+		window._satellite.override,
+		'adobe.experienceCloud.debuggerDTMInitHook',
+		{
+			enumerable: true,
+			get: function() {
+				onSatelliteInit();
+				return '';
+			},
+			set: function() {}
+		}
+	);
+}
+
+// Once the page has finished loading, remove _satellite if both DTM and Launch were not found
+window.addEventListener('load', function() {
+	if (!_hasDtm() && !_hasLaunch()) {
+		delete window._satellite;
+	}
+});
+
+/**
+ * @returns {boolean} whether launch is present on the page
+ */
+function _hasLaunch() {
+	return !!(window._satellite && window._satellite._container);
+}
+
+/**
+ * @returns {boolean} whether DTM is present on the page
+ */
+function _hasDtm() {
+	return !!(window._satellite && window._satellite.configurationSettings);
+}
+ 
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-3', data: data });
+			}
+			window.___target_traces = window.___target_traces || [];
+var originalPush = window.___target_traces.push;
+
+window.___target_traces.push = function(trace) {
+	contentScriptEventTrigger({ trace });
+	originalPush.call(this, trace);
+};
+ 
+		})();
+	</script><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta content="IE=edge" http-equiv="X-UA-Compatible"> <meta content="width=device-width,initial-scale=1,maximum-scale=5,user-scalable=1" name="viewport"> <meta content="Learn JavaScript the Hard Way. A complete front to back JavaScript course that actually shows you how to charge people money." name="description"> <link href="https://learnjsthehardway.com/manifest.json" rel="manifest"> <link href="AH_files/spectre.css" rel="stylesheet"> <link href="AH_files/spectre-exp.css" rel="stylesheet"> <link href="AH_files/spectre-icons.css" rel="stylesheet"> <link href="AH_files/pattern.css" rel="stylesheet"> <link href="https://learnjsthehardway.com/favicon.ico" rel="shortcut icon" type="image/x-icon"> <link href="https://learnjsthehardway.com/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"> <link href="https://learnjsthehardway.com/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32"> <link href="https://learnjsthehardway.com/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16"> <link href="https://learnjsthehardway.com/safari-pinned-tab.svg" rel="mask-icon" color="#495e94"> <link href="https://learnjsthehardway.com/feed.rss" rel="alternate" type="application/rss+xml" title="RSS Feed for learnjsthehardway.com"> <link href="https://learnjsthehardway.com/feed.atom" rel="alternate" type="application/atom+xml" title="Atom Feed for learnjsthehardway.com"> <link href="https://learnjsthehardway.com/feed.json" rel="alternate" type="application/json" title="JSON Feed for learnjsthehardway.com"> <meta content="#ffc40d" name="msapplication-TileColor"> <meta content="#ffffff" name="theme-color"> <!-- base href="https://learnjsthehardway.com/" --> <link href="https://learnjsthehardway.com/favicon.png" rel="icon" type="image/png"> <link rel="stylesheet" href="AH_files/main.css">  <script src="AH_files/client.js" type="module" crossorigin="use-credentials"></script><title>Learn JavaScript The Hard Way -- Your Side Projects are Your Future</title><link rel="stylesheet" href="AH_files/prism.css"></head> <body> <div id="sapper"><div class="container grid-xl svelte-iqzoi0" id="main"><div class="columns" id="nav"><div class="column col-mx-auto"><header class="navbar"><section class="navbar-section"><a class="navbar-brand mr-2" href="https://learnjsthehardway.com/"><img id="logo-large" src="AH_files/logo.svg" class="hide-sm hide-xs svelte-jobh50" alt="LJSTHW" aria-label="LJSTHW"> <img id="logo" class="show-sm show-xs svelte-jobh50" src="AH_files/logo-40.png" alt="LJSTHW logo" aria-label="LJSTHW logo"></a></section> <section class="navbar-section"><a data-testid="nav-home-icon" rel="prefetch" class="btn btn-link" href="https://learnjsthehardway.com/" alt="Home" aria-label="Home"><span data-tooltip="Home" class="tooltip tooltip-bottom"><svg class="icon-home svelte-1i3bqnd" data-tooltip="Home" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#home"></use></svg></span></a> <a data-testid="nav-blog-icon" rel="prefetch" class="btn" href="https://learnjsthehardway.com/blog" alt="Read the blog" aria-label="Read the blog"><span data-tooltip="Blog" class="tooltip tooltip-bottom"><svg class="icon-book-open svelte-1i3bqnd" data-tooltip="Blog" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#book-open"></use></svg></span></a> <div class="popover popover-bottom"><button class="btn btn-link active" tabindex="0" aria-label="RSS,Atom,JSON Feeds"><span data-tooltip=""><svg class="icon-rss svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#rss"></use></svg></span></button> <div class="popover-container"><ul class="menu"><li class="menu-item"><a href="https://learnjsthehardway.com/feed.rss" alt="RSS Feed" aria-label="RSS Feed"><span data-tooltip=""><svg class="icon-rss svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#rss"></use></svg></span> RSS</a></li> <li class="menu-item"><a href="https://learnjsthehardway.com/feed.atom" alt="Atom Feed" aria-label="Atom Feed"><span data-tooltip=""><svg class="icon-activity svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#activity"></use></svg></span> Atom</a></li> <li class="menu-item"><a href="https://learnjsthehardway.com/feed.json" alt="JSON Feed" aria-label="JSON Feed"><span data-tooltip=""><svg class="icon-code svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#code"></use></svg></span> JSON</a></li></ul></div></div> <a data-testid="nav-login" class="btn btn-link" href="https://learnjsthehardway.com/auth" alt="Login" aria-label="Login"><span data-tooltip="Log in" class="tooltip tooltip-bottom"><svg class="icon-log-in svelte-1i3bqnd" data-tooltip="Log in" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#log-in"></use></svg></span></a></section></header> </div></div> <div class="container full-width svelte-iqzoi0" id="main_content"><div class="columns"><div class="column col-mx-auto"> <div class="container grid-lg svelte-tmr8id" id="content" data-testid="blog-content"><div class="columns"><div class="column col-12"><div class="popover popover-bottom"><span class="chip" tabindex="0"><span data-tooltip=""><svg class="icon-more-vertical svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#more-vertical"></use></svg></span></span> <div class="popover-container"><ul class="menu"><li class="menu-item"><a alt="Your Side Projects are Your Future" aria-label="Your Side Projects are Your Future" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#your-side-projects-are-your-future">Your Side Projects are Your Future</a></li><li class="menu-item"><a alt="eBay Wised Up" aria-label="eBay Wised Up" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#e-bay-wised-up">eBay Wised Up</a></li><li class="menu-item"><a alt="The Truths" aria-label="The Truths" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#the-truths">The Truths</a></li><li class="menu-item"><a alt="Truth 0: Side Projects Mean Freedom" aria-label="Truth 0: Side Projects Mean Freedom" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-0-side-projects-mean-freedom">Truth 0: Side Projects Mean Freedom</a></li><li class="menu-item"><a alt="Truth 1: You Never Get a Raise" aria-label="Truth 1: You Never Get a Raise" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-1-you-never-get-a-raise">Truth 1: You Never Get a Raise</a></li><li class="menu-item"><a alt="Truth 2: New Languages Pay More" aria-label="Truth 2: New Languages Pay More" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-2-new-languages-pay-more">Truth 2: New Languages Pay More</a></li><li class="menu-item"><a alt="Truth 3: You Never Get Training" aria-label="Truth 3: You Never Get Training" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-3-you-never-get-training">Truth 3: You Never Get Training</a></li><li class="menu-item"><a alt="Truth 4: You Never Get Recognition" aria-label="Truth 4: You Never Get Recognition" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-4-you-never-get-recognition">Truth 4: You Never Get Recognition</a></li><li class="menu-item"><a alt="Truth 5: You Don't Know Java" aria-label="Truth 5: You Don't Know Java" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-5-you-don-t-know-java">Truth 5: You Don't Know Java</a></li><li class="menu-item"><a alt="Truth 6: MBAs Love Cogs" aria-label="Truth 6: MBAs Love Cogs" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-6-mb-as-love-cogs">Truth 6: MBAs Love Cogs</a></li><li class="menu-item"><a alt="Truth 7: It *Is* a Performance, Fair or Not" aria-label="Truth 7: It *Is* a Performance, Fair or Not" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-7-it-is-a-performance-fair-or-not">Truth 7: It &lt;em&gt;Is&lt;/em&gt; a Performance, Fair or Not</a></li><li class="menu-item"><a alt="Truth 8: You Can Use Code Everywhere" aria-label="Truth 8: You Can Use Code Everywhere" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-8-you-can-use-code-everywhere">Truth 8: You Can Use Code Everywhere</a></li><li class="menu-item"><a alt="Truth 9: You Own The Means of Production" aria-label="Truth 9: You Own The Means of Production" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-9-you-own-the-means-of-production">Truth 9: You Own The Means of Production</a></li><li class="menu-item"><a alt="Truth 10: The Lack of Time" aria-label="Truth 10: The Lack of Time" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-10-the-lack-of-time">Truth 10: The Lack of Time</a></li><li class="menu-item"><a alt="Conclusion" aria-label="Conclusion" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#conclusion">Conclusion</a></li></ul></div></div> <div class="chip"><a href="https://learnjsthehardway.com/blog/" alt="Back to Blog list" aria-label="Back to Blog list" data-testid="back"><span data-tooltip=""><svg class="icon-corner-up-left svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#corner-up-left"></use></svg></span></a></div> <div class="chip"><a target="_blank" alt="RSS Feeds" aria-label="RSS Feeds" rel="external" href="https://learnjsthehardway.com/feed.rss"><span data-tooltip=""><svg class="icon-rss svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#rss"></use></svg></span></a></div> <div class="chip"><a target="_blank" alt="Atom Feed" aria-label="Atom Feed" rel="external" href="https://learnjsthehardway.com/feed.atom"><span data-tooltip=""><svg class="icon-activity svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#activity"></use></svg></span></a></div> <div class="chip"><a target="_blank" alt="JSON Feed" aria-label="JSON Feed" rel="external" href="https://learnjsthehardway.com/feed.json"><span data-tooltip=""><svg class="icon-code svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#code"></use></svg></span></a></div> <div class="chip"><a alt="Jump to Comments" aria-label="Jump to Comments" href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#comments"><span data-tooltip=""><svg class="icon-mic svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#mic"></use></svg></span></a></div> <div class="divider"></div> <div data-testid="iconimage-default-help-circle" class="pattern-diagonal-lines-sm iconimage-container svelte-1giybnb" style="color: rgb(244, 209, 156); background-color: rgb(199, 239, 252);"><svg class="icon-help-circle svelte-1giybnb" width="400" height="400" fill="none" stroke="#1f314d" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#help-circle"></use></svg></div> <div id="content" class="svelte-tmr8id"><h1 id="your-side-projects-are-your-future"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#your-side-projects-are-your-future">Your Side Projects are Your Future</a></h1>
+<blockquote>
+<p><em>Note</em>: This is a blog about my thoughts and experiences 
+designing a complete JavaScript website from scratch including payments.
+  The code is rough and being developed in the open for educational 
+purposes. Grab the <a href="https://learnjsthehardway.com/feed.rss">RSS</a> or follow <a href="https://twitter.com/lzsthw">@lzsthw</a> on Twitter if you want to follow along.</p>
+</blockquote>
+<p>Let me tell you a story about the Enterprise Java Programmers from eBay.  When eBay was founded Java was <em>hot</em>.  Everyone was using Java.  If you were a <em>serious real programmer</em>,
+ you did everything in Java.  I know because I got sucked into endless 
+terrible Java projects up until 2008 when the banks collapsed and 
+swirled around the economic toilet, taking the turd Enterprise Java with
+ them.  People laugh, but the banks dying in 2008 is really what wiped 
+out Enterprise Java as we know it and killed off <a href="https://en.wikipedia.org/wiki/Sun_acquisition_by_Oracle">Sun</a>.</p>
+<p>Apparently, in 2008 about 40-50% of Sun's money came from banks running Java.  When the banks collapsed because of the <a href="https://en.wikipedia.org/wiki/Subprime_mortgage_crisis">mortgage backed securities fraud</a>
+ a huge chunk of Sun's money evaporated practically overnight.  As 
+smaller banks were absorbed into the three remaining larger banks the 
+contractual obligations to Sun were canceled.  There was also a form of 
+"guilt by association" because Java was associated with inflexible old 
+systems that couldn't be changed fast enough to survive the 2008 crash. 
+ I know this because I literally worked on one of these inflexible Java 
+systems at Bear Stearns and watched this all unfold in real time in 
+2008.</p>
+<p>I say Enterprise Java because Java continued on life support when 
+Google/Android used it in their phones.  If it weren't for Android 
+Java--the language--would have died the miserable death it deserved in 
+2008.  That's why I keep saying "Enterprise", because that version of 
+Java was a special brand of obnoxious hell most programmers from then 
+hate.  It was this bizarre infinitely indirect convoluted code that 
+seemed to only exist to keep Enterprise Programmers in their jobs.  I 
+remember to this day obnoxious "old beard" Java programmers who would 
+brow beat you and harass you if you didn't wrap everything in an <code>AbstractFactoryIndirectFactoryFactory</code>.</p>
+<p>This use of convoluted code full of <code>AbstractFactory</code> <a href="https://en.wikipedia.org/wiki/Shibboleth">shibboleths</a>
+ did actually do its job of excluding new entrants to the industry and 
+also keeping programmers employed.  You couldn't fire those Enterprise 
+Java programmers because they were the only ones who knew that 
+incredibly convoluted code to fix that bug once a year that weirdly 
+showed up right about the time they were supposed to get bonuses.  You 
+had to pay 8000 people a year to basically sit and watch a bunch of Java
+ virtual machines do nothing or else one day (right before bonuses) 
+these VMs would implode and you'd have nobody around to fix them.</p>
+<p>The problem with the Enterprise Java Programmer (EJP) and their job 
+protectionism is companies die, and when they do you need to find a new 
+job.  You would think the collapse of 2008 would teach these programmers
+ this lesson, but they did not learn it at all.  You'd think they'd 
+realize no job is safe anymore, and that they need to always have a 
+second language in their back pocket and a plethora of alternative 
+projects just in case they need to jump off the burning ship.</p>
+<p>Nope, and the programmers at eBay are an excellent example.</p>
+<h2 id="e-bay-wised-up"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#e-bay-wised-up">eBay Wised Up</a></h2>
+<p>I used eBay a few times, and even in 2014 it still had old creaky 
+garbage user interfaces.  When you did a checkout it would inject <code>&lt;iframe&gt;</code>
+ tags back to its own services to show you simple things like...an 
+invoice.  That might be fine here and there, but eBay was riddled with 
+these iframe cockroaches.  Paypal (which was owned by eBay at the time) 
+was nearly the same way, with terrible UIs all over and creaky 
+infrastructure.</p>
+<p>I'm pretty sure the cause of this perpetual terrible UI was the EJPs 
+and their job protective code.  In order to maintain their jobs they 
+created a system that was difficult to change without their help.  That <em>also</em> makes the code difficult for <em>them</em>
+ to change, so most likely when they're asked to "please make the UI 
+modern", they claim its "impossible".  You'd ask if they can puhhleaze 
+just use something like bootstrap, and the EJP will go look at their 
+creaky old Java code with its hand coded HTML embedded in a <code>FactoryFactoryImplInterface</code> and say, "No that'd be impossible."</p>
+<p>This impossibility was demonstrated as a lie.  Eventually Paypal was spun off on its own and <em>suddenly</em>
+ their UI started to improve.  Paypal shared the same programmers as 
+eBay, but after the spinoff they were able to fire those crotchety old 
+EJPs and hire some better UI designers to improve the application.  
+Paypal had to do this because of competition from Stripe which was 
+owning them in the developer market with nice UIs and documentation.</p>
+<p>After Paypal showed you <em>could</em> improve this supposedly 
+"impossible" code I believe it started a war within eBay that eventually
+ culminated in eBay firing about 3000 Enterprise Java Programmers.  
+There's no official number, but the information I have from sources 
+inside puts it at around 3000-8000 fired and the CTO trying to hire <em>anyone else</em> to improve the company.</p>
+<p>Eventually companies like eBay either die, or get smart and realize 
+that firing inflexible "impossible" programmers is the only way forward.
+  When you look at many of the banks from 2008, you can always find some
+ piece of inflexible technology controlled by a programmer who thinks 
+keeping it inflexible will save their job.  The irony of this attitude 
+is that being inflexible eventually kills the company, costing them 
+their job, but <em>also</em> makes it difficult for them to find work after.</p>
+<p>The eBay programmers are excellent demonstrations of this effect.  
+Many of them couldn't even switch over to Android development.  I know 
+many that switched over to non-programming jobs or just retired 
+entirely.  Most of them didn't have anything else to show for their 
+decades at eBay and had no ability to learn any new languages.  They had
+ no potential side businesses to start, no additional demonstrations of 
+skill, and no way to explain how they spent 20 years keeping  invoicing <code>AbstractInterfaceImpl</code> <code>&lt;iframe&gt;</code> Virtual Machine running.</p>
+<h2 id="the-truths"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#the-truths">The Truths</a></h2>
+<p>A lot of the people who tell you not to code at home try to cast this
+ viewpoint as some sort of proletariat revolt against the machinery of 
+late capitalism.  I grew up extremely poor and I can tell you that none 
+of these people have ever been truly poor.  People who are actually poor
+ want to work, and know that you can lose everything in an instant so 
+they do everything they can to keep working.  Work is not shameful or a 
+sign that you're a loser.  Many people want to work and people saying 
+they don't doesn't make them edgy or socialist.  It makes them 
+privileged.</p>
+<p>Anyone telling you to work <em>less</em> is <em>not</em> your friend.
+   The same goes for anyone shaming you for wanting to make more money. 
+ Usually these people are privileged with a family or spouse who can 
+take care of them. If they suddenly lose their job, they have an 
+alternative degree and programming is just a minor stepping stone to 
+something else, or they're just delusional and think they'll have their 
+cushy job forever.  Their experience is completely different from mine 
+and yours, so if you need to work, and you want to keep working in 
+programming, then you definitely should ignore someone who has the 
+luxury of learning one programming language to work at one company.</p>
+<p>The truth is having side projects is <em>the main</em> way you build 
+leverage against corporate greed.  It's harder to exploit someone who 
+has options, and in my experience working on additional projects after 
+work has given me far more benefit than any job has.  I can safely say 
+that <em>everything</em> I learned over my career has been from the 
+personal work I do, not from any job I've had.  I can also say that the 
+most fun and enjoyment I've had in programming has been working on my 
+own projects.</p>
+<p>Therefore, I'm going to give you my list of true reasons that side projects benefit you as a programmer of any experience level.</p>
+<h2 id="truth-0-side-projects-mean-freedom"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-0-side-projects-mean-freedom">Truth 0: Side Projects Mean Freedom</a></h2>
+<p>To this day there's hordes of programmers who think it's a form of 
+oppression to have to work on side projects, when the truth is side 
+projects give you choice, and choice is freedom.  With additional code 
+done outside of work in another language you can choose to leave when 
+you find a better position in the new language.  You can also 
+potentially turn these side projects into new businesses you own.</p>
+<p>If all you do is work on your company's code you effectively become 
+stuck in their particular brand of code and their way of doing things.  
+Unless that company is one of the FAANGs your experience is in many ways
+ going to work against you when trying to find new work.  That's because
+ (as I'll explain later), your version of a language is almost always 
+totally weird and incompatible with all the other totally weird uses of 
+that language.</p>
+<p>The company you work for likes this situation because they know 
+you'll never leave since you have lost your experience with new 
+technology, and learning it is difficult.  You'll just sit there 
+babysitting the JVM that keeps the cornflower blue buttons running and 
+not try to find a job doing Go because that's harder.</p>
+<p>You shouldn't think of your side projects as some kind of calling 
+card that you reluctantly do so you can get a job after your big mega 
+corp dies.  You should think of it as keeping your options open through 
+training and study so that you are free to get a new job when you see 
+one or need one.</p>
+<h3 id="truth-1-you-never-get-a-raise"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-1-you-never-get-a-raise">Truth 1: You Never Get a Raise</a></h3>
+<p>Why would you need to go get a new job if you're making decent money at a nice and easy job?  Because <em>companies never give programmers wages that match their impact</em>.
+  You might get a 2% raise a year, which is less than the inflation of 
+your currency.  You might get a tiny bonus.  Meanwhile, your code will 
+be the main reason your company makes billions and trillions of dollars.
+  You <em>might</em> be able to get some stock options, and that's about the only way you'll get a raise.  Ever.</p>
+<p>However, the industry frequently needs people at new companies, so 
+one of the easiest ways to get a raise is to just get a new job.  
+Changing jobs can get you a 20% to a <em>whopping 100% or more</em> pay raise for doing the same thing.</p>
+<p>Companies will do anything to keep you from changing jobs.  Just read about the <a href="https://en.wikipedia.org/wiki/High-Tech_Employee_Antitrust_Litigation">Apple/Google/Intel wage theft scandal</a>
+ to see how far they'll go to keep you from following the money.  If you
+ think your boss has your best interests in mind then you're delusional.
+  They want to get the most they can from you while paying you the least
+ money possible, and you should act accordingly by keeping your skills 
+portable and finding the best jobs you can.</p>
+<p>One great way to keep your options open is to have publicly available side projects.</p>
+<h2 id="truth-2-new-languages-pay-more"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-2-new-languages-pay-more">Truth 2: New Languages Pay More</a></h2>
+<p>Changing jobs to a new hot programming language is one sure fire way 
+to boost your pay, but, you can't jump jobs to a higher paying position 
+if you're still the troll who keeps a single ancient code working.  You 
+need to demonstrate you can code in Go, Rust, Nim, Zig, or whatever else
+ is hot.  Companies hire you to be able to build something, and you can 
+most easily demonstrate that by...building things using new technologies
+ in side projects.</p>
+<h2 id="truth-3-you-never-get-training"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-3-you-never-get-training">Truth 3: You Never Get Training</a></h2>
+<p>Hold on a minute! If a language is new, then how do you have the job experience to get that job?  IBM recently demanded <a href="https://www.theregister.com/2020/07/13/ibm_kubernetes_experience_job_ad/">12 years experience in Kubernetes</a>
+ when Kubernetes has only been around for 6 years.  This is actually 
+very common, with companies demanding experience in new technologies 
+even though nobody actually has experience in those technologies.</p>
+<p>How do you get experience in fresh new technologies?  Side projects.</p>
+<p>Companies know that if they train you in new technologies then you'll
+ leave.  Why wouldn't you leave a company that refuses to give you a pay
+ raise when your code is the reason the company is worth a trillion 
+dollars?  If you get training it will most likely be trips to 
+conferences where you'll learn nothing.  At work, you'll be chastised as
+ a "snowflake" for trying to use any new technology as it's "risky", 
+even if that technology is a massive jump in capability and used by 
+Google or Facebook.</p>
+<p>The only way you can get training in new technologies is to train 
+yourself, and the only training that actually works in programming is 
+building things.  People don't pay you to know how a Monad works in 
+Haskell.  They pay you to build things with Monads in Haskell, so if 
+you've never built something then they don't trust you can actually do 
+what they need.</p>
+<h2 id="truth-4-you-never-get-recognition"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-4-you-never-get-recognition">Truth 4: You Never Get Recognition</a></h2>
+<p>You will never get your name in any kind of credits for your work.  
+The gaming industry is the one place I see credit for people's work, and
+ outside of that you are a faceless cog in a machine.  You actually have
+ no proof you did anything at most companies, which is why new jobs want
+ to see side projects.  It's too easy to lie and say you did all this 
+work at eBay when you actually just kept an <code>iframe</code> working, but a side project in a new language shows that you can actually do the work.</p>
+<p>Until movie style credits are a norm in programming, you need side projects to show your skills.  Probably even after that.</p>
+<h2 id="truth-5-you-don-t-know-java"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-5-you-don-t-know-java">Truth 5: You Don't Know Java</a></h2>
+<p>You might be wondering why the eBay Java programmers couldn't just go
+ do another Java job.  Why not just quickly slip into Android 
+development?  Oh silly goose, that's because they don't know Java, they 
+know <code>eBay Enterprise Java</code>.</p>
+<p>Every programmer working at a company in any programming language is operating under the delusion that <em>their</em>
+ use of that language is "standard" when the truth is it's not.  Your 
+usage of that language is very specific and tailored to that company and
+ based on a history of convolution that makes it weird compared to 
+everyone else's use of the language (who all also think their use of the
+ language is standard).</p>
+<p>The only way to break this delusion (and to keep yourself sane) is to
+ work on a side project that is outside of your company's code base, and
+ in a totally different programming language.  This will help you land 
+future jobs because you'll be more in line with the new trends in 
+programming usage from your outside experience.</p>
+<p>Programming only in <code>eBay Java</code> means you can only work on <code>eBay Java</code>.
+  The industry changes fast, and the new jobs follow trends, so you 
+should keep up on the trends in the event you need or want a new job.</p>
+<h2 id="truth-6-mb-as-love-cogs"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-6-mb-as-love-cogs">Truth 6: MBAs Love Cogs</a></h2>
+<p>The work environment at many companies is incredibly oppressive for 
+programmers given the creative nature of the discipline.  When you go 
+work at a company you will be forced to use whatever tools <em>they</em> think you should use, not what works best for you.  If they are an Eclipse+Java shop, then you <em>will</em> use <em>their</em> specific brand of Eclipse.  If they use WebStorm you <em>will</em> use WebStorm. You <em>will</em>
+ be ridiculed and harassed constantly for using anything different.  
+Many programming environments are oppressive abusive threats to your 
+efficiency and skills, and they want it that way so you can be replaced.</p>
+<p>The reason is MBAs love nicely uniform slotted cogs they can replace 
+at any notice.  You are not a creative human making intelligent educated
+ creative decisions.  You are a piece of machinery they feed vague 
+sentences into and expect solid software out the back end. Anything that
+ threatens your generic nature is seen as an affront to the business and
+ is shut down, <em>and</em> it's shut down by other programmers who have
+ internalized this abusive attitude.  This is quadruple true if you are 
+in any shop that uses Pair Programming.</p>
+<p>If you value your sanity you'll spend some of your free time using 
+and doing things you enjoy with computers, and that means working on 
+side projects you enjoy with the text editor you enjoy.</p>
+<h2 id="truth-7-it-is-a-performance-fair-or-not"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-7-it-is-a-performance-fair-or-not">Truth 7: It <em>Is</em> a Performance, Fair or Not</a></h2>
+<p>One complaint people have about side projects is they think it's 
+unfair that companies ask to see their published work before hiring.  
+They find it offensive that some corporation would dare to ask them to <em>prove</em> they can code.   Programming isn't a performance art!</p>
+<p>The reality is that programming is now a performance art.  You have 
+to show your work when you are at a job. You have to work on a team. You
+ have to submit to code reviews. You have to whiteboard ideas and speak 
+intelligently about what you are trying to do. You have to write about 
+it. You have to attend conferences to sell your things to programmers.  
+Let's not forget that there's an entire contingent of programmers who 
+fervently claim that code is political and there's nothing anyone can do
+ about it.</p>
+<p>If code is political, then it is also performative.  Sorry, but you 
+can't have it both ways.  You don't have politics without performance, 
+and the people who lament the performance aspects of the profession have
+ only their self to blame for turning code political.</p>
+<p>But, what we see from the people who lament having to prove they can 
+code with side projects is they seem to have no problem with <em>every other form of industry performance</em>.
+  They manage a perfectly curated LinkedIn, Instagram, and Twitter that 
+espouses their awesome job in developer relations speaking at 30 
+conferences a year with fantastic high gloss professional head 
+shots....but yeah, showing me 2 small JavaScript projects is demanding 
+performance from them.</p>
+<p>The truth is your side projects demonstrate that you can do the job, <em>and</em>
+ that you can do it on your own.  It sucks that programming is 
+performative now, but if code is political now then, oh well, I guess we
+ all have to suck it up and put on a show.</p>
+<h2 id="truth-8-you-can-use-code-everywhere"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-8-you-can-use-code-everywhere">Truth 8: You Can Use Code Everywhere</a></h2>
+<p>You don't have to code what your boss makes you code.  You can make <em>anything</em>
+ you want, so why not make code that improves your life?  If your entire
+ experience of programming is just what you do at your company then 
+obviously you're going to hate it.</p>
+<p>If you're going home and working on things that interest you or have direct impact on your life, then <em>that's</em>
+ where the power of learning to code comes from.  I can see why some new
+ programmers think programming is only what they do in their first job, 
+but it's so much more.  You have this skill that allows you to automate 
+almost any part of your life, so why would you complain about...having 
+that skill?</p>
+<p>I've used code to figure out new theories of music, automate boring 
+tax collection, create life changing business websites for friends and 
+relatives, and to create my <em>entire online business which started as a side project</em>.
+  Side projects literally gave me freedom to move, travel, and not be 
+afraid to take chances.  They were and are my safety net against bad 
+economies, bad bosses, bad companies, and global pandemics.  I have 
+confidence that I can work anywhere on anything and that I can <em>prove</em> I can work on anything anywhere.</p>
+<p>You don't <em>have</em> to code after you get off work, but if you 
+want to have options in your career and utilize this skill you have to 
+its full potential, then I highly recommend you do.</p>
+<h2 id="truth-9-you-own-the-means-of-production"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-9-you-own-the-means-of-production">Truth 9: You Own The Means of Production</a></h2>
+<p>I find it bizarre that the people who are lamenting having to work on
+ side projects also seem to be incredibly Marxist and then don't realize
+ that being able to code is the ultimate ownership of the means of 
+production.  You can start an online business for almost zero dollars 
+these days.  So many services are free to start, and simply skim off the
+ top that you don't even need to be a programmer to start one.  Hardest 
+thing about starting a business is paying for all the government 
+licenses and requirements.</p>
+<p>As a programmer you have the <em>ultimate</em> tool for starting your
+ own business with almost zero capital and totally owning it.  You can 
+setup your own hosting, register your company, create your domain, even 
+accept your own Bitcoin with something like <a href="https://btcpayserver.org/">btcpayserver</a>
+ and honestly never really have to talk to anyone.  You can also work as
+ a consultant, offer programming services in your local area, help out 
+small businesses, and so many other things.</p>
+<p>For many people a side project is the difference between being 
+homeless after they're ticket to independence, so shaming people who are
+ working on a potential side business is stupid.  Many people who work 
+on something else are doing it to improve their lives by...owning the 
+means of production.</p>
+<p>Sucks for the complainer if they're so risk averse they never think to do that too.</p>
+<h2 id="truth-10-the-lack-of-time"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#truth-10-the-lack-of-time">Truth 10: The Lack of Time</a></h2>
+<p>I understand people who have children, families, or similar social 
+commitments might not have the time, but the vast majority of people who
+ complain they have no time for side projects clearly do have the time. 
+ I'm thinking of one person who probably posts about 200 Twitter posts a
+ day but has "no time to work on side projects" (that they posted in 
+their 200th tweet that day).</p>
+<p>I suggest that if you think you don't have time for anything else 
+then prove it.  Track every half hour of your day for 2 weeks and see 
+where you spend your time.  Be honest, and I bet you'll find out you've 
+got loads of time if you just cut out something stupid.  I'm positive 
+people have lots of free time they don't want to admit they have, but 
+analyzing your time will help you find it and be honest with what you 
+have to work on your own things.</p>
+<p>But, remember Truth 9?  I bet if you tracked where you spend time, 
+you might find a programming project that can automate something out of 
+the way to free up some of your time so you can do more programming.</p>
+<p>Welcome to <a href="https://en.wiktionary.org/wiki/yak_shaving">Yak Shaving</a> my favorite kind of programming side project.</p>
+<h1 id="conclusion"><a href="https://learnjsthehardway.com/blog/07-your-side-projects-are-your-future#conclusion">Conclusion</a></h1>
+<p>I'm a huge fan of people doing what ultimately makes them happy.  If 
+it makes you sad and angry to have to work on side projects at home then
+ don't.  Find something else to fill your time.  But, if you want to 
+have a long career and the ultimate freedom in this profession then you 
+have to accept the performative nature of the job and work on your own 
+in your spare time.  Side projects are honestly the only way to make 
+sure that you aren't blind sided by a tragic turn of events that makes 
+you unemployable, and side projects are also where the real fun in 
+programming resides.</p>
+</div></div> <div class="column col-12" id="comments"><div class="columns svelte-2z47sr" id="comment-container" data-testid="comments-view"><div class="column"><div class="panel svelte-2z47sr" id="comments"><div class="panel-header"> <div class="toast toast-warning">You must login to post a question.
+              <a href="https://learnjsthehardway.com/auth" class="btn btn-primary float-right svelte-2z47sr" id="login-to-post"><span data-tooltip=""><svg class="icon-login svelte-1i3bqnd" data-tooltip="" width="24" height="24" fill="none" stroke="#f8f9f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#login"></use></svg></span> Login to Your Account</a></div></div> <div class="panel-body svelte-2z47sr" data-testid="comments-listing"><div data-testid="no-comments" class="h5 text-gray-dark">No comments yet.</div></div></div></div></div></div></div></div></div></div></div> <div id="footer" class="columns col-gapless svelte-5rqe5b"><div class="column col-9"><div class="panel svelte-5rqe5b"><div class="panel-header">This website and all content is Copyright © Zed A. Shaw since 2016 and beyond.</div> <div class="panel-body">Read our <a alt="Our privacy policy" href="https://learnjsthehardway.com/privacy">radical privacy policy</a> to find out how we built this website to
+        make sharing your personal data almost impossible.</div></div></div> <div class="column col-3 svelte-5rqe5b" id="right-column"><a target="_blank" alt="Twitter @lzsthw" aria-label="Twitter @lzsthw" rel="external" href="https://twitter.com/lzsthw"><span data-tooltip=""><svg class="icon-twitter svelte-1i3bqnd" data-tooltip="" width="48" height="48" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#twitter"></use></svg></span></a> <a target="_blank" alt="The git repository" aria-label="The git repository" rel="external" href="https://git.learnjsthehardway.com/zedshaw/learnjsthehardway"><span data-tooltip=""><svg class="icon-code svelte-1i3bqnd" data-tooltip="" width="48" height="48" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#code"></use></svg></span></a> <a target="_blank" alt="About this site" aria-label="About this site" rel="external" href="https://learnjsthehardway.com/about"><span data-tooltip=""><svg class="icon-help-circle svelte-1i3bqnd" data-tooltip="" width="48" height="48" fill="none" stroke="#1f314d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><use xlink:href="/icons/feather-sprite.svg#help-circle"></use></svg></span></a></div></div></div></div> <script>__SAPPER__={baseUrl:"",preloaded:[void 0,null,(function(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p){return {content:"\u003Ch1 id=\"your-side-projects-are-your-future\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#your-side-projects-are-your-future\"\u003EYour Side Projects are Your Future\u003C\u002Fa\u003E\u003C\u002Fh1\u003E\n\u003Cblockquote\u003E\n\u003Cp\u003E\u003Cem\u003ENote\u003C\u002Fem\u003E: This is a blog about my thoughts and experiences designing a complete JavaScript website from scratch including payments.  The code is rough and being developed in the open for educational purposes. Grab the \u003Ca href=\"https:\u002F\u002Flearnjsthehardway.com\u002Ffeed.rss\"\u003ERSS\u003C\u002Fa\u003E or follow \u003Ca href=\"https:\u002F\u002Ftwitter.com\u002Flzsthw\"\u003E@lzsthw\u003C\u002Fa\u003E on Twitter if you want to follow along.\u003C\u002Fp\u003E\n\u003C\u002Fblockquote\u003E\n\u003Cp\u003ELet me tell you a story about the Enterprise Java Programmers from eBay.  When eBay was founded Java was \u003Cem\u003Ehot\u003C\u002Fem\u003E.  Everyone was using Java.  If you were a \u003Cem\u003Eserious real programmer\u003C\u002Fem\u003E, you did everything in Java.  I know because I got sucked into endless terrible Java projects up until 2008 when the banks collapsed and swirled around the economic toilet, taking the turd Enterprise Java with them.  People laugh, but the banks dying in 2008 is really what wiped out Enterprise Java as we know it and killed off \u003Ca href=\"https:\u002F\u002Fen.wikipedia.org\u002Fwiki\u002FSun_acquisition_by_Oracle\"\u003ESun\u003C\u002Fa\u003E.\u003C\u002Fp\u003E\n\u003Cp\u003EApparently, in 2008 about 40-50% of Sun's money came from banks running Java.  When the banks collapsed because of the \u003Ca href=\"https:\u002F\u002Fen.wikipedia.org\u002Fwiki\u002FSubprime_mortgage_crisis\"\u003Emortgage backed securities fraud\u003C\u002Fa\u003E a huge chunk of Sun's money evaporated practically overnight.  As smaller banks were absorbed into the three remaining larger banks the contractual obligations to Sun were canceled.  There was also a form of &quot;guilt by association&quot; because Java was associated with inflexible old systems that couldn't be changed fast enough to survive the 2008 crash.  I know this because I literally worked on one of these inflexible Java systems at Bear Stearns and watched this all unfold in real time in 2008.\u003C\u002Fp\u003E\n\u003Cp\u003EI say Enterprise Java because Java continued on life support when Google\u002FAndroid used it in their phones.  If it weren't for Android Java--the language--would have died the miserable death it deserved in 2008.  That's why I keep saying &quot;Enterprise&quot;, because that version of Java was a special brand of obnoxious hell most programmers from then hate.  It was this bizarre infinitely indirect convoluted code that seemed to only exist to keep Enterprise Programmers in their jobs.  I remember to this day obnoxious &quot;old beard&quot; Java programmers who would brow beat you and harass you if you didn't wrap everything in an \u003Ccode\u003EAbstractFactoryIndirectFactoryFactory\u003C\u002Fcode\u003E.\u003C\u002Fp\u003E\n\u003Cp\u003EThis use of convoluted code full of \u003Ccode\u003EAbstractFactory\u003C\u002Fcode\u003E \u003Ca href=\"https:\u002F\u002Fen.wikipedia.org\u002Fwiki\u002FShibboleth\"\u003Eshibboleths\u003C\u002Fa\u003E did actually do its job of excluding new entrants to the industry and also keeping programmers employed.  You couldn't fire those Enterprise Java programmers because they were the only ones who knew that incredibly convoluted code to fix that bug once a year that weirdly showed up right about the time they were supposed to get bonuses.  You had to pay 8000 people a year to basically sit and watch a bunch of Java virtual machines do nothing or else one day (right before bonuses) these VMs would implode and you'd have nobody around to fix them.\u003C\u002Fp\u003E\n\u003Cp\u003EThe problem with the Enterprise Java Programmer (EJP) and their job protectionism is companies die, and when they do you need to find a new job.  You would think the collapse of 2008 would teach these programmers this lesson, but they did not learn it at all.  You'd think they'd realize no job is safe anymore, and that they need to always have a second language in their back pocket and a plethora of alternative projects just in case they need to jump off the burning ship.\u003C\u002Fp\u003E\n\u003Cp\u003ENope, and the programmers at eBay are an excellent example.\u003C\u002Fp\u003E\n\u003Ch2 id=\"e-bay-wised-up\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#e-bay-wised-up\"\u003EeBay Wised Up\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EI used eBay a few times, and even in 2014 it still had old creaky garbage user interfaces.  When you did a checkout it would inject \u003Ccode\u003E&lt;iframe&gt;\u003C\u002Fcode\u003E tags back to its own services to show you simple things like...an invoice.  That might be fine here and there, but eBay was riddled with these iframe cockroaches.  Paypal (which was owned by eBay at the time) was nearly the same way, with terrible UIs all over and creaky infrastructure.\u003C\u002Fp\u003E\n\u003Cp\u003EI'm pretty sure the cause of this perpetual terrible UI was the EJPs and their job protective code.  In order to maintain their jobs they created a system that was difficult to change without their help.  That \u003Cem\u003Ealso\u003C\u002Fem\u003E makes the code difficult for \u003Cem\u003Ethem\u003C\u002Fem\u003E to change, so most likely when they're asked to &quot;please make the UI modern&quot;, they claim its &quot;impossible&quot;.  You'd ask if they can puhhleaze just use something like bootstrap, and the EJP will go look at their creaky old Java code with its hand coded HTML embedded in a \u003Ccode\u003EFactoryFactoryImplInterface\u003C\u002Fcode\u003E and say, &quot;No that'd be impossible.&quot;\u003C\u002Fp\u003E\n\u003Cp\u003EThis impossibility was demonstrated as a lie.  Eventually Paypal was spun off on its own and \u003Cem\u003Esuddenly\u003C\u002Fem\u003E their UI started to improve.  Paypal shared the same programmers as eBay, but after the spinoff they were able to fire those crotchety old EJPs and hire some better UI designers to improve the application.  Paypal had to do this because of competition from Stripe which was owning them in the developer market with nice UIs and documentation.\u003C\u002Fp\u003E\n\u003Cp\u003EAfter Paypal showed you \u003Cem\u003Ecould\u003C\u002Fem\u003E improve this supposedly &quot;impossible&quot; code I believe it started a war within eBay that eventually culminated in eBay firing about 3000 Enterprise Java Programmers.  There's no official number, but the information I have from sources inside puts it at around 3000-8000 fired and the CTO trying to hire \u003Cem\u003Eanyone else\u003C\u002Fem\u003E to improve the company.\u003C\u002Fp\u003E\n\u003Cp\u003EEventually companies like eBay either die, or get smart and realize that firing inflexible &quot;impossible&quot; programmers is the only way forward.  When you look at many of the banks from 2008, you can always find some piece of inflexible technology controlled by a programmer who thinks keeping it inflexible will save their job.  The irony of this attitude is that being inflexible eventually kills the company, costing them their job, but \u003Cem\u003Ealso\u003C\u002Fem\u003E makes it difficult for them to find work after.\u003C\u002Fp\u003E\n\u003Cp\u003EThe eBay programmers are excellent demonstrations of this effect.  Many of them couldn't even switch over to Android development.  I know many that switched over to non-programming jobs or just retired entirely.  Most of them didn't have anything else to show for their decades at eBay and had no ability to learn any new languages.  They had no potential side businesses to start, no additional demonstrations of skill, and no way to explain how they spent 20 years keeping  invoicing \u003Ccode\u003EAbstractInterfaceImpl\u003C\u002Fcode\u003E \u003Ccode\u003E&lt;iframe&gt;\u003C\u002Fcode\u003E Virtual Machine running.\u003C\u002Fp\u003E\n\u003Ch2 id=\"the-truths\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#the-truths\"\u003EThe Truths\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EA lot of the people who tell you not to code at home try to cast this viewpoint as some sort of proletariat revolt against the machinery of late capitalism.  I grew up extremely poor and I can tell you that none of these people have ever been truly poor.  People who are actually poor want to work, and know that you can lose everything in an instant so they do everything they can to keep working.  Work is not shameful or a sign that you're a loser.  Many people want to work and people saying they don't doesn't make them edgy or socialist.  It makes them privileged.\u003C\u002Fp\u003E\n\u003Cp\u003EAnyone telling you to work \u003Cem\u003Eless\u003C\u002Fem\u003E is \u003Cem\u003Enot\u003C\u002Fem\u003E your friend.   The same goes for anyone shaming you for wanting to make more money.  Usually these people are privileged with a family or spouse who can take care of them. If they suddenly lose their job, they have an alternative degree and programming is just a minor stepping stone to something else, or they're just delusional and think they'll have their cushy job forever.  Their experience is completely different from mine and yours, so if you need to work, and you want to keep working in programming, then you definitely should ignore someone who has the luxury of learning one programming language to work at one company.\u003C\u002Fp\u003E\n\u003Cp\u003EThe truth is having side projects is \u003Cem\u003Ethe main\u003C\u002Fem\u003E way you build leverage against corporate greed.  It's harder to exploit someone who has options, and in my experience working on additional projects after work has given me far more benefit than any job has.  I can safely say that \u003Cem\u003Eeverything\u003C\u002Fem\u003E I learned over my career has been from the personal work I do, not from any job I've had.  I can also say that the most fun and enjoyment I've had in programming has been working on my own projects.\u003C\u002Fp\u003E\n\u003Cp\u003ETherefore, I'm going to give you my list of true reasons that side projects benefit you as a programmer of any experience level.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-0-side-projects-mean-freedom\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-0-side-projects-mean-freedom\"\u003ETruth 0: Side Projects Mean Freedom\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003ETo this day there's hordes of programmers who think it's a form of oppression to have to work on side projects, when the truth is side projects give you choice, and choice is freedom.  With additional code done outside of work in another language you can choose to leave when you find a better position in the new language.  You can also potentially turn these side projects into new businesses you own.\u003C\u002Fp\u003E\n\u003Cp\u003EIf all you do is work on your company's code you effectively become stuck in their particular brand of code and their way of doing things.  Unless that company is one of the FAANGs your experience is in many ways going to work against you when trying to find new work.  That's because (as I'll explain later), your version of a language is almost always totally weird and incompatible with all the other totally weird uses of that language.\u003C\u002Fp\u003E\n\u003Cp\u003EThe company you work for likes this situation because they know you'll never leave since you have lost your experience with new technology, and learning it is difficult.  You'll just sit there babysitting the JVM that keeps the cornflower blue buttons running and not try to find a job doing Go because that's harder.\u003C\u002Fp\u003E\n\u003Cp\u003EYou shouldn't think of your side projects as some kind of calling card that you reluctantly do so you can get a job after your big mega corp dies.  You should think of it as keeping your options open through training and study so that you are free to get a new job when you see one or need one.\u003C\u002Fp\u003E\n\u003Ch3 id=\"truth-1-you-never-get-a-raise\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-1-you-never-get-a-raise\"\u003ETruth 1: You Never Get a Raise\u003C\u002Fa\u003E\u003C\u002Fh3\u003E\n\u003Cp\u003EWhy would you need to go get a new job if you're making decent money at a nice and easy job?  Because \u003Cem\u003Ecompanies never give programmers wages that match their impact\u003C\u002Fem\u003E.  You might get a 2% raise a year, which is less than the inflation of your currency.  You might get a tiny bonus.  Meanwhile, your code will be the main reason your company makes billions and trillions of dollars.  You \u003Cem\u003Emight\u003C\u002Fem\u003E be able to get some stock options, and that's about the only way you'll get a raise.  Ever.\u003C\u002Fp\u003E\n\u003Cp\u003EHowever, the industry frequently needs people at new companies, so one of the easiest ways to get a raise is to just get a new job.  Changing jobs can get you a 20% to a \u003Cem\u003Ewhopping 100% or more\u003C\u002Fem\u003E pay raise for doing the same thing.\u003C\u002Fp\u003E\n\u003Cp\u003ECompanies will do anything to keep you from changing jobs.  Just read about the \u003Ca href=\"https:\u002F\u002Fen.wikipedia.org\u002Fwiki\u002FHigh-Tech_Employee_Antitrust_Litigation\"\u003EApple\u002FGoogle\u002FIntel wage theft scandal\u003C\u002Fa\u003E to see how far they'll go to keep you from following the money.  If you think your boss has your best interests in mind then you're delusional.  They want to get the most they can from you while paying you the least money possible, and you should act accordingly by keeping your skills portable and finding the best jobs you can.\u003C\u002Fp\u003E\n\u003Cp\u003EOne great way to keep your options open is to have publicly available side projects.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-2-new-languages-pay-more\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-2-new-languages-pay-more\"\u003ETruth 2: New Languages Pay More\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EChanging jobs to a new hot programming language is one sure fire way to boost your pay, but, you can't jump jobs to a higher paying position if you're still the troll who keeps a single ancient code working.  You need to demonstrate you can code in Go, Rust, Nim, Zig, or whatever else is hot.  Companies hire you to be able to build something, and you can most easily demonstrate that by...building things using new technologies in side projects.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-3-you-never-get-training\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-3-you-never-get-training\"\u003ETruth 3: You Never Get Training\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EHold on a minute! If a language is new, then how do you have the job experience to get that job?  IBM recently demanded \u003Ca href=\"https:\u002F\u002Fwww.theregister.com\u002F2020\u002F07\u002F13\u002Fibm_kubernetes_experience_job_ad\u002F\"\u003E12 years experience in Kubernetes\u003C\u002Fa\u003E when Kubernetes has only been around for 6 years.  This is actually very common, with companies demanding experience in new technologies even though nobody actually has experience in those technologies.\u003C\u002Fp\u003E\n\u003Cp\u003EHow do you get experience in fresh new technologies?  Side projects.\u003C\u002Fp\u003E\n\u003Cp\u003ECompanies know that if they train you in new technologies then you'll leave.  Why wouldn't you leave a company that refuses to give you a pay raise when your code is the reason the company is worth a trillion dollars?  If you get training it will most likely be trips to conferences where you'll learn nothing.  At work, you'll be chastised as a &quot;snowflake&quot; for trying to use any new technology as it's &quot;risky&quot;, even if that technology is a massive jump in capability and used by Google or Facebook.\u003C\u002Fp\u003E\n\u003Cp\u003EThe only way you can get training in new technologies is to train yourself, and the only training that actually works in programming is building things.  People don't pay you to know how a Monad works in Haskell.  They pay you to build things with Monads in Haskell, so if you've never built something then they don't trust you can actually do what they need.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-4-you-never-get-recognition\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-4-you-never-get-recognition\"\u003ETruth 4: You Never Get Recognition\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EYou will never get your name in any kind of credits for your work.  The gaming industry is the one place I see credit for people's work, and outside of that you are a faceless cog in a machine.  You actually have no proof you did anything at most companies, which is why new jobs want to see side projects.  It's too easy to lie and say you did all this work at eBay when you actually just kept an \u003Ccode\u003Eiframe\u003C\u002Fcode\u003E working, but a side project in a new language shows that you can actually do the work.\u003C\u002Fp\u003E\n\u003Cp\u003EUntil movie style credits are a norm in programming, you need side projects to show your skills.  Probably even after that.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-5-you-don-t-know-java\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-5-you-don-t-know-java\"\u003ETruth 5: You Don't Know Java\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EYou might be wondering why the eBay Java programmers couldn't just go do another Java job.  Why not just quickly slip into Android development?  Oh silly goose, that's because they don't know Java, they know \u003Ccode\u003EeBay Enterprise Java\u003C\u002Fcode\u003E.\u003C\u002Fp\u003E\n\u003Cp\u003EEvery programmer working at a company in any programming language is operating under the delusion that \u003Cem\u003Etheir\u003C\u002Fem\u003E use of that language is &quot;standard&quot; when the truth is it's not.  Your usage of that language is very specific and tailored to that company and based on a history of convolution that makes it weird compared to everyone else's use of the language (who all also think their use of the language is standard).\u003C\u002Fp\u003E\n\u003Cp\u003EThe only way to break this delusion (and to keep yourself sane) is to work on a side project that is outside of your company's code base, and in a totally different programming language.  This will help you land future jobs because you'll be more in line with the new trends in programming usage from your outside experience.\u003C\u002Fp\u003E\n\u003Cp\u003EProgramming only in \u003Ccode\u003EeBay Java\u003C\u002Fcode\u003E means you can only work on \u003Ccode\u003EeBay Java\u003C\u002Fcode\u003E.  The industry changes fast, and the new jobs follow trends, so you should keep up on the trends in the event you need or want a new job.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-6-mb-as-love-cogs\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-6-mb-as-love-cogs\"\u003ETruth 6: MBAs Love Cogs\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EThe work environment at many companies is incredibly oppressive for programmers given the creative nature of the discipline.  When you go work at a company you will be forced to use whatever tools \u003Cem\u003Ethey\u003C\u002Fem\u003E think you should use, not what works best for you.  If they are an Eclipse+Java shop, then you \u003Cem\u003Ewill\u003C\u002Fem\u003E use \u003Cem\u003Etheir\u003C\u002Fem\u003E specific brand of Eclipse.  If they use WebStorm you \u003Cem\u003Ewill\u003C\u002Fem\u003E use WebStorm. You \u003Cem\u003Ewill\u003C\u002Fem\u003E be ridiculed and harassed constantly for using anything different.  Many programming environments are oppressive abusive threats to your efficiency and skills, and they want it that way so you can be replaced.\u003C\u002Fp\u003E\n\u003Cp\u003EThe reason is MBAs love nicely uniform slotted cogs they can replace at any notice.  You are not a creative human making intelligent educated creative decisions.  You are a piece of machinery they feed vague sentences into and expect solid software out the back end. Anything that threatens your generic nature is seen as an affront to the business and is shut down, \u003Cem\u003Eand\u003C\u002Fem\u003E it's shut down by other programmers who have internalized this abusive attitude.  This is quadruple true if you are in any shop that uses Pair Programming.\u003C\u002Fp\u003E\n\u003Cp\u003EIf you value your sanity you'll spend some of your free time using and doing things you enjoy with computers, and that means working on side projects you enjoy with the text editor you enjoy.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-7-it-is-a-performance-fair-or-not\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-7-it-is-a-performance-fair-or-not\"\u003ETruth 7: It \u003Cem\u003EIs\u003C\u002Fem\u003E a Performance, Fair or Not\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EOne complaint people have about side projects is they think it's unfair that companies ask to see their published work before hiring.  They find it offensive that some corporation would dare to ask them to \u003Cem\u003Eprove\u003C\u002Fem\u003E they can code.   Programming isn't a performance art!\u003C\u002Fp\u003E\n\u003Cp\u003EThe reality is that programming is now a performance art.  You have to show your work when you are at a job. You have to work on a team. You have to submit to code reviews. You have to whiteboard ideas and speak intelligently about what you are trying to do. You have to write about it. You have to attend conferences to sell your things to programmers.  Let's not forget that there's an entire contingent of programmers who fervently claim that code is political and there's nothing anyone can do about it.\u003C\u002Fp\u003E\n\u003Cp\u003EIf code is political, then it is also performative.  Sorry, but you can't have it both ways.  You don't have politics without performance, and the people who lament the performance aspects of the profession have only their self to blame for turning code political.\u003C\u002Fp\u003E\n\u003Cp\u003EBut, what we see from the people who lament having to prove they can code with side projects is they seem to have no problem with \u003Cem\u003Eevery other form of industry performance\u003C\u002Fem\u003E.  They manage a perfectly curated LinkedIn, Instagram, and Twitter that espouses their awesome job in developer relations speaking at 30 conferences a year with fantastic high gloss professional head shots....but yeah, showing me 2 small JavaScript projects is demanding performance from them.\u003C\u002Fp\u003E\n\u003Cp\u003EThe truth is your side projects demonstrate that you can do the job, \u003Cem\u003Eand\u003C\u002Fem\u003E that you can do it on your own.  It sucks that programming is performative now, but if code is political now then, oh well, I guess we all have to suck it up and put on a show.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-8-you-can-use-code-everywhere\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-8-you-can-use-code-everywhere\"\u003ETruth 8: You Can Use Code Everywhere\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EYou don't have to code what your boss makes you code.  You can make \u003Cem\u003Eanything\u003C\u002Fem\u003E you want, so why not make code that improves your life?  If your entire experience of programming is just what you do at your company then obviously you're going to hate it.\u003C\u002Fp\u003E\n\u003Cp\u003EIf you're going home and working on things that interest you or have direct impact on your life, then \u003Cem\u003Ethat's\u003C\u002Fem\u003E where the power of learning to code comes from.  I can see why some new programmers think programming is only what they do in their first job, but it's so much more.  You have this skill that allows you to automate almost any part of your life, so why would you complain about...having that skill?\u003C\u002Fp\u003E\n\u003Cp\u003EI've used code to figure out new theories of music, automate boring tax collection, create life changing business websites for friends and relatives, and to create my \u003Cem\u003Eentire online business which started as a side project\u003C\u002Fem\u003E.  Side projects literally gave me freedom to move, travel, and not be afraid to take chances.  They were and are my safety net against bad economies, bad bosses, bad companies, and global pandemics.  I have confidence that I can work anywhere on anything and that I can \u003Cem\u003Eprove\u003C\u002Fem\u003E I can work on anything anywhere.\u003C\u002Fp\u003E\n\u003Cp\u003EYou don't \u003Cem\u003Ehave\u003C\u002Fem\u003E to code after you get off work, but if you want to have options in your career and utilize this skill you have to its full potential, then I highly recommend you do.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-9-you-own-the-means-of-production\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-9-you-own-the-means-of-production\"\u003ETruth 9: You Own The Means of Production\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EI find it bizarre that the people who are lamenting having to work on side projects also seem to be incredibly Marxist and then don't realize that being able to code is the ultimate ownership of the means of production.  You can start an online business for almost zero dollars these days.  So many services are free to start, and simply skim off the top that you don't even need to be a programmer to start one.  Hardest thing about starting a business is paying for all the government licenses and requirements.\u003C\u002Fp\u003E\n\u003Cp\u003EAs a programmer you have the \u003Cem\u003Eultimate\u003C\u002Fem\u003E tool for starting your own business with almost zero capital and totally owning it.  You can setup your own hosting, register your company, create your domain, even accept your own Bitcoin with something like \u003Ca href=\"https:\u002F\u002Fbtcpayserver.org\u002F\"\u003Ebtcpayserver\u003C\u002Fa\u003E and honestly never really have to talk to anyone.  You can also work as a consultant, offer programming services in your local area, help out small businesses, and so many other things.\u003C\u002Fp\u003E\n\u003Cp\u003EFor many people a side project is the difference between being homeless after they're ticket to independence, so shaming people who are working on a potential side business is stupid.  Many people who work on something else are doing it to improve their lives by...owning the means of production.\u003C\u002Fp\u003E\n\u003Cp\u003ESucks for the complainer if they're so risk averse they never think to do that too.\u003C\u002Fp\u003E\n\u003Ch2 id=\"truth-10-the-lack-of-time\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#truth-10-the-lack-of-time\"\u003ETruth 10: The Lack of Time\u003C\u002Fa\u003E\u003C\u002Fh2\u003E\n\u003Cp\u003EI understand people who have children, families, or similar social commitments might not have the time, but the vast majority of people who complain they have no time for side projects clearly do have the time.  I'm thinking of one person who probably posts about 200 Twitter posts a day but has &quot;no time to work on side projects&quot; (that they posted in their 200th tweet that day).\u003C\u002Fp\u003E\n\u003Cp\u003EI suggest that if you think you don't have time for anything else then prove it.  Track every half hour of your day for 2 weeks and see where you spend your time.  Be honest, and I bet you'll find out you've got loads of time if you just cut out something stupid.  I'm positive people have lots of free time they don't want to admit they have, but analyzing your time will help you find it and be honest with what you have to work on your own things.\u003C\u002Fp\u003E\n\u003Cp\u003EBut, remember Truth 9?  I bet if you tracked where you spend time, you might find a programming project that can automate something out of the way to free up some of your time so you can do more programming.\u003C\u002Fp\u003E\n\u003Cp\u003EWelcome to \u003Ca href=\"https:\u002F\u002Fen.wiktionary.org\u002Fwiki\u002Fyak_shaving\"\u003EYak Shaving\u003C\u002Fa\u003E my favorite kind of programming side project.\u003C\u002Fp\u003E\n\u003Ch1 id=\"conclusion\"\u003E\u003Ca href=\"\u002Fblog\u002F07-your-side-projects-are-your-future#conclusion\"\u003EConclusion\u003C\u002Fa\u003E\u003C\u002Fh1\u003E\n\u003Cp\u003EI'm a huge fan of people doing what ultimately makes them happy.  If it makes you sad and angry to have to work on side projects at home then don't.  Find something else to fill your time.  But, if you want to have a long career and the ultimate freedom in this profession then you have to accept the performative nature of the job and work on your own in your spare time.  Side projects are honestly the only way to make sure that you aren't blind sided by a tragic turn of events that makes you unemployable, and side projects are also where the real fun in programming resides.\u003C\u002Fp\u003E\n",toc:[{level:c,content:b,slug:"your-side-projects-are-your-future",html:b},{level:a,content:d,slug:"e-bay-wised-up",html:d},{level:a,content:e,slug:"the-truths",html:e},{level:a,content:f,slug:"truth-0-side-projects-mean-freedom",html:f},{level:3,content:g,slug:"truth-1-you-never-get-a-raise",html:g},{level:a,content:h,slug:"truth-2-new-languages-pay-more",html:h},{level:a,content:i,slug:"truth-3-you-never-get-training",html:i},{level:a,content:j,slug:"truth-4-you-never-get-recognition",html:j},{level:a,content:k,slug:"truth-5-you-don-t-know-java",html:k},{level:a,content:l,slug:"truth-6-mb-as-love-cogs",html:l},{level:a,content:"Truth 7: It *Is* a Performance, Fair or Not",slug:"truth-7-it-is-a-performance-fair-or-not",html:"Truth 7: It \u003Cem\u003EIs\u003C\u002Fem\u003E a Performance, Fair or Not"},{level:a,content:m,slug:"truth-8-you-can-use-code-everywhere",html:m},{level:a,content:n,slug:"truth-9-you-own-the-means-of-production",html:n},{level:a,content:o,slug:"truth-10-the-lack-of-time",html:o},{level:c,content:p,slug:"conclusion",html:p}],metadata:{author:"Zed A. Shaw",date:"Jul 21, 2020",has_image:false,icon:"help-circle",tag:"Opinion",summary:"How the prevailing view of side projects is a damaging perspective for early programmers.",title:b,slug:"07-your-side-projects-are-your-future"},base_url:"\u002Fblog\u002F07-your-side-projects-are-your-future"}}(2,"Your Side Projects are Your Future",1,"eBay Wised Up","The Truths","Truth 0: Side Projects Mean Freedom","Truth 1: You Never Get a Raise","Truth 2: New Languages Pay More","Truth 3: You Never Get Training","Truth 4: You Never Get Recognition","Truth 5: You Don't Know Java","Truth 6: MBAs Love Cogs","Truth 8: You Can Use Code Everywhere","Truth 9: You Own The Means of Production","Truth 10: The Lack of Time","Conclusion"))],session:{development:false}};if('serviceWorker' in navigator)navigator.serviceWorker.register('/service-worker.js');(function(){try{eval("async function x(){}");var main="/client/client.bda39bee.js"}catch(e){main="/client/legacy/client.8ba37417.js"};var s=document.createElement("script");try{new Function("if(0)import('')")();s.src=main;s.type="module";s.crossOrigin="use-credentials";}catch(e){s.src="/client/shimport@1.0.1.js";s.setAttribute("data-main",main);}document.head.appendChild(s);}());</script> </body></html>
