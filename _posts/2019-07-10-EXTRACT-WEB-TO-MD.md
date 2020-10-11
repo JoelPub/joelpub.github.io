@@ -16,7 +16,7 @@ tags:	MarkDown							#标签
     *  [SIPG](https://www.shobserver.com/toutiao/html/115104.html?group_id=6621114274582364680&app=)   
 2\.右键另存为Y 网页，全部  
 3\.把Y_files文件夹放到`img\blog`  
-4\.去[dillinger](https://dillinger.io/) 把Y.html转换成MD  
+4\.去[https://domchristie.github.io/turndown/](https://domchristie.github.io/turndown/) 或者[dillinger](https://dillinger.io/) 把Y.html转换成MD  
 5\.把MD中的./Y_files批量替换成/img/blog/Y_files  
 
 
