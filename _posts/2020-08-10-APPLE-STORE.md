@@ -12,7 +12,7 @@ tags:	APP							#标签
 ## 注册付费:
 * [https://developer.apple.com/](https://developer.apple.com/ ) 
 * [https://appstoreconnect.apple.com/](https://appstoreconnect.apple.com/ ) 
-* [Deploy a React Native App to TestFlight](https://www.boorje.com/deploy-react-native-app/ )  
+* [Deploy a React Native App to TestFlight](https://joelpub.github.io/2019/10/07/RN-TestFlight/ )  
 
 ```javascript
 Bundle ID - Choose “Explicit” and create bundle ID com.haidanmm.video
