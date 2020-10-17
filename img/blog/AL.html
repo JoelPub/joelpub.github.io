@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html data-react-helmet="lang" lang="en"><script async="" src="AL_files/analytics.js"></script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-1', data: data });
+			}
+			const DATA_LAYER_LOCAL_STORAGE_KEY = 'com.adobe.experiencePlatformDebugger.dataLayer.key';
+const dataLayerKey = window.localStorage.getItem(DATA_LAYER_LOCAL_STORAGE_KEY);
+
+if (dataLayerKey) {
+	// sindresorhus/on-change
+	// MIT - License
+	// https://github.com/sindresorhus/on-change
+	const PATH_SEPARATOR = '.';
+	const TARGET = Symbol('target');
+	const UNSUBSCRIBE = Symbol('unsubscribe');
+
+	const isPrimitive = value =>
+		value === null || (typeof value !== 'object' && typeof value !== 'function');
+
+	const isBuiltinWithoutMutableMethods = value =>
+		value instanceof RegExp || value instanceof Number;
+
+	const isBuiltinWithMutableMethods = value => value instanceof Date;
+
+	const concatPath = (path, property) => {
+		if (property && property.toString) {
+			if (path) {
+				path += PATH_SEPARATOR;
+			}
+
+			path += property.toString();
+		}
+
+		return path;
+	};
+
+	const walkPath = (path, callback) => {
+		let index;
+
+		while (path) {
+			index = path.indexOf(PATH_SEPARATOR);
+
+			if (index === -1) {
+				index = path.length;
+			}
+
+			callback(path.slice(0, index));
+
+			path = path.slice(index + 1);
+		}
+	};
+
+	const shallowClone = value => {
+		if (Array.isArray(value)) {
+			return value.slice();
+		}
+
+		return Object.assign({}, value);
+	};
+
+	const onChange = (object, onChange, options = {}) => {
+		const proxyTarget = Symbol('ProxyTarget');
+		let inApply = false;
+		let changed = false;
+		let applyPath;
+		let applyPrevious;
+		let isUnsubscribed = false;
+		const equals = options.equals || Object.is;
+		let propCache = new WeakMap();
+		let pathCache = new WeakMap();
+		let proxyCache = new WeakMap();
+
+		const handleChange = (path, property, previous, value) => {
+			if (isUnsubscribed) {
+				return;
+			}
+
+			if (!inApply) {
+				onChange(concatPath(path, property), value, previous);
+				return;
+			}
+
+			if (
+				inApply &&
+				applyPrevious &&
+				previous !== undefined &&
+				value !== undefined &&
+				property !== 'length'
+			) {
+				let item = applyPrevious;
+
+				if (path !== applyPath) {
+					path = path.replace(applyPath, '').slice(1);
+
+					walkPath(path, key => {
+						item[key] = shallowClone(item[key]);
+						item = item[key];
+					});
+				}
+
+				item[property] = previous;
+			}
+
+			changed = true;
+		};
+
+		const getOwnPropertyDescriptor = (target, property) => {
+			let props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				return props;
+			}
+
+			props = new Map();
+			propCache.set(target, props);
+
+			let prop = props.get(property);
+			if (!prop) {
+				prop = Reflect.getOwnPropertyDescriptor(target, property);
+				props.set(property, prop);
+			}
+
+			return prop;
+		};
+
+		const invalidateCachedDescriptor = (target, property) => {
+			const props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				props.delete(property);
+			}
+		};
+
+		const buildProxy = (value, path) => {
+			if (isUnsubscribed) {
+				return value;
+			}
+
+			pathCache.set(value, path);
+
+			let proxy = proxyCache.get(value);
+
+			if (proxy === undefined) {
+				proxy = new Proxy(value, handler);
+				proxyCache.set(value, proxy);
+			}
+
+			return proxy;
+		};
+
+		const unsubscribe = target => {
+			isUnsubscribed = true;
+			propCache = null;
+			pathCache = null;
+			proxyCache = null;
+
+			return target;
+		};
+
+		const ignoreChange = property => {
+			return isUnsubscribed || (options.ignoreSymbols === true && typeof property === 'symbol');
+		};
+
+		const handler = {
+			get(target, property, receiver) {
+				if (property === proxyTarget || property === TARGET) {
+					return target;
+				}
+
+				if (property === UNSUBSCRIBE && pathCache.get(target) === '') {
+					return unsubscribe(target);
+				}
+
+				const value = Reflect.get(target, property, receiver);
+				if (
+					isPrimitive(value) ||
+					isBuiltinWithoutMutableMethods(value) ||
+					property === 'constructor' ||
+					options.isShallow === true
+				) {
+					return value;
+				}
+
+				// Preserve invariants
+				const descriptor = getOwnPropertyDescriptor(target, property);
+				if (descriptor && !descriptor.configurable) {
+					if (descriptor.set && !descriptor.get) {
+						return undefined;
+					}
+
+					if (descriptor.writable === false) {
+						return value;
+					}
+				}
+
+				return buildProxy(value, concatPath(pathCache.get(target), property));
+			},
+
+			set(target, property, value, receiver) {
+				if (value && value[proxyTarget] !== undefined) {
+					value = value[proxyTarget];
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property, receiver);
+				const result = Reflect.set(target[proxyTarget] || target, property, value);
+
+				if (!ignore && !equals(previous, value)) {
+					handleChange(pathCache.get(target), property, previous, value);
+				}
+
+				return result;
+			},
+
+			defineProperty(target, property, descriptor) {
+				const result = Reflect.defineProperty(target, property, descriptor);
+
+				if (!ignoreChange(property)) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, undefined, descriptor.value);
+				}
+
+				return result;
+			},
+
+			deleteProperty(target, property) {
+				if (!Reflect.has(target, property)) {
+					return true;
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property);
+				const result = Reflect.deleteProperty(target, property);
+
+				if (!ignore) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, previous);
+				}
+
+				return result;
+			},
+
+			apply(target, thisArg, argumentsList) {
+				const compare = isBuiltinWithMutableMethods(thisArg);
+
+				if (compare) {
+					thisArg = thisArg[proxyTarget];
+				}
+
+				if (!inApply) {
+					inApply = true;
+
+					if (compare) {
+						applyPrevious = thisArg.valueOf();
+					}
+
+					if (Array.isArray(thisArg) || toString.call(thisArg) === '[object Object]') {
+						applyPrevious = shallowClone(thisArg[proxyTarget]);
+					}
+
+					applyPath = pathCache.get(target);
+					applyPath = applyPath.slice(0, Math.max(applyPath.lastIndexOf(PATH_SEPARATOR), 0));
+
+					const result = Reflect.apply(target, thisArg, argumentsList);
+
+					inApply = false;
+
+					if (changed || (compare && !equals(applyPrevious, thisArg.valueOf()))) {
+						handleChange(applyPath, '', applyPrevious, thisArg[proxyTarget] || thisArg);
+						applyPrevious = null;
+						changed = false;
+					}
+
+					return result;
+				}
+
+				return Reflect.apply(target, thisArg, argumentsList);
+			}
+		};
+
+		const proxy = buildProxy(object, '');
+		onChange = onChange.bind(proxy);
+
+		return proxy;
+	};
+
+	onChange.target = proxy => proxy[TARGET] || proxy;
+	onChange.unsubscribe = proxy => proxy[UNSUBSCRIBE] || proxy;
+
+	let proxy;
+	let previousDataLayer;
+
+	function _serialize(dataLayer) {
+		try {
+			return JSON.stringify({ ...dataLayer }, null, 2);
+		} catch (e) {
+			return JSON.stringify(dataLayer, null, 2);
+		}
+	}
+
+	function _notify(dataLayer) {
+		contentScriptEventTrigger({
+			data: {
+				dataLayer
+			},
+			timestamp: Date.now(),
+			timeSincePageLoad: window.performance.now()
+		});
+	}
+
+	function onDataLayerUpdate() {
+		const dataLayer = _serialize(this);
+
+		if (previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	function onDataLayerSet(newDataLayer) {
+		const dataLayer = _serialize(newDataLayer);
+		if (!previousDataLayer || previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	Object.defineProperty(window, dataLayerKey, {
+		get() {
+			return proxy;
+		},
+		set(newDataLayer) {
+			onDataLayerSet(newDataLayer);
+			proxy = onChange(newDataLayer, onDataLayerUpdate);
+		},
+		enumerable: true,
+		configurable: true
+	});
+
+	const oldObjectDefine = Object.defineProperty.bind(Object);
+	Object.defineProperty = function(obj, prop, descriptor) {
+		if (prop === dataLayerKey) {
+			console.debug(
+				'Data layer being overwritten by Object.defineProperty(). Falling back to polling...'
+			);
+
+			function pollForChanges() {
+				const dataLayer = _serialize(window[dataLayerKey]);
+				if (previousDataLayer !== dataLayer) {
+					previousDataLayer = dataLayer;
+					_notify(dataLayer);
+				}
+				window.requestAnimationFrame(pollForChanges);
+			}
+
+			window.requestAnimationFrame(pollForChanges);
+		}
+		return oldObjectDefine(obj, prop, descriptor);
+	};
+}
+ 
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-2', data: data });
+			}
+			/**
+ * Hooks into both DTM's and Launch's logging mechanisms in order to capture all log messages and
+ * send them to the UI to display to the user
+ */
+function notifyContentScript(log) {
+	contentScriptEventTrigger({
+		data: log,
+		timestamp: Date.now(),
+		timeSincePageLoad: window.performance.now()
+	});
+}
+
+window._satellite = window._satellite || {
+	notify: function() {
+		// TODO: if we have sdsat_debug set to true, then console log
+	},
+	track: function() {
+		// TODO: implement notifications
+	},
+	getVar: function() {
+		// TODO: implement notifications
+	},
+	setVar: function() {
+		// TODO: implement notifications
+	},
+	getVisitorId: function() {
+		// TODO: implement notifications
+		return null;
+	},
+	setCookie: function() {
+		// TODO: implement cookie setting
+	},
+	readCookie: function() {
+		// TODO: implement cookie reading
+	},
+	removeCookie: function() {
+		// TODO: implement cookie deletion
+	},
+	isLinked: function() {
+		// TODO: figure out what this is
+	},
+	pageBottom: function() {
+		// TODO: implement notifications
+	}
+};
+
+window._satellite.override = window._satellite.override || {};
+
+onSatelliteInit = function() {
+	let _satellite = window._satellite;
+	if (_satellite.Logger) {
+		_satellite.Logger.keepLimit = 9999;
+	}
+
+	// override notify
+	// Reason: we want to intercept messages that go through here
+	// without worrying about limits or messing anything up internally
+	let originalNotify = _satellite.notify;
+	_satellite.notify = function(message, level) {
+		const logLevel = ['log', 'log', 'log', 'info', 'warn', 'error'];
+
+		// call original
+		originalNotify(message, level);
+
+		const log = {
+			solution: 'dtm',
+			solutions: ['dtm'],
+			level: logLevel[level] || 'log',
+			message: ''
+		};
+
+		// make sure that we have a message
+		if (message && typeof message === 'string') {
+			// only add it
+			log.message = message;
+
+			// check to see what solution it came from
+			if (message.indexOf('Adobe Analytics:') !== -1) {
+				log.solutions.push('analytics');
+			} else if (message.indexOf('Test & Target:') !== -1) {
+				log.solutions.push('target');
+			} else if (message.indexOf('Visitor ID:') !== -1) {
+				log.solutions.push('visitorService');
+			} else if (message.indexOf('AdLens:') !== -1) {
+				log.solutions.push('mediaOptimizer');
+			}
+		}
+		notifyContentScript(log);
+	};
+};
+
+function _overrideConsoleLogFunction(prefix, solution, level) {
+	const originalFunction = console[level];
+	const previousMessages = [];
+	console[level] = function() {
+		const argsAsArray = Array.prototype.slice.call(arguments);
+		originalFunction.apply(console, argsAsArray);
+		const mappedArgs = argsAsArray.map(arg => {
+			let result = '';
+			if (arg && typeof arg.toString === 'function') {
+				result = arg.toString();
+			}
+			if (!result || result === '[object Object]') {
+				try {
+					result = JSON.stringify(arg);
+				} catch (e) {
+					return '';
+				}
+			}
+			return result;
+		});
+
+		const message = mappedArgs.join(' ');
+
+		if (typeof message === 'string') {
+			if (message.indexOf(prefix) === 0) {
+				const log = {
+					solution: solution,
+					solutions: [solution],
+					level: level,
+					message: message,
+					searchIndex: message,
+					params: mappedArgs
+				};
+
+				// check to see what solution it came from
+				if (message.indexOf('[Adobe Analytics]') !== -1) {
+					log.solutions.push('analytics');
+				} else if (message.indexOf('[Adobe Target]') !== -1) {
+					log.solutions.push('target');
+				} else if (message.indexOf('[Experience Cloud ID Service]') !== -1) {
+					log.solutions.push('visitorService');
+				} else if (message.indexOf('[Adobe Media Optimizer]') !== -1) {
+					log.solutions.push('mediaOptimizer');
+				}
+				previousMessages.unshift(message);
+				if (previousMessages.length >= 10) {
+					previousMessages.pop();
+					if (previousMessages.every(m => m === message)) {
+						// We've caught the same message 10 times in a row. We're probably in a loop of some kind...
+						// Just bail out and don't send it up to the debugger UI
+						return;
+					}
+				}
+				notifyContentScript(log);
+			}
+		}
+	};
+}
+
+/**
+ * Overrides the various console.* methods in order to intercept messages that
+ * are sent to the console by launch. A message was sent be launch if it starts
+ * with the rocket emoji 🚀. Note that this is a somewhat brittle solution
+ * since if the emoji ever changes this integration will break. However this
+ * is the only solution that works for now.
+ *
+ * Any messages that are not prefixed with the rocket emoji are ignored and passed
+ * through to the original console function
+ */
+function _overrideConsoleForLaunch() {
+	const prefix = '\uD83D\uDE80';
+	['error', 'info', 'log', 'warn'].forEach(
+		_overrideConsoleLogFunction.bind(null, prefix, 'launch')
+	);
+}
+
+/**
+ * Intercepts console messages made by alloy (prefixed with [alloy]) and notifies content script about each one.
+ * Note that this is a brittle solution and should not be used long term.
+ *
+ * Ideally there will be some debugging hooks built into alloy itself that we can connect to
+ */
+function _overrideConsoleForAlloy() {
+	window.__alloyNS = [];
+	const originalPush = window.__alloyNS.push;
+	window.__alloyNS.push = function(namespace) {
+		['error', 'info', 'log', 'warn'].forEach(
+			_overrideConsoleLogFunction.bind(null, `[${namespace}]`, 'alloy')
+		);
+
+		originalPush.apply(window.__alloyNS, Array.prototype.slice.call(arguments));
+	};
+}
+
+_overrideConsoleForLaunch();
+_overrideConsoleForAlloy();
+
+// find a good place to hook into _satellite object
+if (window.Object && window.Object.defineProperty) {
+	// DTM hook
+	window.Object.defineProperty(
+		window._satellite.override,
+		'adobe.experienceCloud.debuggerDTMInitHook',
+		{
+			enumerable: true,
+			get: function() {
+				onSatelliteInit();
+				return '';
+			},
+			set: function() {}
+		}
+	);
+}
+
+// Once the page has finished loading, remove _satellite if both DTM and Launch were not found
+window.addEventListener('load', function() {
+	if (!_hasDtm() && !_hasLaunch()) {
+		delete window._satellite;
+	}
+});
+
+/**
+ * @returns {boolean} whether launch is present on the page
+ */
+function _hasLaunch() {
+	return !!(window._satellite && window._satellite._container);
+}
+
+/**
+ * @returns {boolean} whether DTM is present on the page
+ */
+function _hasDtm() {
+	return !!(window._satellite && window._satellite.configurationSettings);
+}
+ 
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-3', data: data });
+			}
+			window.___target_traces = window.___target_traces || [];
+var originalPush = window.___target_traces.push;
+
+window.___target_traces.push = function(trace) {
+	contentScriptEventTrigger({ trace });
+	originalPush.call(this, trace);
+};
+ 
+		})();
+	</script><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"><meta charset="utf-8"><meta http-equiv="x-ua-compatible" content="ie=edge"><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><style data-href="/styles.d52f0eade14aca1c599b.css">@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:100;src:local("Montserrat Thin "),local("Montserrat-Thin"),url(/static/montserrat-latin-100-191cc9f50f3b76b9617cb383f19acb7d.woff2) format("woff2"),url(/static/montserrat-latin-100-370318464551d5f25b0f0a78f374faac.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:100;src:local("Montserrat Thin italic"),local("Montserrat-Thinitalic"),url(/static/montserrat-latin-100italic-bdeaeb79db315697bd173a55b097dc18.woff2) format("woff2"),url(/static/montserrat-latin-100italic-ecf7d49386e8f265878e735db34a7c4b.woff) format("woff")}@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:200;src:local("Montserrat Extra Light "),local("Montserrat-Extra Light"),url(/static/montserrat-latin-200-85d5ef9db7f2dc6979172a4a3b2c57cb.woff2) format("woff2"),url(/static/montserrat-latin-200-1fc98e126a3d152549240e6244d7e669.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:200;src:local("Montserrat Extra Light italic"),local("Montserrat-Extra Lightitalic"),url(/static/montserrat-latin-200italic-49095760a498d024fe1a85a078850df9.woff2) format("woff2"),url(/static/montserrat-latin-200italic-fe46cf8b9462c820457d3bf537e4057f.woff) format("woff")}@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:300;src:local("Montserrat Light "),local("Montserrat-Light"),url(/static/montserrat-latin-300-7c3daf12b706645b5d3710f863a4da04.woff2) format("woff2"),url(/static/montserrat-latin-300-8dc95fab9cf98d02ca8d76e97d3dff60.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:300;src:local("Montserrat Light italic"),local("Montserrat-Lightitalic"),url(/static/montserrat-latin-300italic-f20b178ca2024a5eac8e42e6649db86c.woff2) format("woff2"),url(/static/montserrat-latin-300italic-3fe16939288856e8e828fa2661bf2354.woff) format("woff")}@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:400;src:local("Montserrat Regular "),local("Montserrat-Regular"),url(/static/montserrat-latin-400-bc3aa95dca08f5fee5291e34959c27bc.woff2) format("woff2"),url(/static/montserrat-latin-400-8102c4838f9e3d08dad644290a9cb701.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:400;src:local("Montserrat Regular italic"),local("Montserrat-Regularitalic"),url(/static/montserrat-latin-400italic-5cad650422a7184467af5a4d17b264c4.woff2) format("woff2"),url(/static/montserrat-latin-400italic-d191f22af3bb50902b99ac577f81a322.woff) format("woff")}@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:500;src:local("Montserrat Medium "),local("Montserrat-Medium"),url(/static/montserrat-latin-500-92d16e458625f4d2c8940f6bdca0ff09.woff2) format("woff2"),url(/static/montserrat-latin-500-8b763220218ffc11c57c84ddb80e7b26.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:500;src:local("Montserrat Medium italic"),local("Montserrat-Mediumitalic"),url(/static/montserrat-latin-500italic-47bfcca6b69d6a9acca7a8bff17193e2.woff2) format("woff2"),url(/static/montserrat-latin-500italic-72c01f753c3940c0b9cb6bf2389caddf.woff) format("woff")}@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:600;src:local("Montserrat SemiBold "),local("Montserrat-SemiBold"),url(/static/montserrat-latin-600-6fb1b5623e528e27c18658fecf5ee0ee.woff2) format("woff2"),url(/static/montserrat-latin-600-7c839d15a6f54e7025ba8c0c4b333e8f.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:600;src:local("Montserrat SemiBold italic"),local("Montserrat-SemiBolditalic"),url(/static/montserrat-latin-600italic-60789af1c9338ed1a9546722ec54b4f7.woff2) format("woff2"),url(/static/montserrat-latin-600italic-f3d4de8d0afb19e777c79032ce828e3d.woff) format("woff")}@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:700;src:local("Montserrat Bold "),local("Montserrat-Bold"),url(/static/montserrat-latin-700-39d93cf678c740f9f6b2b1cfde34bee3.woff2) format("woff2"),url(/static/montserrat-latin-700-80f10bd382f0df1cd650fec59f3c9394.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:700;src:local("Montserrat Bold italic"),local("Montserrat-Bolditalic"),url(/static/montserrat-latin-700italic-ba136d97b14e82284dd595e257f11c47.woff2) format("woff2"),url(/static/montserrat-latin-700italic-8c98142b425630821139c24bd1698700.woff) format("woff")}@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:800;src:local("Montserrat ExtraBold "),local("Montserrat-ExtraBold"),url(/static/montserrat-latin-800-b7018be9ed6cd94da8b6675b3a468c3b.woff2) format("woff2"),url(/static/montserrat-latin-800-9a9befcf50d64f9d2d19d8b1d1984add.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:800;src:local("Montserrat ExtraBold italic"),local("Montserrat-ExtraBolditalic"),url(/static/montserrat-latin-800italic-540ffdd223d1a9ad3d4e678e1a23372e.woff2) format("woff2"),url(/static/montserrat-latin-800italic-897086f99f4e1f45e6b1e9368527d0bc.woff) format("woff")}@font-face{font-family:Montserrat;font-style:normal;font-display:swap;font-weight:900;src:local("Montserrat Black "),local("Montserrat-Black"),url(/static/montserrat-latin-900-58cd789700850375b834e8b6776002eb.woff2) format("woff2"),url(/static/montserrat-latin-900-26d42c9428780e545a540bbb50c84bce.woff) format("woff")}@font-face{font-family:Montserrat;font-style:italic;font-display:swap;font-weight:900;src:local("Montserrat Black italic"),local("Montserrat-Blackitalic"),url(/static/montserrat-latin-900italic-451157bc8861fe54f523b3669a3def71.woff2) format("woff2"),url(/static/montserrat-latin-900italic-a8ec4957e1c24f5793305763ad9845b3.woff) format("woff")}@font-face{font-family:Merriweather;font-style:normal;font-display:swap;font-weight:300;src:local("Merriweather Light "),local("Merriweather-Light"),url(/static/merriweather-latin-300-b1158cfcd4aacb9d8fb61625e37af46a.woff2) format("woff2"),url(/static/merriweather-latin-300-cc7de05e166e90320d7d896e0f72a19d.woff) format("woff")}@font-face{font-family:Merriweather;font-style:italic;font-display:swap;font-weight:300;src:local("Merriweather Light italic"),local("Merriweather-Lightitalic"),url(/static/merriweather-latin-300italic-8fe52a48089d6ebe46db0b8e7cc66263.woff2) format("woff2"),url(/static/merriweather-latin-300italic-e1331f5397c2a673f9d3765138debdb5.woff) format("woff")}@font-face{font-family:Merriweather;font-style:normal;font-display:swap;font-weight:400;src:local("Merriweather Regular "),local("Merriweather-Regular"),url(/static/merriweather-latin-400-8276fdb72ae8f4714d4e6eba704cc39f.woff2) format("woff2"),url(/static/merriweather-latin-400-69f09800f4f6479d06e44eba837df872.woff) format("woff")}@font-face{font-family:Merriweather;font-style:italic;font-display:swap;font-weight:400;src:local("Merriweather Regular italic"),local("Merriweather-Regularitalic"),url(/static/merriweather-latin-400italic-3a9be9ea9f7aa4af6de7307df21d9fc0.woff2) format("woff2"),url(/static/merriweather-latin-400italic-d76079ed7541a433a54f79316de086e9.woff) format("woff")}@font-face{font-family:Merriweather;font-style:normal;font-display:swap;font-weight:700;src:local("Merriweather Bold "),local("Merriweather-Bold"),url(/static/merriweather-latin-700-fa534be7ffa380e39a7f6e03bf9a5e03.woff2) format("woff2"),url(/static/merriweather-latin-700-ba56ea84b8084b7ff9677f50d3cd81bd.woff) format("woff")}@font-face{font-family:Merriweather;font-style:italic;font-display:swap;font-weight:700;src:local("Merriweather Bold italic"),local("Merriweather-Bolditalic"),url(/static/merriweather-latin-700italic-1ef5edaaa20ae53ea50399884c5e48c6.woff2) format("woff2"),url(/static/merriweather-latin-700italic-534bc9e7ce93c73d73426e46acd78092.woff) format("woff")}@font-face{font-family:Merriweather;font-style:normal;font-display:swap;font-weight:900;src:local("Merriweather Black "),local("Merriweather-Black"),url(/static/merriweather-latin-900-7528fb70e8a4a82c7305e72ff43ac25f.woff2) format("woff2"),url(/static/merriweather-latin-900-3799b6e2f5ed3fcccf9d7a708d7419fa.woff) format("woff")}@font-face{font-family:Merriweather;font-style:italic;font-display:swap;font-weight:900;src:local("Merriweather Black italic"),local("Merriweather-Blackitalic"),url(/static/merriweather-latin-900italic-e1b4d2aaa78e12ad84aaf8a56321e4c2.woff2) format("woff2"),url(/static/merriweather-latin-900italic-2ae22f731b3424e8dbb4b37f7ca6e708.woff) format("woff")}code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:none;text-shadow:0 1px rgba(0,0,0,.3);font-family:Consolas,Monaco,Andale Mono,Ubuntu Mono,monospace;font-size:1em;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.5;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:1em;margin:.5em 0;overflow:auto;border-radius:.3em}:not(pre)>code[class*=language-],pre[class*=language-]{background:#272822}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}.token.cdata,.token.comment,.token.doctype,.token.prolog{color:#708090}.token.punctuation{color:#f8f8f2}.namespace{opacity:.7}.token.constant,.token.deleted,.token.property,.token.symbol,.token.tag{color:#f92672}.token.boolean,.token.number{color:#ae81ff}.token.attr-name,.token.builtin,.token.char,.token.inserted,.token.selector,.token.string{color:#a6e22e}.language-css .token.string,.style .token.string,.token.entity,.token.operator,.token.url,.token.variable{color:#f8f8f2}.token.atrule,.token.attr-value,.token.class-name,.token.function{color:#e6db74}.token.keyword{color:#66d9ef}.token.important,.token.regex{color:#fd971f}.token.bold,.token.important{font-weight:700}.token.italic{font-style:italic}.token.entity{cursor:help}.post-list{list-style-type:none;padding:0;margin:0}.post-list h4{font-size:30px;padding:10px 0;margin:0;font-weight:900}.post-content{font-size:18px;color:#333}.post-list li{display:flex;flex-direction:row;justify-content:space-between;border-bottom:1px solid #eee;padding:20px 12px}.post-list li:hover{background-color:#eee;color:#00a0fc}.post-list li:hover,.post-list li a:hover{text-decoration:none}.post-list .post-meta{display:flex;flex-direction:column;align-items:flex-end;height:75px;justify-content:space-between}.post-list .post-meta time{width:140px;font-size:18px;text-align:right;font-family:monospace;order:-1}@media only screen and (max-width:650px){.post-list li{display:block;padding-left:0;padding-right:0}.post-list .post-meta{flex-direction:row;align-items:center;justify-content:start;height:50px}.post-list .post-meta time{order:2}}
+
+/*! 
+ * Primitive UI | MIT License
+ *
+ * A minimalist front-end design toolkit built with Sass for developing 
+ * responsive, browser-consistent web apps.
+ *
+ * Author: Tania Rascia <tania@taniarascia.com>
+ * Source: https://github.com/taniarascia/primitive
+ * Documentation: https://taniarascia.github.io/primitive
+ */
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}main{display:block}h1{font-size:2em;margin:.67em 0}hr{box-sizing:content-box;overflow:visible}pre{font-family:monospace,monospace;font-size:1em}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,samp{font-family:monospace,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}img{border-style:none}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}progress{vertical-align:baseline}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}details{display:block}summary{display:list-item}[hidden],template{display:none}html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}figure{margin:0}html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font:normal normal normal 1rem/1.6 -apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:1rem}body{color:#404040;background:#fff;font-size:1rem}dl,ol,p,table,ul{margin:0 0 1.5rem}ol li ol,ul li ul{margin-bottom:0}h1,h2,h3,h4,h5{font-weight:600;font-family:-apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Arial,sans-serif;line-height:1.2;color:#404040}h1,h1:not(:first-child),h2,h2:not(:first-child),h3,h3:not(:first-child),h4,h4:not(:first-child),h5,h5:not(:first-child){margin:1.5rem 0}h1:not(:first-child),h2:not(:first-child),h3:not(:first-child){margin-top:2rem}h1{font-size:1.75rem}h2{font-size:1.5rem}h3{font-size:1.25rem}h4{font-size:1.1rem}h5{font-size:1rem}@media (min-width:600px){h1:not(:first-child),h2:not(:first-child),h3:not(:first-child){margin-top:2.5rem}h1{font-size:2.25rem}h2{font-size:2rem}h3{font-size:1.75rem}h4{font-size:1.5rem}h5{font-size:1.25rem}}a{color:#0366ee;text-decoration:none}a:active,a:focus,a:hover{color:#0246a2;text-decoration:underline}mark{background:#ffeea8;padding:0 .2rem}blockquote{margin:0 0 1.5rem;border-left:16px solid #f0f0f0;padding:0 1.5rem;font-size:1.5rem}blockquote cite{display:block;margin-top:1.5rem;font-size:1rem;text-align:right}pre{border:0;border-radius:4px;background:transparent;padding:1rem;-moz-tab-size:2;-o-tab-size:2;tab-size:2;color:#404040;font-size:14px;margin:0 0 1.5rem}pre,pre code{font-family:Menlo,monospace}pre code{line-height:1.2}kbd{background-color:#f7f7f7;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 0 0 2px #fff;color:#333;display:inline-block;font-family:Helvetica,Arial,sans-serif;font-size:13px;line-height:1.4;margin:0 .1em;padding:.1em .6em;text-shadow:0 1px 0 #fff}:not(pre)>code{color:#404040;background:transparent;font-family:Menlo,monospace;font-size:14px;padding:0 .2rem;border:1px solid #dedede;border-radius:4px}hr{height:0;border:0;border-top:1px solid #dedede}dt{font-weight:600}dd{margin-bottom:.5rem}.full-container{max-width:100%;padding:0 1rem}.container,.medium-container,.small-container{max-width:1200px;padding:0 1rem;margin-left:auto;margin-right:auto}.small-container{max-width:800px}.medium-container{max-width:1000px}.content-section{padding:30px 0}@media (min-width:600px){.content-section{padding:60px 0}}.flex-large,.flex-small{padding-left:1rem;padding-right:1rem}.flex-row{margin-left:-1rem;margin-right:-1rem;display:flex;flex-direction:row;flex-wrap:wrap}.flex-large,.flex-small{flex-basis:100%;margin-bottom:1rem}@media (min-width:600px){.flex-small{flex:1 1;margin-bottom:0}}@media (min-width:1000px){.flex-large{flex:1 1;margin-bottom:0}}.clearfix:after,.clearfix:before{content:" ";display:block}.clearfix:after{clear:both}.text-left{text-align:left}.text-right{text-align:right}.text-center{text-align:center}.text-justify{text-align:justify}.block{display:block}.inline-block{display:inline-block}.inline{display:inline}.vertical-center{display:flex;align-items:center;justify-content:center}.responsive-image{max-width:100%;height:auto}.show{display:block!important}.hide{display:none!important}.invisible{visibility:hidden}.float-left{float:left}.float-right{float:right}.no-padding-top{padding-top:0}.no-padding-bottom{padding-bottom:0}.padding-top{padding-top:2rem}.padding-bottom{padding-bottom:2rem}.no-margin-top{margin-top:0}.no-margin-bottom{margin-bottom:0}.margin-top{margin-top:2rem}.margin-bottom{margin-bottom:2rem}.alternate-background{background:#fafafa;color:#404040}.screen-reader-text{clip:rect(1px,1px,1px,1px);position:absolute!important;height:1px;width:1px;overflow:hidden}.button,[type=button],[type=reset],[type=submit],a.button,button{-webkit-appearance:none;display:inline-block;border:1px solid #0366ee;border-radius:4px;background:#0366ee;color:#fff;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Arial,sans-serif;font-size:1rem;text-transform:none;padding:.75rem 1.25rem;margin:0 0 .5rem;vertical-align:middle;text-align:center;cursor:pointer;text-decoration:none;line-height:1}.button:active,.button:focus,.button:hover,[type=button]:active,[type=button]:focus,[type=button]:hover,[type=reset]:active,[type=reset]:focus,[type=reset]:hover,[type=submit]:active,[type=submit]:focus,[type=submit]:hover,a.button:active,a.button:focus,a.button:hover,button:active,button:focus,button:hover{border:1px solid #0250bc;background:#0250bc;color:#fff;text-decoration:none}.button::-moz-focus-inner,[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,a.button::-moz-focus-inner,button::-moz-focus-inner{border:0;padding:0}.accent-button,a.accent-button{color:#fff;border:1px solid #29de7d;background:#29de7d}.accent-button:active,.accent-button:focus,.accent-button:hover,a.accent-button:active,a.accent-button:focus,a.accent-button:hover{color:#fff;border:1px solid #1cb864;background:#1cb864}.muted-button,a.muted-button{background:transparent;border:1px solid #cdcdcd;color:#4e4e4e}.muted-button:active,.muted-button:focus,.muted-button:hover,a.muted-button:active,a.muted-button:focus,a.muted-button:hover{color:#4e4e4e;border:1px solid #818181;background:transparent}.round-button,a.round-button{border-radius:40px}.square-button,a.square-button{border-radius:0}.full-button,a.full-button{display:block;width:100%}[type=color],[type=date],[type=datetime-local],[type=datetime],[type=email],[type=month],[type=number],[type=password],[type=search],[type=tel],[type=text],[type=time],[type=url],[type=week],select,textarea{display:block;border:1px solid #dedede;border-radius:4px;padding:.75rem;outline:none;background:transparent;margin-bottom:.5rem;font-size:1rem;width:100%;max-width:100%;line-height:1}[type=color]:hover,[type=date]:hover,[type=datetime-local]:hover,[type=datetime]:hover,[type=email]:hover,[type=month]:hover,[type=number]:hover,[type=password]:hover,[type=search]:hover,[type=tel]:hover,[type=text]:hover,[type=time]:hover,[type=url]:hover,[type=week]:hover,select:hover,textarea:hover{border:1px solid #c5c5c5}[type=color]:active,[type=color]:focus,[type=date]:active,[type=date]:focus,[type=datetime-local]:active,[type=datetime-local]:focus,[type=datetime]:active,[type=datetime]:focus,[type=email]:active,[type=email]:focus,[type=month]:active,[type=month]:focus,[type=number]:active,[type=number]:focus,[type=password]:active,[type=password]:focus,[type=search]:active,[type=search]:focus,[type=tel]:active,[type=tel]:focus,[type=text]:active,[type=text]:focus,[type=time]:active,[type=time]:focus,[type=url]:active,[type=url]:focus,[type=week]:active,[type=week]:focus,select:active,select:focus,textarea:active,textarea:focus{border:1px solid #0366ee;box-shadow:inset 0 1px 1px rgba(0,0,0,.1),0 0 6px #8cbcfe}textarea{overflow:auto;height:auto}fieldset{border:1px solid #dedede;border-radius:4px;padding:1rem;margin:1.5rem 0}legend{padding:0 .5rem;font-weight:600}select{color:#404040;-webkit-appearance:none;-moz-appearance:none;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAAJCAYAAAA/33wPAAAAvklEQVQoFY2QMQqEMBBFv7ERa/EMXkGw11K8QbDXzuN4BHv7QO6ifUgj7v4UAdlVM8Uwf+b9YZJISnlqrfEUZVlinucnBGKaJgghbiHOyLyFKIoCbdvecpyReYvo/Ma2bajrGtbaC58kCdZ1RZ7nl/4/4d5EsO/7nzl7IUtodBexMMagaRrs+06JLMvcNWmaOv2W/C/TMAyD58dxROgSmvxFFMdxoOs6lliWBXEcuzokXRbRoJRyvqqqQvye+QDMDz1D6yuj9wAAAABJRU5ErkJggg==) 100% no-repeat;line-height:1}select::-ms-expand{display:none}[type=range]{width:100%}label{font-weight:600;max-width:100%;display:block;margin:1rem 0 .5rem}@media (min-width:600px){.split-form label{text-align:right;padding:0 .5rem;margin-bottom:1rem}}input.has-error,input.has-error:active,input.has-error:focus,input.has-error:hover,select.has-error,select.has-error:active,select.has-error:focus,select.has-error:hover,textarea.has-error,textarea.has-error:active,textarea.has-error:focus,textarea.has-error:hover{border:1px solid #d33c40;box-shadow:inset 0 1px 1px rgba(0,0,0,.1),0 0 6px #f4cecf}:-moz-placeholder,:-ms-input-placeholder,::-moz-placeholder,::-webkit-input-placeholder{color:#9a9a9a}table{border-collapse:collapse;border-spacing:0;width:100%;max-width:100%}thead th{border-bottom:2px solid #dedede}tfoot th{border-top:2px solid #dedede}td{border-bottom:1px solid #dedede}td,th{text-align:left;padding:.5rem}caption{padding:1rem 0;caption-side:bottom;color:#ababab}.striped-table tbody tr:nth-child(odd){background-color:#f8f8f8}.contain-table{overflow-x:auto}@media (min-width:600px){.contain-table{width:100%}}.wrapper{margin:0;padding:0}.container{display:flex;max-width:1200px;margin:100px auto 50px}.post-container{max-width:800px;margin:0 auto}.sidebar{order:-1;padding-top:30px;margin:0 40px;flex:0 0 220px}.topbar{position:absolute;top:0;right:0;width:100%;height:20px;background-color:#0e1e24}@media only screen and (max-width:900px){.container{flex-direction:column}.sidebar{width:100%;max-width:450px;margin:20px auto;order:2;padding:20px}}@media only screen and (max-width:650px){.post-container{margin:0 5px}}p{line-height:1.6em}ol,p,ul li{font-size:18px}h1,h2,h3,h4,h5{font-weight:900}.hero-wrap{width:100%;background-color:#10272f;overflow:hidden;padding:25px;height:70vh;display:flex;flex-direction:column;justify-content:center;align-items:center;margin-bottom:-60px}.hero-title{color:#fff;font-size:4rem;margin:50px;padding:20px}.hero-text{height:100px;width:90%}.hero-text h2{color:#fff;font-size:2rem;border-bottom:none;font-weight:400;text-align:center}.typed{margin-left:8px}@media only screen and (max-width:650px){.hero-title{font-size:2.5rem;margin:30px}.hero-text{width:100%}.hero-text h2{font-size:1.5rem}}@media only screen and (max-width:350px){.hero-text h2{font-size:1.5rem}}.menu-wrapper{width:100vw;background-color:#10272f;height:70px;display:flex;justify-content:center;align-items:center;position:fixed;z-index:10;top:0}.menu-hide,.menu-wrapper{transition:top .3s ease-in}.menu-hide{top:-70px}.menu-logo a{color:#fff;margin:0;padding:0}.menu-logo{margin:0}.github{padding:10px;background-color:#333;display:flex;justify-content:space-around;align-items:center;width:50%;border-radius:8px;color:#fff;margin:0 auto;cursor:pointer;font-size:14px;max-width:100px}.github:hover{background-color:#444;text-decoration:none;color:#fff}.github:focus{color:#fff}.github-icon{font-size:20px}.subscribe{margin:24px 0}.subscribe p{margin-bottom:10px}.contact a{color:#333;text-decoration:underline}.footer p{font-size:12px;margin:0;color:#555;text-align:center}.footer .icon-heart{color:#fb6970}.footer .icon-mug{color:#b8b8a2}.tag p{text-align:center;padding:10px;margin:0;border-radius:5px;font-size:12px;font-weight:700;color:#fff;background-color:#0e1e24}.react-native p,.react p{background-color:#282c34;color:#61dafb}.amplify p{background-color:#f90}.fastlane p{background-color:#3a3ff1}.heroku p{background-color:#534292}.header{margin:2rem 0}.post-meta{display:flex;align-items:center;margin-bottom:1rem}.post-meta .date{font-size:18px;text-align:right;margin-left:12px;font-family:monospace;order:2}.post-footer{margin:60px 0}.post-content h2{color:#404040;border-bottom:2px solid #ebebeb;padding-bottom:.5rem;min-width:0}.post-content h2,h3{margin:2.5rem 0 1rem}h4{font-size:1.2rem;font-weight:600}ol,ul{padding-left:.1rem;margin-left:1.75rem}article li .language-text,article p .language-text{background:#eee;color:#333;text-shadow:none;font-size:14px}.gatsby-highlight-code-line{background-color:#666;display:block;margin-right:-1em;margin-left:-1em;padding-right:1em;padding-left:.75em;border-left:.25em solid #f99}.gatsby-highlight{background-color:#272822;border-radius:.3em;margin:2em 0;padding:1em;overflow:auto;font-size:14px}.gatsby-highlight pre[class*=language-]{background-color:transparent;margin:0;padding:0;overflow:initial;float:left;min-width:100%}.note{background-color:#b1d5db;padding:20px;margin-bottom:28px}@media only screen and (min-width:760px){ol,ul{padding-left:.5rem;margin-left:2rem}}</style><meta name="generator" content="Gatsby 2.24.1"><style type="text/css">.gatsby-resp-image-image{width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;color:transparent;}</style><link rel="preconnect dns-prefetch" href="https://www.google-analytics.com/"><link rel="alternate" type="application/rss+xml" href="https://www.boorje.com/rss.xml"><link rel="shortcut icon" href="https://www.boorje.com/icons/icon-48x48.png?v=a3639f990b306c04aaf7be4b35006676"><link rel="manifest" href="https://www.boorje.com/manifest.webmanifest"><meta name="theme-color" content="#212f4f"><link rel="apple-touch-icon" sizes="48x48" href="https://www.boorje.com/icons/icon-48x48.png?v=a3639f990b306c04aaf7be4b35006676"><link rel="apple-touch-icon" sizes="72x72" href="https://www.boorje.com/icons/icon-72x72.png?v=a3639f990b306c04aaf7be4b35006676"><link rel="apple-touch-icon" sizes="96x96" href="https://www.boorje.com/icons/icon-96x96.png?v=a3639f990b306c04aaf7be4b35006676"><link rel="apple-touch-icon" sizes="144x144" href="https://www.boorje.com/icons/icon-144x144.png?v=a3639f990b306c04aaf7be4b35006676"><link rel="apple-touch-icon" sizes="192x192" href="https://www.boorje.com/icons/icon-192x192.png?v=a3639f990b306c04aaf7be4b35006676"><link rel="apple-touch-icon" sizes="256x256" href="https://www.boorje.com/icons/icon-256x256.png?v=a3639f990b306c04aaf7be4b35006676"><link rel="apple-touch-icon" sizes="384x384" href="https://www.boorje.com/icons/icon-384x384.png?v=a3639f990b306c04aaf7be4b35006676"><link rel="apple-touch-icon" sizes="512x512" href="https://www.boorje.com/icons/icon-512x512.png?v=a3639f990b306c04aaf7be4b35006676"><title>Deploy a React Native App to TestFlight Using Fastlane | boorje.com</title><meta data-react-helmet="true" name="description" content="This step-by-step tutorial will show you how to deploy your React Native App to iOS TestFlight Beta Testing Using Fastlane."><meta data-react-helmet="true" property="og:title" content="Deploy a React Native App to TestFlight Using Fastlane"><meta data-react-helmet="true" property="og:description" content="This step-by-step tutorial will show you how to deploy your React Native App to iOS TestFlight Beta Testing Using Fastlane."><meta data-react-helmet="true" property="og:type" content="website"><link as="script" rel="preload" href="AL_files/component---src-templates-blog-post-js-e5cbad704805324048dc.js"><link as="script" rel="preload" href="AL_files/4d54d37eab4a7134ebd9629ce963c23f53f16ae6-3d21186fcd8454291434.js"><link as="script" rel="preload" href="AL_files/1bfc9850-80785248ddd3cc7efbb6.js"><link as="script" rel="preload" href="AL_files/styles-89fd2ae28bdf06750a71.js"><link as="script" rel="preload" href="AL_files/app-62952ca896253591ae45.js"><link as="script" rel="preload" href="AL_files/framework-c7791fee255608901ed3.js"><link as="script" rel="preload" href="AL_files/webpack-runtime-0a301985d22aa7125914.js"><link as="fetch" rel="preload" href="https://www.boorje.com/page-data/deploy-react-native-app/page-data.json" crossorigin="anonymous"><link as="fetch" rel="preload" href="https://www.boorje.com/page-data/app-data.json" crossorigin="anonymous"><link rel="prefetch" href="https://www.boorje.com/page-data/index/page-data.json" crossorigin="anonymous" as="fetch"><link rel="prefetch" as="style" href="AL_files/a_data/lounge.css"><link rel="prefetch" as="script" href="AL_files/a_data/common.js"><link rel="prefetch" as="script" href="AL_files/a_data/lounge.js"><link rel="prefetch" as="script" href="AL_files/a_data/config.js"><script src="AL_files/alfalfalfa.js" async="" charset="UTF-8"></script></head><body><div id="___gatsby"><div style="outline:none" tabindex="-1" id="gatsby-focus-wrapper"><div class="wrapper"><div class="menu-wrapper"><h3 class="menu-logo"><a href="https://www.boorje.com/">boorje.com</a></h3></div><div class="container"><article class="post-container"><header class="header"><h1>Deploy a React Native App to TestFlight Using Fastlane</h1><div class="post-meta"><time class="date" time="07 Oct, 2019">07 Oct, 2019</time><div class="tag fastlane"><p>fastlane</p></div></div></header><div class="post-content"><p>You
+ have created an awesome app and you’re finally ready to Beta test the 
+app on iOS, amazing! The last thing remaining is just preparing the 
+application for submission to <a href="https://developer.apple.com/testflight/">TestFlight</a>.
+ From own experience, I know that this isn’t as simple as it might seem.
+ Especially if you don’t have previous experience with iOS development 
+and Xcode.</p>
+<p>When I first attempted to deploy a React Native app to TestFlight, I 
+didn’t really understand how the process worked. I tried following some 
+tutorials, who all had different processes and different 
+recommendations. After gaining more experience with publishing apps, I 
+decided to create my own step-by-step tutorial to provide some guidance 
+for other first time publishers.</p>
+<h3>Goals</h3>
+<p>This tutorial will take you through a step-by-step guide on how you can prepare and publish a <strong>React Native</strong> app, created with the React Native CLI <code class="language-text">react-native init</code>, to TestFlight. We’ll be using <a href="https://fastlane.tools/">Fastlane</a>
+ which is an open source platform that simplifies the deployment 
+process. The setup of Fastlane is quick and easy, and when it’s in place
+ you can build and deploy your React Native app using just a single line
+ of code. I can promise, it’s worth the time!</p>
+<h3>Prerequisites</h3>
+<p>This is not a guide on how to build a React Native application, or 
+how to solve any errors you might have during the development process. 
+Make sure that your app is working and free from errors before 
+continuing the tutorial.</p>
+<p>This tutorial is aimed for projects created using the React Native CLI <code class="language-text">react-native init</code> and not Expo. In order to upload your React Native app to TestFlight, you’ll need a paid membership for <a href="https://developer.apple.com/programs/">Apple Developer Program</a>. Lastly, we’ll be using a private Github repository for storing certificates.</p>
+<h2>Apple Developer</h2>
+<p>We’ll begin the process by registering the app to a Apple Developer 
+account. Fastlane will build and submit the React Native project to the 
+app that we create there. Go to <a href="https://developer.apple.com/develop/">developer.apple.com</a> and login into your account. If you don’t have one, you’ll need to create one.</p>
+<h3>Unique App ID</h3>
+<p>First, we’ll need to create a new identifier for the application. 
+We’ll create an App ID which uniquely identifies one or more apps 
+created by a single development team. Navigate to the <strong>Certificates, Identifiers &amp; Profiles</strong> page and go to the <strong>Identifiers</strong> tab. Create a new identifier by clicking on the ”<strong>+</strong>” icon. You should see a list of different types of IDs to select, as the image below. Select <strong>App IDs</strong> and click on <strong>continue</strong>.</p>
+<p><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;">
+      <a class="gatsby-resp-image-link" href="https://www.boorje.com/static/079d47a30219f42d37ed85a9f2144e55/c3e5e/identifiers.png" style="display: block" target="_blank" rel="noopener">
+    <span class="gatsby-resp-image-background-image" style="padding-bottom: 42.366107114308555%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAAA+ElEQVQoz32QCW6DMBBFuf8hep6eAKEgQSlLEJsxqwHDr2cIUURIR/rYxvLzG1tBEMC93eB5HsdxHLiuC9/3Yds2wjAE1bZtH2N2sdcGa9EapezRDQOGR7T5d9R/oB0GqGVFVE9YtAEOo4L/84ssyzhJkmAcR1zVGbY+gHc54es7gxw1LL0CopZoGom+79mw6zpIKTl1XfNIe4f5leVRFn1EVSFNUwNtniCaE5hyXPQKPJvrdYczsCgKRFHEh9u2fUYphXmeMU0Tz68McbJlYGUMCUhvWJYlX0BjnufcMsHJmuBXhm8tEzCOYwgh3ixpTe1S26/AT9A/u41uC4oBV4YAAAAASUVORK5CYII='); background-size: cover; display: block;"></span>
+  <img class="gatsby-resp-image-image" alt="Different types of IDs" title="Different types of IDs" src="AL_files/identifiers.png" srcset="/static/079d47a30219f42d37ed85a9f2144e55/cf440/identifiers.png 148w,
+/static/079d47a30219f42d37ed85a9f2144e55/d2d38/identifiers.png 295w,
+/static/079d47a30219f42d37ed85a9f2144e55/b9e4f/identifiers.png 590w,
+/static/079d47a30219f42d37ed85a9f2144e55/f9b6a/identifiers.png 885w,
+/static/079d47a30219f42d37ed85a9f2144e55/2d849/identifiers.png 1180w,
+/static/079d47a30219f42d37ed85a9f2144e55/c3e5e/identifiers.png 2502w" sizes="(max-width: 590px) 100vw, 590px" loading="lazy" style="opacity: 0;">
+  </a>
+    </span></p>
+<p>The App ID is a two-part string which consists of a <strong>Team ID</strong> and a <strong>bundle ID</strong>.
+ The Team ID is automatically set by Apple and is unique to a specific 
+development team. The bundle ID should be unique for the app and we’ll 
+need to create it ourselves. Let’s do so and fill in the rest of the 
+information in order to finish the registration of the App ID. The 
+information that we need to fill in is:</p>
+<p><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;">
+      <a class="gatsby-resp-image-link" href="https://www.boorje.com/static/ec04182fe1198f95326f01f7cf5de53c/2901a/registerappid.png" style="display: block" target="_blank" rel="noopener">
+    <span class="gatsby-resp-image-background-image" style="padding-bottom: 42.38304678128748%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAICAYAAAD5nd/tAAAACXBIWXMAABYlAAAWJQFJUiTwAAAA/klEQVQoz31S0W6EIBDk/3+iz9c/ufZdEy/VUHqaaJqoRRAEpyx3tlx75yaTDbA7OwMwzjlORYGyLCPyPEcR1lVVIcsyCCFAsa7rQ/zGCrY4h89hglQKKsCF9UZwk3dIlfX46A2sC4TzrMHfBdquQ13X0Fr/U+S9p427Shfn8dZpPB1b9NqBaeMgJ3XVgEtzomxZFhwOzzi+vP6cpzZvLQPMhoa27TAMA6SUkYBsU6MnFSGfzzW4aND3PaZpiudbzabU+Utm1EB3R4XzPMMYE0lTW7Qv5RfGcYxDCVQfCf9cA7PWommaqPBRpK95/3UTyySdVNFUUkKgIXvfZA/f7tlwpZDlFCUAAAAASUVORK5CYII='); background-size: cover; display: block;"></span>
+  <img class="gatsby-resp-image-image" alt="Register App ID" title="Register App ID" src="AL_files/registerappid.png" srcset="/static/ec04182fe1198f95326f01f7cf5de53c/cf440/registerappid.png 148w,
+/static/ec04182fe1198f95326f01f7cf5de53c/d2d38/registerappid.png 295w,
+/static/ec04182fe1198f95326f01f7cf5de53c/b9e4f/registerappid.png 590w,
+/static/ec04182fe1198f95326f01f7cf5de53c/f9b6a/registerappid.png 885w,
+/static/ec04182fe1198f95326f01f7cf5de53c/2d849/registerappid.png 1180w,
+/static/ec04182fe1198f95326f01f7cf5de53c/2901a/registerappid.png 2501w" sizes="(max-width: 590px) 100vw, 590px" loading="lazy" style="opacity: 0;">
+  </a>
+    </span></p>
+<ol>
+<li><strong>Platform</strong> - Choose “iOS, tvOS, watchOS”.</li>
+<li><strong>Description</strong> - Add a description of your application and/or development team.</li>
+<li><strong>Bundle ID</strong> - Choose “Explicit” and create a unique bundle ID which will identify your application. The recommended approach is to use <strong>com.domainname.appname</strong>. If you don’t have a domain name or a company name, you use your name instead.</li>
+<li><strong>Capabilities</strong> - Here, you can select a range of technologies to use in your App. For this one, we won’t be selecting any.</li>
+</ol>
+<p>With all the information filled in, you can click on <strong>continue</strong> and then finish the registration by clicking on <strong>register</strong>. We now have a registered App ID that uniquely identifies our app and we’re ready to move to the next step.</p>
+<h3>App Store Connect</h3>
+<p>It’s now time to register our new app inside the <a href="https://appstoreconnect.apple.com/">App Store Connect</a>. Login to App Store Connect and navigate to <strong>My Apps</strong>. Once you’re logged in, add a new app by clicking on the ”<strong>+</strong>” icon in the top lefter corner and select <strong>New App</strong>. This opens a modal with some fields for us to fill in.</p>
+<p><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;">
+      <a class="gatsby-resp-image-link" href="https://www.boorje.com/static/12a15da444ea19b6785bb39a2f300beb/06418/newappstoreconnect.png" style="display: block" target="_blank" rel="noopener">
+    <span class="gatsby-resp-image-background-image" style="padding-bottom: 91.51291512915128%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAACXBIWXMAABYlAAAWJQFJUiTwAAABXklEQVQ4y51UWXKFMAzj/qds+8W+k524kSEMtEALmfGL8xgUybJJhBCUpillWUZVVRGW9/6wP1mJ1prquubo+3578AaMAaVU9PH5RWVZkjGGpmkiXBJBn0ZinaNxnMhaS/M8k5SSgd+uRCkV2BWklGbAyAz502CGSLquY8l5nm/Sn0qNoIkLkuE0pI7jyDW01v2L5WkNYUBsmaIomKHW5vKFO4YMiB9IBmCs4Zv6oUwsGe5CMgL5m1bZ9yxLxqTAkN9mBMZ+3vZ94L89Q3jBkpGgbqgjWggsAWzCru1MKoRZd70GcvdDcuxjBoS7Ugp2eBgGHsFRSKqlp0p4atYd51YtuXGQeSIZrNq2Deg3s+uXl/dxPXqBKhyOUZYVNU2znWW48MnkcNvAGDQ2nI7NDdlLk9s/AQ99GD9fMAYgzs2HL83dVJy1DpsCIEwJpKKeqGvXL+bgDKb7S65L7ekba/6JNkXWI2IAAAAASUVORK5CYII='); background-size: cover; display: block;"></span>
+  <img class="gatsby-resp-image-image" alt="Creating new app in App Store Connect" title="Creating new app in App Store Connect" src="AL_files/newappstoreconnect.png" srcset="/static/12a15da444ea19b6785bb39a2f300beb/cf440/newappstoreconnect.png 148w,
+/static/12a15da444ea19b6785bb39a2f300beb/d2d38/newappstoreconnect.png 295w,
+/static/12a15da444ea19b6785bb39a2f300beb/b9e4f/newappstoreconnect.png 590w,
+/static/12a15da444ea19b6785bb39a2f300beb/f9b6a/newappstoreconnect.png 885w,
+/static/12a15da444ea19b6785bb39a2f300beb/06418/newappstoreconnect.png 1084w" sizes="(max-width: 590px) 100vw, 590px" loading="lazy" style="opacity: 0;">
+  </a>
+    </span></p>
+<ol>
+<li><strong>Platforms</strong> - Choose <strong>iOS</strong></li>
+<li><strong>Name</strong> - Enter the name of your app</li>
+<li><strong>Primary Language</strong> - Choose the primary language used in the app</li>
+<li><strong>Bundle ID</strong> - Select the bundle ID that we created in previous section.</li>
+<li><strong>SKU</strong> - The SKU should be something unique for the app. I usually choose the the bundle ID but can be anything you like.</li>
+<li><strong>User Access</strong> If you have multiple team members you can choose to limit the app access of the app to certain members.</li>
+</ol>
+<p>Once you’ve filled in all the information, click on <strong>create</strong> to create the app. Before we proceed to the Xcode setup, we’ll need to add an actual iOS device.</p>
+<div class="note"><b>Note: </b>Adding a iOS device is required to be able to deploy your application to TestFlight for Beta testing.</div>
+<h3>Add iOS Device</h3>
+<p>We’ll be adding a device through the <a href="https://developer.apple.com/develop/">Apple Developer</a> page. From the main dashboard (make sure you’re logged in), navigate to the <strong>Devices</strong> tab which you’ll find in the left menu. Press the ”<strong>+</strong>” to register a new device. You will need to enter some information.</p>
+<ol>
+<li><strong>Platform</strong> - Choose <strong>iOS, tvOS, watchOS</strong></li>
+<li><strong>Device Name</strong> - Enter a name for the device you’ll add.</li>
+<li><strong>Device ID (UDID)</strong> - You can find the UDID by 
+connecting your phone to your Mac and then going into iTunes. Click the 
+phone icon to open up the information about your device. To view the 
+UDID, you can click on <strong>Serial Number</strong> which then changes and shows the UDID of your device.</li>
+</ol>
+<p>We’re now ready to proceed to Xcode.</p>
+<h2>Xcode Setup</h2>
+<p>To prepare our project for Beta deployment we’ll need to make some 
+changes inside the projects Xcode workspace. You can find the file 
+inside the <code class="language-text">/ios</code> folder with the name of <code class="language-text">yourprojectname.xcworkspace</code>. This will open the workspace with Xcode.</p>
+<p>Inside Xcode, click on your Xcode project in the left menu and the <strong>General</strong> tab in the top. Here we need to make some changes under the three sections:</p>
+<ol>
+<li><strong>Identity</strong> - Update the <em>Bundle Identifier</em> with the bundle ID that we created earlier.</li>
+<li><strong>Signing</strong> - Make sure that <em>Automatically manage signing</em> is enabled. Then, choose your <em>team</em>. If you don’t see it there, click on <em>Add an account</em> and sign in to your Apple developer account.</li>
+<li><strong>App Icons and Launch Images</strong> - You’ll need to add an app icon, otherwise you’ll run into an error later on. You can use <a href="https://makeappicon.com/">Make App Icon</a> to easily generate all the different sizes. To add the icons, click the arrow to the right of <em>App Icons Source</em>.</li>
+</ol>
+<p><span class="gatsby-resp-image-wrapper" style="position: relative; display: block; margin-left: auto; margin-right: auto;  max-width: 590px;">
+      <a class="gatsby-resp-image-link" href="https://www.boorje.com/static/b52d2965b3c3c7f11da32004417e49bc/de97e/xcodeworkspace.png" style="display: block" target="_blank" rel="noopener">
+    <span class="gatsby-resp-image-background-image" style="padding-bottom: 56.228070175438596%; position: relative; bottom: 0; left: 0; background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALCAYAAAB/Ca1DAAAACXBIWXMAABYlAAAWJQFJUiTwAAABkUlEQVQoz41Ty07CUBDlOxT6uu3tE0qBAuqCRxRDYtQYkGITF2oMO79AF6786+PMpTwUgyxOZtqenJk5My31nr8wePxAmr2jk3+ifb1AVKsjaZ/CDWrQhYTrBbBsCamio3LXDyEcF9L1VXRcj3IbpenTG27zV1zNXnCTL9Af38ELQtiOREW3oFu2EmCYwoFuChj8jnKOZhEZzC9NJxOskGUzjEYjHJU1+mgSDHjUSZw0kXZO0Gi1EVZrqlPuasnZQDNMEpw9YHI/J2SYzXNcXI5VFwzNsFQMohr8IFJCDKcYk7//BgkuxdaCo3HhldyqbsGSbIO7FqpoxoGC1GGZyMsRliQhPaTdM7TaXSTNFHE9gQwbxKEpioKr4n8KbotV4wR18rCVdlS+WpAhPFSYw0LGP4LHFV2BCeyhQ2M26w0ktJQgqqqT0U3rR+G9Hnq0AO5G0OloRXWTzoL94zNh8EYPXgoL8nHzdjm3ycMo3jwzHD8mAbEjvHfklYdx0kB/eI7eYAg/rKo/RwQt8s7e8fAbrS1ZLzgF16gAAAAASUVORK5CYII='); background-size: cover; display: block;"></span>
+  <img class="gatsby-resp-image-image" alt="Xcode workspace" title="Xcode workspace" src="AL_files/xcodeworkspace.png" srcset="/static/b52d2965b3c3c7f11da32004417e49bc/cf440/xcodeworkspace.png 148w,
+/static/b52d2965b3c3c7f11da32004417e49bc/d2d38/xcodeworkspace.png 295w,
+/static/b52d2965b3c3c7f11da32004417e49bc/b9e4f/xcodeworkspace.png 590w,
+/static/b52d2965b3c3c7f11da32004417e49bc/f9b6a/xcodeworkspace.png 885w,
+/static/b52d2965b3c3c7f11da32004417e49bc/2d849/xcodeworkspace.png 1180w,
+/static/b52d2965b3c3c7f11da32004417e49bc/de97e/xcodeworkspace.png 2280w" sizes="(max-width: 590px) 100vw, 590px" loading="lazy" style="opacity: 0;">
+  </a>
+    </span></p>
+<p>We’re now ready to start setting up Fastlane.</p>
+<h2>Fastlane Setup</h2>
+<p>The setup of Fastlane requires a few steps. We’ll be following the official <a href="https://docs.fastlane.tools/getting-started/ios/setup/">Fastlane Docs</a>.</p>
+<p>First, we’ll make sure that we have the latest Xcode command tools. Open up your terminal and run the following command.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">xcode-select --install</code></pre></div>
+<p>Next, we install Fastlane which you can do with <strong>RubyGems</strong> or <strong>Homebrew</strong>.
+ The recommended installation method is with RubyGems so that’s what 
+we’ll stick to. If you don’t have it installed, I’d recommend using a 
+environment manager such as <a href="https://github.com/rbenv/rbenv">rbenv</a>.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash"><span class="token comment"># Using RubyGems</span>
+<span class="token function">sudo</span> gem <span class="token function">install</span> fastlane -NV</code></pre></div>
+<h3>Fastlane Init</h3>
+<p>Once we have <code class="language-text">fastlane</code> installed, we need to configure it inside the <code class="language-text">/ios</code> folder of our React Native application. Inside the terminal, navigate to the <code class="language-text">/ios</code> folder inside your project and run the command.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">fastlane init</code></pre></div>
+<p>When running this command, you’ll be taken through some steps.</p>
+<ol>
+<li><strong>What would you like to use fastlane for?</strong> - Fastlane handles different tasks but we’re interested in the second: <em>Automate beta distribution to TestFlight</em>. Type <strong>2</strong> and hit Enter.</li>
+<li><strong>Select Scheme</strong> - Choose the first one which is your project name (NOT <em>projectname-tvOS</em>). Type <strong>1</strong> and hit Enter.</li>
+<li><strong>Login to your Apple Developer account</strong> - Enter your Apple ID username (the email you used to create your account).</li>
+</ol>
+<p>After you’ve finished the steps, Fastlane has been initialized in your project. You should now see some addtions inside the <code class="language-text">/src</code> folder. Fastlane automatically adds a new folder <code class="language-text">/fastlane</code> with two files:</p>
+<ul>
+<li><code class="language-text">Appfile</code> - Stores useful information used for deployment, like the Apple ID and bundle identifier.</li>
+<li><code class="language-text">Fastfile</code> - Stores the automation configuration for the tasks we can run with the <code class="language-text">fastlane</code> command. There’s some code generated inside this file for us, we’ll go through this later.</li>
+</ul>
+<p>It also adds a <code class="language-text">Gemfile</code> which defines the <code class="language-text">fastlane</code> version along with it’s dependencies. With the <code class="language-text">Gemfile</code> in place, we can run <code class="language-text">bundle exec fastlane [lane]</code> which will speed up the process, we’ll use this later.</p>
+<p>Before we move on, we also need to configure some environment 
+variables to prevent future errors during build. We’ll be adding two 
+lines of code to <code class="language-text">~/.bash_profile</code>. Run the following code to open the text editor.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash"><span class="token function">open</span> ~/.bash_profile</code></pre></div>
+<p>Inside, we can add the two lines which are required for <code class="language-text">fastlane</code> to work properly.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash"><span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">LC_ALL</span></span><span class="token operator">=</span>en_US.UTF-8
+<span class="token builtin class-name">export</span> <span class="token assign-left variable"><span class="token environment constant">LANG</span></span><span class="token operator">=</span>en_US.UTF-8</code></pre></div>
+<h3>Code Signing</h3>
+<p>The next step is to setup the configuration for <strong>code signing</strong>.
+ If you’re new to this concept, code signing is a method to ensure the 
+user that the app is from a known sources and hasn’t been changed since 
+it was signed by the author. This is done by verifying the author 
+through a certificate-based digital signature.</p>
+<p>We’ll be code signing our app using the <code class="language-text">match</code> action which is part of Fastlane. When using <code class="language-text">match</code>, all the required certificates and provisioning profiles will be created and stored inside a separate and private <strong>Git repo</strong>. It can also be stored inside <strong>Google Cloud</strong> but we’ll be using a git repo in this tutorial.</p>
+<div class="note"><b>Note: </b>By storing the credentials inside a 
+separate git repo, everyone with access to the repo can use the 
+credentials for code signing. This is useful especially for development 
+teams as it only requires one code signing identity instead of one for 
+each developer.</div>
+<p>First we need to create a new and <strong>private</strong> git repo to store the credentials. Go to <a href="https://github.com/">GitHub</a> or your preferred platform, and copy the url to the repo as you’ll be asked to enter this soon.</p>
+<p>Now we can start using <code class="language-text">match</code> by running the following command, still inside the <code class="language-text">/ios</code> folder. We’re using <code class="language-text">bundle exec</code> as mentioned before (this requires a <code class="language-text">Gemfile</code>). Before running <code class="language-text">match</code>, it’s recommended to clear any previous certificates with the <a href="https://docs.fastlane.tools/actions/match/#nuke">nuke command</a>.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">bundle <span class="token builtin class-name">exec</span> fastlane match init</code></pre></div>
+<p>You’ll be asked to choose between <code class="language-text">git</code> or <code class="language-text">google_cloud</code>. Choose <code class="language-text">git</code> by entering <strong>1</strong> followed by pressing Enter. Then you’re asked for the url to the <strong>private</strong> git repo you created for storing the credentials. Add the url and hit Enter to finish the setup.</p>
+<p>This will create a <code class="language-text">Matchfile</code> inside the <code class="language-text">/fastlane</code>
+ folder which will store information about the git repo that you 
+provided. We can now generate new certificates and profiles using <code class="language-text">match</code>.
+ In order to deploy your app to TestFlight, you’ll need a iOS 
+Distribution certificate. To create one, run the following command in 
+your terminal.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">bundle <span class="token builtin class-name">exec</span> fastlane match appstore</code></pre></div>
+<p>This will create a new certificate and provisioning profile and store
+ them inside your private git repo. We’ll also create a developer 
+certificate, which is used for when testing the app with Xcode on a 
+physical device.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">bundle <span class="token builtin class-name">exec</span> fastlane match development</code></pre></div>
+<p>When running these commands, the <code class="language-text">match</code> action will create the certificates and upload them to the git repo.</p>
+<h3>Fastfile</h3>
+<p>With our certificates created, the last thing left is to tell 
+Fastlane to code sign using the iOS Distribution certificate that we 
+created. When we ran <code class="language-text">fastlane init</code>, the <code class="language-text">Fastfile</code> file was created for us along with some code. Inside this file, we’ll be coding our <code class="language-text">lane</code> which is a group of actions that will be executed synchronously to automate the Beta deployment process. Open up the <code class="language-text">Fastfile</code> inside the <code class="language-text">/fastlane</code> folder.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">default_platform<span class="token punctuation">(</span>:ios<span class="token punctuation">)</span>
+
+platform :ios <span class="token keyword">do</span>
+  desc <span class="token string">"Push a new beta build to TestFlight"</span>
+  lane :beta <span class="token keyword">do</span>
+    increment_build_number<span class="token punctuation">(</span>xcodeproj: <span class="token string">"YourProjectName.xcodeproj"</span><span class="token punctuation">)</span>
+    build_app<span class="token punctuation">(</span>workspace: <span class="token string">"YourProjectName.xcworkspace"</span>, scheme: <span class="token string">"YourProjectName"</span><span class="token punctuation">)</span>
+    upload_to_testflight
+  end
+end</code></pre></div>
+<p>We start by setting the default platform to iOS and then create a lane which will be run for iOS platform only. The <code class="language-text">desc</code> let’s us add a description of the lane. Then we create the actual lane called <code class="language-text">beta</code>. Inside, we define a set of actions which performs some tasks for us.</p>
+<ul>
+<li><code class="language-text">increment_build_number</code> - Increments the build number each time we upload the project. This is a requirement when uploading to TestFlight.</li>
+<li><code class="language-text">build_app</code> - Builds the app, where we also specify the path to the workspace file and the project’s scheme.</li>
+<li><code class="language-text">upload_to_testflight</code> - Uploads the app to TestFlight.</li>
+</ul>
+<p>Before we’re ready to submit the app to TestFlight, we’ll need to add
+ the code signing we setup earlier. This can easily be achieved by using
+ the <code class="language-text">sync_code_signing</code> action and specifying that we’re using the <code class="language-text">appstore</code> certificate.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">platform :ios <span class="token keyword">do</span>
+  desc <span class="token string">"Push a new beta build to TestFlight"</span>
+  lane :beta <span class="token keyword">do</span>
+<span class="gatsby-highlight-code-line">    sync_code_signing<span class="token punctuation">(</span>type: <span class="token string">"appstore"</span><span class="token punctuation">)</span></span>    increment_build_number<span class="token punctuation">(</span>xcodeproj: <span class="token string">"YourProjectName.xcodeproj"</span><span class="token punctuation">)</span>
+    build_app<span class="token punctuation">(</span>workspace: <span class="token string">"YourProjectName.xcworkspace"</span>, scheme: <span class="token string">"YourProjectName"</span><span class="token punctuation">)</span>
+    upload_to_testflight
+  end
+end</code></pre></div>
+<h2>Deploying to TestFlight</h2>
+<p>We’re now ready to deploy the app to App Store and TestFlight. With a
+ single line of code, we can upload the app to TestFlight. Make sure 
+you’re still in the <code class="language-text">/ios</code> folder and run the following.</p>
+<div class="gatsby-highlight" data-language="bash"><pre class="language-bash"><code class="language-bash">bundle <span class="token builtin class-name">exec</span> fastlane beta</code></pre></div>
+<p>The build and deployment will take some time. If you don’t encounter 
+any errors, you should eventually see your built app in App Store 
+Connect.</p>
+<h2>Wrapping Up</h2>
+<p>Deploying a React Native app to TestFlight can be hard, but I hope 
+this step-by-step guide has helped you with the process. Using Fastlane 
+will require some initial setup but it’s definitely worth it as you can 
+build and deploy your app with a single line of code.</p>
+<p>Thanks for your time!</p></div><hr><div class="post-footer"><h4>Was this article helpful? Please share it!</h4><p>I put in a lot of work and effort in all my posts and tutorials. I'd really appreciate if you could help and share them!</p><div style="display:flex;margin-bottom:50px;justify-content:center"><div aria-label="facebook" role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--facebook" style="margin-right:20px;cursor:pointer"><div style="width:40px;height:40px"><svg viewBox="0 0 64 64" width="40" height="40" class="social-icon social-icon--facebook "><g><circle cx="32" cy="32" r="31" fill="#3b5998"></circle></g><g><path d="M34.1,47V33.3h4.6l0.7-5.3h-5.3v-3.4c0-1.5,0.4-2.6,2.6-2.6l2.8,0v-4.8c-0.5-0.1-2.2-0.2-4.1-0.2 c-4.1,0-6.9,2.5-6.9,7V28H24v5.3h4.6V47H34.1z" fill="white"></path></g></svg></div></div><div aria-label="twitter" role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--twitter" style="margin-right:20px;cursor:pointer"><div style="width:40px;height:40px"><svg viewBox="0 0 64 64" width="40" height="40" class="social-icon social-icon--twitter "><g><circle cx="32" cy="32" r="31" fill="#00aced"></circle></g><g><path d="M48,22.1c-1.2,0.5-2.4,0.9-3.8,1c1.4-0.8,2.4-2.1,2.9-3.6c-1.3,0.8-2.7,1.3-4.2,1.6 C41.7,19.8,40,19,38.2,19c-3.6,0-6.6,2.9-6.6,6.6c0,0.5,0.1,1,0.2,1.5c-5.5-0.3-10.3-2.9-13.5-6.9c-0.6,1-0.9,2.1-0.9,3.3 c0,2.3,1.2,4.3,2.9,5.5c-1.1,0-2.1-0.3-3-0.8c0,0,0,0.1,0,0.1c0,3.2,2.3,5.8,5.3,6.4c-0.6,0.1-1.1,0.2-1.7,0.2c-0.4,0-0.8,0-1.2-0.1 c0.8,2.6,3.3,4.5,6.1,4.6c-2.2,1.8-5.1,2.8-8.2,2.8c-0.5,0-1.1,0-1.6-0.1c2.9,1.9,6.4,2.9,10.1,2.9c12.1,0,18.7-10,18.7-18.7 c0-0.3,0-0.6,0-0.8C46,24.5,47.1,23.4,48,22.1z" fill="white"></path></g></svg></div></div><div aria-label="linkedin" role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--linkedin" style="margin-right:20px;cursor:pointer"><div style="width:40px;height:40px"><svg viewBox="0 0 64 64" width="40" height="40" class="social-icon social-icon--linkedin "><g><circle cx="32" cy="32" r="31" fill="#007fb1"></circle></g><g><path d="M20.4,44h5.4V26.6h-5.4V44z M23.1,18c-1.7,0-3.1,1.4-3.1,3.1c0,1.7,1.4,3.1,3.1,3.1 c1.7,0,3.1-1.4,3.1-3.1C26.2,19.4,24.8,18,23.1,18z M39.5,26.2c-2.6,0-4.4,1.4-5.1,2.8h-0.1v-2.4h-5.2V44h5.4v-8.6 c0-2.3,0.4-4.5,3.2-4.5c2.8,0,2.8,2.6,2.8,4.6V44H46v-9.5C46,29.8,45,26.2,39.5,26.2z" fill="white"></path></g></svg></div></div><div aria-label="email" role="button" tabindex="0" class="SocialMediaShareButton SocialMediaShareButton--email" style="margin-right:20px;cursor:pointer"><div style="width:40px;height:40px"><svg viewBox="0 0 64 64" width="40" height="40" class="social-icon social-icon--email "><g><circle cx="32" cy="32" r="31" fill="#7f7f7f"></circle></g><g><path d="M17,22v20h30V22H17z M41.1,25L32,32.1L22.9,25H41.1z M20,39V26.6l12,9.3l12-9.3V39H20z" fill="white"></path></g></svg></div></div></div></div><div id="disqus_thread"><iframe id="dsq-app7047" name="dsq-app7047" allowtransparency="true" scrolling="no" tabindex="0" title="Disqus" style="width: 1px !important; min-width: 100% !important; border: medium none !important; overflow: hidden !important; height: 1306px !important;" src="AL_files/a.html" horizontalscrolling="no" verticalscrolling="no" width="100%" frameborder="0"></iframe></div></article></div></div></div><div id="gatsby-announcer" style="position:absolute;top:0;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0, 0, 0, 0);white-space:nowrap;border:0" aria-live="assertive" aria-atomic="true"></div></div><script>
+  
+  
+  if(true) {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  }
+  if (typeof ga === "function") {
+    ga('create', 'UA-147358815-1', 'auto', {});
+      
+      
+      
+      
+      
+      }</script><script id="gatsby-script-loader">/*<![CDATA[*/window.pagePath="/deploy-react-native-app/";/*]]>*/</script><script id="gatsby-chunk-mapping">/*<![CDATA[*/window.___chunkMapping={"polyfill":["/polyfill-4ea298b8bf2940645630.js"],"app":["/app-62952ca896253591ae45.js"],"component---node-modules-gatsby-plugin-offline-app-shell-js":["/component---node-modules-gatsby-plugin-offline-app-shell-js-a4bfd5cb9f281694bbfb.js"],"component---src-pages-404-js":["/component---src-pages-404-js-f8b369ab8df893377d33.js"],"component---src-pages-contact-js":["/component---src-pages-contact-js-e4ffd04ad572c0f85c1d.js"],"component---src-pages-index-js":["/component---src-pages-index-js-a6fbdedc2ed0846afbbc.js"],"component---src-pages-newsletter-js":["/component---src-pages-newsletter-js-57edbeafd72b3bb4ab59.js"],"component---src-pages-thankyou-js":["/component---src-pages-thankyou-js-c6b757a0c4b2559262ed.js"],"component---src-templates-blog-post-js":["/component---src-templates-blog-post-js-e5cbad704805324048dc.js"]};/*]]>*/</script><script src="AL_files/polyfill-4ea298b8bf2940645630.js" nomodule=""></script><script src="AL_files/webpack-runtime-0a301985d22aa7125914.js" async=""></script><script src="AL_files/framework-c7791fee255608901ed3.js" async=""></script><script src="AL_files/app-62952ca896253591ae45.js" async=""></script><script src="AL_files/styles-89fd2ae28bdf06750a71.js" async=""></script><script src="AL_files/1bfc9850-80785248ddd3cc7efbb6.js" async=""></script><script src="AL_files/4d54d37eab4a7134ebd9629ce963c23f53f16ae6-3d21186fcd8454291434.js" async=""></script><script src="AL_files/component---src-templates-blog-post-js-e5cbad704805324048dc.js" async=""></script><script async="" src="AL_files/embed.js" id="dsq-embed-scr"></script><iframe style="display: none;"></iframe></body></html>
