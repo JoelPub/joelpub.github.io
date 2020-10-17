@@ -1,0 +1,2695 @@
+<!-- start coded_template: id:7923173462 path:basic/Coded files/Custom/email/netguru-onboarding/page/shared/New-base-meta-tags-fixed.html -->
+<!DOCTYPE html>
+<html><script type="text/javascript" async="" src="AK_files/conversion_async.js"></script><script async="" src="AK_files/insight.js"></script><script type="text/javascript" async="" src="AK_files/insight_002.js"></script><script async="" src="AK_files/insight.js"></script><script src="AK_files/725955437490668.js" async=""></script><script src="AK_files/all.js" async="" crossorigin="anonymous"></script><script src="AK_files/conversations-embed.js" type="text/javascript" id="hubspot-messages-loader" data-loader="hs-scriptloader" data-hsjs-portal="493098" data-hsjs-env="prod"></script><script src="AK_files/collectedforms.js" type="text/javascript" id="CollectedForms-493098" crossorigin="anonymous" data-leadin-portal-id="493098" data-leadin-env="prod" data-loader="hs-scriptloader" data-hsjs-portal="493098" data-hsjs-env="prod"></script><script src="AK_files/leadflows.js" type="text/javascript" id="LeadFlows-493098" crossorigin="anonymous" data-leadin-portal-id="493098" data-leadin-env="prod" data-loader="hs-scriptloader" data-hsjs-portal="493098" data-hsjs-env="prod"></script><script src="AK_files/493098.js" type="text/javascript" id="cookieBanner-493098" data-loader="hs-scriptloader" data-hsjs-portal="493098" data-hsjs-env="prod"></script><script src="AK_files/493098_003.js" type="text/javascript" id="hs-analytics"></script><script src="AK_files/fb.js" type="text/javascript" id="hs-ads-pixel-493098" data-ads-portal-id="493098" data-ads-env="prod" data-loader="hs-scriptloader" data-hsjs-portal="493098" data-hsjs-env="prod"></script><script id="twitter-wjs" src="AK_files/widgets.js"></script><script id="facebook-jssdk" src="AK_files/all_002.js"></script><script src="AK_files/lftracker_v1_DzLR5a5Rbkx8BoQ2.js"></script><script async="" src="AK_files/fbevents.js"></script><script type="text/javascript" async="" src="AK_files/2c2aa232-a45f-465e-a9a4-14d604240785.js"></script><script type="text/javascript" async="" src="AK_files/conversion_async.js"></script><script type="text/javascript" async="" src="AK_files/bat.js"></script><script type="text/javascript" async="" src="AK_files/uwt.js"></script><script type="text/javascript" async="" src="AK_files/analytics.js"></script><script type="text/javascript" async="" src="AK_files/conversion_async.js"></script><script type="text/javascript" async="" src="AK_files/insight_002.js"></script><script type="text/javascript" async="" src="AK_files/hotjar-335070.js"></script><script async="" src="AK_files/gtm.js"></script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-1', data: data });
+			}
+			const DATA_LAYER_LOCAL_STORAGE_KEY = 'com.adobe.experiencePlatformDebugger.dataLayer.key';
+const dataLayerKey = window.localStorage.getItem(DATA_LAYER_LOCAL_STORAGE_KEY);
+
+if (dataLayerKey) {
+	// sindresorhus/on-change
+	// MIT - License
+	// https://github.com/sindresorhus/on-change
+	const PATH_SEPARATOR = '.';
+	const TARGET = Symbol('target');
+	const UNSUBSCRIBE = Symbol('unsubscribe');
+
+	const isPrimitive = value =>
+		value === null || (typeof value !== 'object' && typeof value !== 'function');
+
+	const isBuiltinWithoutMutableMethods = value =>
+		value instanceof RegExp || value instanceof Number;
+
+	const isBuiltinWithMutableMethods = value => value instanceof Date;
+
+	const concatPath = (path, property) => {
+		if (property && property.toString) {
+			if (path) {
+				path += PATH_SEPARATOR;
+			}
+
+			path += property.toString();
+		}
+
+		return path;
+	};
+
+	const walkPath = (path, callback) => {
+		let index;
+
+		while (path) {
+			index = path.indexOf(PATH_SEPARATOR);
+
+			if (index === -1) {
+				index = path.length;
+			}
+
+			callback(path.slice(0, index));
+
+			path = path.slice(index + 1);
+		}
+	};
+
+	const shallowClone = value => {
+		if (Array.isArray(value)) {
+			return value.slice();
+		}
+
+		return Object.assign({}, value);
+	};
+
+	const onChange = (object, onChange, options = {}) => {
+		const proxyTarget = Symbol('ProxyTarget');
+		let inApply = false;
+		let changed = false;
+		let applyPath;
+		let applyPrevious;
+		let isUnsubscribed = false;
+		const equals = options.equals || Object.is;
+		let propCache = new WeakMap();
+		let pathCache = new WeakMap();
+		let proxyCache = new WeakMap();
+
+		const handleChange = (path, property, previous, value) => {
+			if (isUnsubscribed) {
+				return;
+			}
+
+			if (!inApply) {
+				onChange(concatPath(path, property), value, previous);
+				return;
+			}
+
+			if (
+				inApply &&
+				applyPrevious &&
+				previous !== undefined &&
+				value !== undefined &&
+				property !== 'length'
+			) {
+				let item = applyPrevious;
+
+				if (path !== applyPath) {
+					path = path.replace(applyPath, '').slice(1);
+
+					walkPath(path, key => {
+						item[key] = shallowClone(item[key]);
+						item = item[key];
+					});
+				}
+
+				item[property] = previous;
+			}
+
+			changed = true;
+		};
+
+		const getOwnPropertyDescriptor = (target, property) => {
+			let props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				return props;
+			}
+
+			props = new Map();
+			propCache.set(target, props);
+
+			let prop = props.get(property);
+			if (!prop) {
+				prop = Reflect.getOwnPropertyDescriptor(target, property);
+				props.set(property, prop);
+			}
+
+			return prop;
+		};
+
+		const invalidateCachedDescriptor = (target, property) => {
+			const props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				props.delete(property);
+			}
+		};
+
+		const buildProxy = (value, path) => {
+			if (isUnsubscribed) {
+				return value;
+			}
+
+			pathCache.set(value, path);
+
+			let proxy = proxyCache.get(value);
+
+			if (proxy === undefined) {
+				proxy = new Proxy(value, handler);
+				proxyCache.set(value, proxy);
+			}
+
+			return proxy;
+		};
+
+		const unsubscribe = target => {
+			isUnsubscribed = true;
+			propCache = null;
+			pathCache = null;
+			proxyCache = null;
+
+			return target;
+		};
+
+		const ignoreChange = property => {
+			return isUnsubscribed || (options.ignoreSymbols === true && typeof property === 'symbol');
+		};
+
+		const handler = {
+			get(target, property, receiver) {
+				if (property === proxyTarget || property === TARGET) {
+					return target;
+				}
+
+				if (property === UNSUBSCRIBE && pathCache.get(target) === '') {
+					return unsubscribe(target);
+				}
+
+				const value = Reflect.get(target, property, receiver);
+				if (
+					isPrimitive(value) ||
+					isBuiltinWithoutMutableMethods(value) ||
+					property === 'constructor' ||
+					options.isShallow === true
+				) {
+					return value;
+				}
+
+				// Preserve invariants
+				const descriptor = getOwnPropertyDescriptor(target, property);
+				if (descriptor && !descriptor.configurable) {
+					if (descriptor.set && !descriptor.get) {
+						return undefined;
+					}
+
+					if (descriptor.writable === false) {
+						return value;
+					}
+				}
+
+				return buildProxy(value, concatPath(pathCache.get(target), property));
+			},
+
+			set(target, property, value, receiver) {
+				if (value && value[proxyTarget] !== undefined) {
+					value = value[proxyTarget];
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property, receiver);
+				const result = Reflect.set(target[proxyTarget] || target, property, value);
+
+				if (!ignore && !equals(previous, value)) {
+					handleChange(pathCache.get(target), property, previous, value);
+				}
+
+				return result;
+			},
+
+			defineProperty(target, property, descriptor) {
+				const result = Reflect.defineProperty(target, property, descriptor);
+
+				if (!ignoreChange(property)) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, undefined, descriptor.value);
+				}
+
+				return result;
+			},
+
+			deleteProperty(target, property) {
+				if (!Reflect.has(target, property)) {
+					return true;
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property);
+				const result = Reflect.deleteProperty(target, property);
+
+				if (!ignore) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, previous);
+				}
+
+				return result;
+			},
+
+			apply(target, thisArg, argumentsList) {
+				const compare = isBuiltinWithMutableMethods(thisArg);
+
+				if (compare) {
+					thisArg = thisArg[proxyTarget];
+				}
+
+				if (!inApply) {
+					inApply = true;
+
+					if (compare) {
+						applyPrevious = thisArg.valueOf();
+					}
+
+					if (Array.isArray(thisArg) || toString.call(thisArg) === '[object Object]') {
+						applyPrevious = shallowClone(thisArg[proxyTarget]);
+					}
+
+					applyPath = pathCache.get(target);
+					applyPath = applyPath.slice(0, Math.max(applyPath.lastIndexOf(PATH_SEPARATOR), 0));
+
+					const result = Reflect.apply(target, thisArg, argumentsList);
+
+					inApply = false;
+
+					if (changed || (compare && !equals(applyPrevious, thisArg.valueOf()))) {
+						handleChange(applyPath, '', applyPrevious, thisArg[proxyTarget] || thisArg);
+						applyPrevious = null;
+						changed = false;
+					}
+
+					return result;
+				}
+
+				return Reflect.apply(target, thisArg, argumentsList);
+			}
+		};
+
+		const proxy = buildProxy(object, '');
+		onChange = onChange.bind(proxy);
+
+		return proxy;
+	};
+
+	onChange.target = proxy => proxy[TARGET] || proxy;
+	onChange.unsubscribe = proxy => proxy[UNSUBSCRIBE] || proxy;
+
+	let proxy;
+	let previousDataLayer;
+
+	function _serialize(dataLayer) {
+		try {
+			return JSON.stringify({ ...dataLayer }, null, 2);
+		} catch (e) {
+			return JSON.stringify(dataLayer, null, 2);
+		}
+	}
+
+	function _notify(dataLayer) {
+		contentScriptEventTrigger({
+			data: {
+				dataLayer
+			},
+			timestamp: Date.now(),
+			timeSincePageLoad: window.performance.now()
+		});
+	}
+
+	function onDataLayerUpdate() {
+		const dataLayer = _serialize(this);
+
+		if (previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	function onDataLayerSet(newDataLayer) {
+		const dataLayer = _serialize(newDataLayer);
+		if (!previousDataLayer || previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	Object.defineProperty(window, dataLayerKey, {
+		get() {
+			return proxy;
+		},
+		set(newDataLayer) {
+			onDataLayerSet(newDataLayer);
+			proxy = onChange(newDataLayer, onDataLayerUpdate);
+		},
+		enumerable: true,
+		configurable: true
+	});
+
+	const oldObjectDefine = Object.defineProperty.bind(Object);
+	Object.defineProperty = function(obj, prop, descriptor) {
+		if (prop === dataLayerKey) {
+			console.debug(
+				'Data layer being overwritten by Object.defineProperty(). Falling back to polling...'
+			);
+
+			function pollForChanges() {
+				const dataLayer = _serialize(window[dataLayerKey]);
+				if (previousDataLayer !== dataLayer) {
+					previousDataLayer = dataLayer;
+					_notify(dataLayer);
+				}
+				window.requestAnimationFrame(pollForChanges);
+			}
+
+			window.requestAnimationFrame(pollForChanges);
+		}
+		return oldObjectDefine(obj, prop, descriptor);
+	};
+}
+ 
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-2', data: data });
+			}
+			/**
+ * Hooks into both DTM's and Launch's logging mechanisms in order to capture all log messages and
+ * send them to the UI to display to the user
+ */
+function notifyContentScript(log) {
+	contentScriptEventTrigger({
+		data: log,
+		timestamp: Date.now(),
+		timeSincePageLoad: window.performance.now()
+	});
+}
+
+window._satellite = window._satellite || {
+	notify: function() {
+		// TODO: if we have sdsat_debug set to true, then console log
+	},
+	track: function() {
+		// TODO: implement notifications
+	},
+	getVar: function() {
+		// TODO: implement notifications
+	},
+	setVar: function() {
+		// TODO: implement notifications
+	},
+	getVisitorId: function() {
+		// TODO: implement notifications
+		return null;
+	},
+	setCookie: function() {
+		// TODO: implement cookie setting
+	},
+	readCookie: function() {
+		// TODO: implement cookie reading
+	},
+	removeCookie: function() {
+		// TODO: implement cookie deletion
+	},
+	isLinked: function() {
+		// TODO: figure out what this is
+	},
+	pageBottom: function() {
+		// TODO: implement notifications
+	}
+};
+
+window._satellite.override = window._satellite.override || {};
+
+onSatelliteInit = function() {
+	let _satellite = window._satellite;
+	if (_satellite.Logger) {
+		_satellite.Logger.keepLimit = 9999;
+	}
+
+	// override notify
+	// Reason: we want to intercept messages that go through here
+	// without worrying about limits or messing anything up internally
+	let originalNotify = _satellite.notify;
+	_satellite.notify = function(message, level) {
+		const logLevel = ['log', 'log', 'log', 'info', 'warn', 'error'];
+
+		// call original
+		originalNotify(message, level);
+
+		const log = {
+			solution: 'dtm',
+			solutions: ['dtm'],
+			level: logLevel[level] || 'log',
+			message: ''
+		};
+
+		// make sure that we have a message
+		if (message && typeof message === 'string') {
+			// only add it
+			log.message = message;
+
+			// check to see what solution it came from
+			if (message.indexOf('Adobe Analytics:') !== -1) {
+				log.solutions.push('analytics');
+			} else if (message.indexOf('Test & Target:') !== -1) {
+				log.solutions.push('target');
+			} else if (message.indexOf('Visitor ID:') !== -1) {
+				log.solutions.push('visitorService');
+			} else if (message.indexOf('AdLens:') !== -1) {
+				log.solutions.push('mediaOptimizer');
+			}
+		}
+		notifyContentScript(log);
+	};
+};
+
+function _overrideConsoleLogFunction(prefix, solution, level) {
+	const originalFunction = console[level];
+	const previousMessages = [];
+	console[level] = function() {
+		const argsAsArray = Array.prototype.slice.call(arguments);
+		originalFunction.apply(console, argsAsArray);
+		const mappedArgs = argsAsArray.map(arg => {
+			let result = '';
+			if (arg && typeof arg.toString === 'function') {
+				result = arg.toString();
+			}
+			if (!result || result === '[object Object]') {
+				try {
+					result = JSON.stringify(arg);
+				} catch (e) {
+					return '';
+				}
+			}
+			return result;
+		});
+
+		const message = mappedArgs.join(' ');
+
+		if (typeof message === 'string') {
+			if (message.indexOf(prefix) === 0) {
+				const log = {
+					solution: solution,
+					solutions: [solution],
+					level: level,
+					message: message,
+					searchIndex: message,
+					params: mappedArgs
+				};
+
+				// check to see what solution it came from
+				if (message.indexOf('[Adobe Analytics]') !== -1) {
+					log.solutions.push('analytics');
+				} else if (message.indexOf('[Adobe Target]') !== -1) {
+					log.solutions.push('target');
+				} else if (message.indexOf('[Experience Cloud ID Service]') !== -1) {
+					log.solutions.push('visitorService');
+				} else if (message.indexOf('[Adobe Media Optimizer]') !== -1) {
+					log.solutions.push('mediaOptimizer');
+				}
+				previousMessages.unshift(message);
+				if (previousMessages.length >= 10) {
+					previousMessages.pop();
+					if (previousMessages.every(m => m === message)) {
+						// We've caught the same message 10 times in a row. We're probably in a loop of some kind...
+						// Just bail out and don't send it up to the debugger UI
+						return;
+					}
+				}
+				notifyContentScript(log);
+			}
+		}
+	};
+}
+
+/**
+ * Overrides the various console.* methods in order to intercept messages that
+ * are sent to the console by launch. A message was sent be launch if it starts
+ * with the rocket emoji 🚀. Note that this is a somewhat brittle solution
+ * since if the emoji ever changes this integration will break. However this
+ * is the only solution that works for now.
+ *
+ * Any messages that are not prefixed with the rocket emoji are ignored and passed
+ * through to the original console function
+ */
+function _overrideConsoleForLaunch() {
+	const prefix = '\uD83D\uDE80';
+	['error', 'info', 'log', 'warn'].forEach(
+		_overrideConsoleLogFunction.bind(null, prefix, 'launch')
+	);
+}
+
+/**
+ * Intercepts console messages made by alloy (prefixed with [alloy]) and notifies content script about each one.
+ * Note that this is a brittle solution and should not be used long term.
+ *
+ * Ideally there will be some debugging hooks built into alloy itself that we can connect to
+ */
+function _overrideConsoleForAlloy() {
+	window.__alloyNS = [];
+	const originalPush = window.__alloyNS.push;
+	window.__alloyNS.push = function(namespace) {
+		['error', 'info', 'log', 'warn'].forEach(
+			_overrideConsoleLogFunction.bind(null, `[${namespace}]`, 'alloy')
+		);
+
+		originalPush.apply(window.__alloyNS, Array.prototype.slice.call(arguments));
+	};
+}
+
+_overrideConsoleForLaunch();
+_overrideConsoleForAlloy();
+
+// find a good place to hook into _satellite object
+if (window.Object && window.Object.defineProperty) {
+	// DTM hook
+	window.Object.defineProperty(
+		window._satellite.override,
+		'adobe.experienceCloud.debuggerDTMInitHook',
+		{
+			enumerable: true,
+			get: function() {
+				onSatelliteInit();
+				return '';
+			},
+			set: function() {}
+		}
+	);
+}
+
+// Once the page has finished loading, remove _satellite if both DTM and Launch were not found
+window.addEventListener('load', function() {
+	if (!_hasDtm() && !_hasLaunch()) {
+		delete window._satellite;
+	}
+});
+
+/**
+ * @returns {boolean} whether launch is present on the page
+ */
+function _hasLaunch() {
+	return !!(window._satellite && window._satellite._container);
+}
+
+/**
+ * @returns {boolean} whether DTM is present on the page
+ */
+function _hasDtm() {
+	return !!(window._satellite && window._satellite.configurationSettings);
+}
+ 
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-3', data: data });
+			}
+			window.___target_traces = window.___target_traces || [];
+var originalPush = window.___target_traces.push;
+
+window.___target_traces.push = function(trace) {
+	contentScriptEventTrigger({ trace });
+	originalPush.call(this, trace);
+};
+ 
+		})();
+	</script><head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-type">
+    <title>
+      
+Comparison of Text to Speech Solutions for React Native | Netguru Blog on React Native
+
+    </title>
+    
+    
+    <meta property="og:description" content="React Native Speech to Text solutions differ in available features - we can use this service offline, or have a unified voice on every platform. Comparison of Google Cloud service, Expo's Speech and React-Native-TTS library.">
+    <meta property="og:title" content="Comparison of Text to Speech Solutions for React Native">
+    <meta name="twitter:description" content="React Native Speech to Text solutions differ in available features - we can use this service offline, or have a unified voice on every platform. Comparison of Google Cloud service, Expo's Speech and React-Native-TTS library.">
+    <meta name="twitter:title" content="Comparison of Text to Speech Solutions for React Native">
+
+    
+
+    
+    <style>
+a.cta_button{-moz-box-sizing:content-box !important;-webkit-box-sizing:content-box !important;box-sizing:content-box !important;vertical-align:middle}.hs-breadcrumb-menu{list-style-type:none;margin:0px 0px 0px 0px;padding:0px 0px 0px 0px}.hs-breadcrumb-menu-item{float:left;padding:10px 0px 10px 10px}.hs-breadcrumb-menu-divider:before{content:'›';padding-left:10px}.hs-featured-image-link{border:0}.hs-featured-image{float:right;margin:0 0 20px 20px;max-width:50%}@media (max-width: 568px){.hs-featured-image{float:none;margin:0;width:100%;max-width:100%}}.hs-screen-reader-text{clip:rect(1px, 1px, 1px, 1px);height:1px;overflow:hidden;position:absolute !important;width:1px}
+</style>
+
+<link rel="stylesheet" href="AK_files/module_6830270409_footer_GLOBAL.css">
+    
+
+    
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Google Tag Manager -->
+
+<script>
+dataLayer = [];
+
+dataLayer.push({'contact.id': ""});
+dataLayer.push({'contact.email': ""});
+dataLayer.push({'contact.lifecycle_stage': ""});
+dataLayer.push({'company.name': ""});
+dataLayer.push({'company.domain': ""});
+dataLayer.push({'content.publish_date': "2020-02-04"});
+dataLayer.push({'content.modified_date': "2020-09-15"});
+dataLayer.push({'content.topic_list': "[React Native, Text to speech]"});
+dataLayer.push({'content.campaign_name': "Codestories"});
+
+
+
+
+
+
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-TC2LVR');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Schema.org snippet -->
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "WebSite",
+  "url": "https://www.netguru.com/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "Netguru",
+  "mainEntityOfPage": "https://www.netguru.com/",
+  "url": "https://www.netguru.com/",
+  "sameAs": [
+    "https://twitter.com/netguru",
+    "https://facebook.com/netguru",
+    "https://www.linkedin.com/company/netguru",
+    "https://www.github.com/netguru",
+    "https://www.dribbble.com/netguru",
+    "https://www.behance.net/netguru"
+  ],
+  "email": "hello@netguru.com",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "telephone": "+48 534 205 209",
+    "contactType": "customer support",
+    "contactOption": "TollFree",
+    "areaServed": "PL"
+  },
+  "foundingDate": "2008",
+  "foundingLocation": "Poznań, Poland",
+  "member": {
+    "@type": "Person",
+    "name": "Wiktor Schmidt",
+    "jobTitle": "CEO",
+    "nationality": "Poland",
+    "url": "https://www.linkedin.com/in/wiktorschmidt/"
+  },
+"address": [{
+          "@type": "PostalAddress",
+          "addressLocality": "Poznań, Poland",
+          "postalCode": "61-756",
+          "streetAddress": "Małe Garbary 9"
+        },
+        {
+          "@type": "PostalAddress",
+          "addressLocality": "Warszawa, Poland",
+          "postalCode": "00-867",
+          "streetAddress": "Jana Pawła II 29"
+        },
+        {
+          "@type": "PostalAddress",
+          "addressLocality": "Kraków, Poland",
+          "postalCode": "31-154",
+          "streetAddress": "Pawia 9"
+        },
+        {
+          "@type": "PostalAddress",
+          "addressLocality": "Wrocław, Poland",
+          "postalCode": "50-148",
+          "streetAddress": "Wita Stwosza 15/9a"
+        },
+        {
+          "@type": "PostalAddress",
+          "addressLocality": "Gdańsk, Poland",
+          "postalCode": "80-309",
+          "streetAddress": "Grunwaldzka 472"
+        },
+        {
+          "@type": "PostalAddress",
+          "addressLocality": "Białystok, Poland",
+          "postalCode": "15-094",
+          "streetAddress": "Marii Skłodowskiej Curie 3"
+        }],
+  "logo": "https://www.netguru.com/hubfs/images/logos/netguru_logo.svg",
+  "numberOfEmployees": 630,
+  "vatId": "PL7781454968"
+
+}
+</script>
+<meta property="og:image" content="https://www.netguru.com/hubfs/dan-farrell-aW9_Lo2AiGg-unsplash.jpg#keepProtocol">
+
+<meta name="twitter:image" content="https://www.netguru.com/hubfs/dan-farrell-aW9_Lo2AiGg-unsplash.jpg#keepProtocol">
+
+
+<meta property="og:url" content="https://www.netguru.com/codestories/react-native-text-to-speech">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.netguru.com/codestories/react-native-text-to-speech">
+
+<meta property="og:type" content="article">
+<link rel="alternate" type="application/rss+xml" href="https://www.netguru.com/codestories/rss.xml">
+<meta name="twitter:domain" content="www.netguru.com">
+<script src="AK_files/in.js" type="text/javascript">
+    lang: en_US
+</script><style type="text/css">.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q{display:block!important;border:1px solid #cdcfd2!important;background-color:#fff!important;color:#373a3d!important;width:100vw!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-24GeGuJgk9LrMLp7qVvlyz{background:#6a7e89!important;color:#fff!important;padding:10px!important;font-size:18px!important;font-family:sans-serif!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-KVjdulkCFfUZps29EbgAC{background:#f3f6f8!important;border-bottom:1px solid #cdcfd2!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-KVjdulkCFfUZps29EbgAC>*{margin-right:10px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1OeZ2PQ98oAp6Vc5mMc6V5{list-style:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-vCwYmWF_l83ScZBrGnRoi,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1OeZ2PQ98oAp6Vc5mMc6V5{margin:0!important;padding:0!important;width:100%!important;display:block!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-vCwYmWF_l83ScZBrGnRoi:not(:last-child){border-bottom:1px solid #cdcfd2!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XQZkb-FlHWABUp4_uShaZ{color:inherit!important;cursor:pointer!important;width:100%!important;display:inline-block!important;margin:10px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XTzMvb2XKitWz0mFLlyyp{margin:5px!important;display:block!important;width:auto!important;white-space:pre!important;overflow-x:scroll!important;background:inherit!important;color:inherit!important;font-family:monospace}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XTzMvb2XKitWz0mFLlyyp:not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-39QUvFFn5B7GMcqMQkOXZ3){display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-295DY3nO0DbJWMsOqmjCli{background:#f5f5f5!important;color:#5a5a5a!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1aQZwu6CUzAf2zUcI7tg0Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-295DY3nO0DbJWMsOqmjCli{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-38EPFyKXMtoP12rPlmrHxs{background:#e6f7ff!important;color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3W4ZnQjhoGfT1gTNcqRXdi .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-38EPFyKXMtoP12rPlmrHxs{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-HGYnfzlmgOZ-l7eANhQe_{background:#fff3ea!important;color:#993a00!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-24e52A11B1UIErbKHtBmqc .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-HGYnfzlmgOZ-l7eANhQe_{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-jji74ZzulHScD0OAD_G7h{background:#fef2f1!important;color:#b10823!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-28jAOA7cDee-95LvwGsOP- .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-jji74ZzulHScD0OAD_G7h{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu{background-color:#0073b1!important;border:0!important;border-radius:2px!important;box-sizing:border-box!important;color:#fff!important;cursor:pointer!important;display:inline-block!important;font-family:-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif!important;font-weight:600!important;overflow:hidden!important;outline-width:2px!important;position:relative!important;text-align:center!important;text-decoration:none!important;vertical-align:middle!important;white-space:nowrap!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:disabled{cursor:not-allowed!important;opacity:.7!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:not(:disabled):not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy):hover{background-color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:not(:disabled):not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy):active{background-color:#004b7c!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy{background-color:#fff!important;color:#0073b1!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy:not(:disabled):hover{color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy:not(:disabled):active{color:#004b7c!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon{display:inline-block!important;height:100%!important;vertical-align:top!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon>svg{pointer-events:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr{font-size:10px!important;height:16px!important;line-height:16px!important;padding:0 6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr>xdoor-icon{margin-left:-6px!important;margin-right:3px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr>xdoor-icon>svg{height:16px!important;width:16px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6{font-size:11px!important;height:20px!important;line-height:20px!important;padding:0 7px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6>xdoor-icon,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon{margin-left:-7px!important;margin-right:3.5px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6>xdoor-icon>svg,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon>svg{height:20px!important;width:20px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-7px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG{font-size:14px!important;height:24px!important;line-height:24px!important;padding:0 12px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG>xdoor-icon{margin-left:-12px!important;margin-right:6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG>xdoor-icon>svg{height:24px!important;width:24px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-12px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q{font-size:16px!important;height:32px!important;line-height:32px!important;padding:0 16px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q>xdoor-icon{margin-left:-16px!important;margin-right:8px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q>xdoor-icon>svg{height:32px!important;width:32px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-16px!important}</style>
+
+<meta http-equiv="content-language" content="en-us">
+
+
+
+
+
+
+    
+  
+    <meta property="og:image" content="https://www.netguru.com/hubfs/dan-farrell-aW9_Lo2AiGg-unsplash.jpg">
+  
+
+<script type="application/ld+json">
+
+
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+         {
+            "@type": "ListItem",
+            "position": 1,
+            "item": {
+                "@id": "https://www.netguru.com/codestories",
+                "name": "Netguru Codestories"
+            }
+         },
+    {
+            "@type": "ListItem",
+            "position": 2,
+            "item": {
+                "@id": "https://www.netguru.com/codestories/topic/react-native",
+                "name": "React Native",
+            }
+         }
+    ]
+}
+</script>
+  <!-- start coded_template: id:5406448879 path:basic/Coded files/Custom/email/netguru-onboarding/page/shared/blogpost-schema.html -->
+<script type="application/ld+json">
+    {
+      "@context": "http://schema.org",
+      "@type": "BlogPosting",
+      "headline": "Comparison of Text to Speech Solutions for React Native",
+      "description": "React Native Speech to Text solutions differ in available features - we can use this service offline, or have a unified voice on every platform. Comparison of Google Cloud service, Expo's Speech and React-Native-TTS library.",
+      "author": "Daniel Idaszak",
+      "publisher": {
+        "@context": "http://schema.org",
+        "@type": "Organization",
+        "name": "Netguru",
+        "mainEntityOfPage": "https://www.netguru.com/",
+        "url": "https://www.netguru.com/",
+        "sameAs": [
+          "https://twitter.com/netguru",
+          "https://facebook.com/netguru",
+          "https://www.linkedin.com/company/netguru",
+          "https://www.github.com/netguru",
+          "https://www.dribbble.com/netguru",
+          "https://www.behance.net/netguru"
+        ],
+        "email": "hello@netguru.com",
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "telephone": "+48 534 205 209",
+          "contactType": "Customer support",
+          "contactOption": "TollFree",
+          "areaServed": "PL"
+        },
+        "foundingDate": "2008",
+        "foundingLocation": "Poznań, Poland",
+        "member": {
+          "@type": "Person",
+          "name": "Wiktor Schmidt",
+          "jobTitle": "CEO",
+          "nationality": "Poland",
+          "url": "https://www.linkedin.com/in/wiktorschmidt/"
+        },
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Poznań, Poland",
+          "postalCode": "60-792",
+          "streetAddress": "Wojskowa 6"
+        },
+        "logo": "https://www.netguru.com/hubfs/images/logos/netguru_logo.svg",
+        "numberOfEmployees": 560,
+        "vatId": "PL7781454968"
+      },
+      "datePublished": "2020-02-04",
+      "dateModified": "2020-09-15",
+      "keywords": "[React Native, Text to speech]",
+      "image": "https://www.netguru.com/hubfs/dan-farrell-aW9_Lo2AiGg-unsplash.jpg",
+      "mainEntityOfPage": "https://www.netguru.com/codestories/react-native-text-to-speech"
+    }
+</script><!-- end coded_template: id:5406448879 path:basic/Coded files/Custom/email/netguru-onboarding/page/shared/blogpost-schema.html -->
+
+
+
+    
+    <link rel="stylesheet" href="">
+
+    
+    <meta name="robots" content="index, follow">
+
+    
+    
+    
+      <link rel="shortcut icon" href="https://www.netguru.com/hubfs/images/ico/favicon.ico?v=2">
+    
+    <script>
+      !function(e){function n(r){if(t[r])return t[r].exports;var o=t[r]={i:r,l:!1,exports:{}};return e[r].call(o.exports,o,o.exports,n),o.l=!0,o.exports}var t={};n.m=e,n.c=t,n.i=function(e){return e},n.d=function(e,t,r){n.o(e,t)||Object.defineProperty(e,t,{configurable:!1,enumerable:!0,get:r})},n.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return n.d(t,"a",t),t},n.o=function(e,n){return Object.prototype.hasOwnProperty.call(e,n)},n.p="https://www.netguru.co/hubfs/js/",n(n.s=253)}({253:function(e,n){window.renderComponent=function(e,n){var t=void 0;document.currentScript?t=document.currentScript.parentElement.insertBefore(document.createElement("span"),document.currentScript):(document.write('<span id="temp-id-to-remove"></span>'),t=document.getElementById("temp-id-to-remove"),t.removeAttribute("id")),renderComponent.components.push([t,e,n]);var r=void 0;try{r=new Event("renderComponent")}catch(e){r=document.createEvent("Event"),r.initEvent("renderComponent",!1,!1)}window.dispatchEvent(r)},renderComponent.components=[],window.awaitjQuery=function(e){window.jQuery?window.jQuery(function(){return e(window.jQuery)}):window.addEventListener("jqueryLoaded",function n(){window.removeEventListener("jqueryLoaded",n),window.jQuery(function(){return e(window.jQuery)})})}}});
+    </script>
+    
+      <link rel="stylesheet" href="AK_files/Redesign.css">
+      <link rel="stylesheet" href="AK_files/forms.css">
+    
+    <link rel="stylesheet" href="AK_files/font-awesome.css" media="all" onload="this.media='all';">
+    <link rel="stylesheet" href="AK_files/31092c.css" media="all" onload="this.media='all';">
+    
+    
+  <link rel="stylesheet" type="text/css" href="AK_files/prism.css">
+	<style>
+	  .token.operator{
+		  background-color: transparent;
+		}
+	</style>
+
+
+    
+      
+        <script async="" src="AK_files/custom-modules.js"></script>
+      
+    
+    
+    <script src="AK_files/v2.js"></script>
+    <style>
+      
+
+
+.footer-module--hidden {
+  display: none;
+}
+
+.footer {
+  color: #3a3b3a;
+  font-size: 1.4rem;
+  background: #fff;
+}
+
+.footer-main {
+  background: #f7f8f7;
+}
+
+.footer-main,
+.footer-details,
+.footer-awards {
+  padding: 3.5rem;
+}
+
+.footer-main ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  column-gap: 2.4rem
+  align-items: baseline;
+}
+
+.footer-main ul ul {
+  display: block;
+}
+
+.footer-main .hs-menu-item {
+  margin-top: .8rem;
+  line-height: 2.4rem;
+}
+
+.footer-main .hs-menu-item a {
+  color: #000;
+  font-weight: bold;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.footer-main .hs-menu-depth-1 {
+  display: inline-block;
+  vertical-align: top;
+}
+
+.footer-main .hs-menu-children-wrapper {
+  margin-top: 3.2rem;
+}
+
+.footer-main .hs-menu-depth-2 {
+  margin-top: 4rem;
+}
+
+.footer-main .hs-menu-depth-2 a {
+  font-weight: bold;
+  color: #000;
+  text-transform: uppercase;
+  -webkit-transition: all 200ms ease-in-out;
+  -moz-transition: all 200ms ease-in-out;
+  transition: all 200ms ease-in-out;
+}
+
+.footer-main .hs-menu-depth-2 a:hover {
+  color: #00d563;
+}
+
+.footer-main .hs-menu-depth-3 a {
+  font-weight: normal;
+  color: #3a3b3a;
+  text-transform: none;
+}
+
+.footer-main .hs-menu-depth-3 a:hover {
+  color: #00d563;
+  margin-left: 1rem;
+}
+
+.footer__logo {
+  width: 12.6rem;
+}
+
+.footer__logo .logo-letter {
+  fill: #000;
+}
+
+.footer-details__content {
+  display: grid;
+  grid-template-columns: repeat(1,1fr);
+  align-items: center;
+}
+
+.footer-details__content:after {
+  content: '';
+  width: 100%;
+  display: inline-block;
+}
+
+.footer-details__wrapper {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.footer-details__content li {
+  margin: .5rem 0;
+  color: #3a3b3a;
+}
+
+.footer-details__content a {
+  color: #3a3b3a;
+  text-decoration: underline;
+  text-decoration-color: #00d563;
+}
+
+.footer-details__content a:hover {
+  color: #00d563;
+}
+
+.footer__detail {
+  vertical-align: top;
+}
+
+.footer__detail:nth-child(2) .footer-details__header {
+  display: none;
+}
+
+.footer-details__header {
+  margin: 6.3rem 0 3.3rem 0;
+  height: 3rem;
+  font-size: 2rem;
+  font-weight: bold;
+  line-height: 3rem;
+  overflow: hidden;
+}
+
+.footer-details__social-wrapper {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(6,1fr);
+  align-items: center;
+}
+
+.footer-details__social-item {
+  text-align: center;
+  display: inline-block;
+}
+
+.footer-details__social-item:first-of-type {
+  text-align: left;
+}
+
+.footer-details__social-item:last-of-type {
+  text-align: right;
+}
+
+.footer-details__social-icon {
+  width: 2.4rem;
+}
+
+.footer-awards {
+  border-top: solid 1px #e3e3e3;
+}
+
+.footer-awards__content {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  align-items: center;
+}
+
+.footer-award {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 9rem;
+  height: 9rem;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+.footer-award:nth-child(2) {
+  height: 6rem;
+}
+
+.footer-award:nth-child(3) {
+  height: 3.5rem;
+}
+
+.footer-award:nth-child(4) {
+  max-width: 6rem;
+}
+
+.footer-award:nth-child(5) {
+  max-width: 6rem;
+}
+
+.footer-award:nth-child(6) {
+  max-width: 7rem;
+}
+
+.footer-bottom {
+  padding: 2.5rem 3.5rem;
+  font-size: 1.2rem;
+  color: #999999;
+  border-top: solid 1px #e3e3e3;
+  overflow: hidden;
+}
+
+.footer-copyrights {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.footer-bottom__links ul {
+  padding: 0;
+  margin: 0;
+  text-align: justify;
+  list-style: none;
+}
+
+.footer-bottom__links ul:after {
+  content: '';
+  width: 100%;
+  display: inline-block;
+}
+
+.footer-bottom__links li {
+  display: inline-block;  
+}
+
+.footer-bottom__links a {
+  color: #999999;
+  text-decoration: none;
+}
+
+.footer-bottom__links a:hover {
+  color: #00d563;
+}
+
+
+  
+  
+  
+  
+
+  
+  
+   
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+      
+    
+  
+    
+
+    
+    
+    
+  
+  
+  @media screen 
+    
+     and (min-width: 768px) 
+ {
+  .footer-main ul {
+    grid-template-columns: repeat(4,1fr);
+  }
+  
+  .footer-awards__content {
+    grid-template-columns: repeat(6,1fr);
+  }
+  
+  .footer-award {
+    max-width: 12rem;
+  }
+  
+  .footer-award:nth-child(1) {
+    height: 3rem;
+  }
+  
+  .footer-award:nth-child(2) {
+    height: 6rem;
+  }
+  
+  .footer-award:nth-child(4) {
+    height: 3.5rem;
+    max-width: 9rem;
+  }
+  
+  .footer-award:nth-child(5) {
+    max-width: 9rem;
+    height: 3.5rem;
+  }
+
+  .footer-award:nth-child(6) {
+    max-width: 11rem;
+  }
+  
+  .footer-award:first-of-type {
+    margin-left: 0;
+  }
+
+  .footer-award:last-of-type {
+    margin-right: 0;
+  }
+  
+  .footer-details__content {
+    grid-template-columns: repeat(2,1fr);
+    align-items: normal;
+  }
+  
+  .footer__detail:nth-child(2) .footer-details__header {
+    display: block;
+  }
+  
+  .footer-details__social-wrapper {
+    grid-template-columns: repeat(3,1fr);
+  }
+  
+  .footer-details__social-item {
+    text-align: left;
+  }
+
+  .footer-details__social-item:first-of-type,
+  .footer-details__social-item:last-of-type {
+    text-align: left;
+  }
+  
+  .footer-copyrights {
+    margin-top: 0;
+    text-align: left;
+    float: left;
+  }
+
+  .footer-bottom__links {
+    float: right;
+  }
+  
+  .footer-bottom__links ul {
+    text-align: normal;
+  }
+  
+  .footer-bottom__links ul:after {
+    display: none;
+  }
+  
+  .footer-bottom__links li {
+    margin-left: 7.2rem;
+  }
+}
+
+
+  
+  
+  
+  
+
+  
+  
+   
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+      
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+  
+  @media screen 
+    
+     and (min-width: 1024px) 
+ {
+  .footer-award:nth-child(1) {
+    height: 7.5rem;
+  }
+  
+  .footer-award:nth-child(2) {
+    height: 7.5rem;
+  }
+  
+  .footer-award:nth-child(4) {
+    height: 7.5rem;
+  }
+  
+  .footer-award:nth-child(5) {
+    height: 7.5rem;
+  }
+  
+  .footer-details__content {
+    grid-template-columns: repeat(4,1fr);
+  }
+}
+
+
+  
+  
+  
+  
+
+  
+  
+   
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+      
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+    
+
+    
+    
+    
+  
+  
+  @media screen 
+    
+     and (min-width: 1366px) 
+ {
+  .footer-main {
+    padding: 3.2rem 12rem 5rem 12rem;
+    display: block;
+  }
+  
+  .footer-main .hs-menu-depth-2.hs-item-has-children {
+    margin-bottom: 4rem
+  }
+  
+  .footer-details {
+    padding: 8rem 12rem;
+  }
+  
+  .footer-awards {
+    padding: 5.6rem 12rem;
+  }
+  
+  .footer-bottom {
+    padding: 0 12rem;
+  }
+
+  .footer-bottom__links,
+  .footer-copyrights {
+    height: 10rem;
+    line-height: 10rem;
+  }
+}
+    </style>
+  <meta name="generator" content="HubSpot"><style type="text/css">._container_1wabf_1 {
+  position: fixed
+}
+._container_1wabf_1 img {
+  width: 100%
+}
+</style><script type="text/javascript" charset="utf-8" async="" src="AK_files/4.js"></script><script type="text/javascript" async="" src="AK_files/loader-v2.js"></script><script type="text/javascript" async="" src="AK_files/loader-v2_002.js"></script><script type="text/javascript" async="" src="AK_files/cta-loaded_002.js"></script><script type="text/javascript" referrerpolicy="no-referrer-when-downgrade" async="" src="AK_files/has-permission.txt"></script><script type="text/javascript" charset="utf-8" async="" src="AK_files/3.js"></script><script type="text/javascript" async="" src="AK_files/cta-loaded.js"></script><script async="" src="AK_files/modules.js" charset="utf-8"></script><style type="text/css">iframe#_hjRemoteVarsFrame {display: none !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important;}</style><style type="text/css" data-fbcssmodules="css:fb.css.basecss:fb.css.dialog css:fb.css.iframewidget">.fb_hidden{position:absolute;top:-10000px;z-index:10001}.fb_reposition{overflow:hidden;position:relative}.fb_invisible{display:none}.fb_reset{background:none;border:0;border-spacing:0;color:#000;cursor:auto;direction:ltr;font-family:"lucida grande", tahoma, verdana, arial, sans-serif;font-size:11px;font-style:normal;font-variant:normal;font-weight:normal;letter-spacing:normal;line-height:1;margin:0;overflow:visible;padding:0;text-align:left;text-decoration:none;text-indent:0;text-shadow:none;text-transform:none;visibility:visible;white-space:normal;word-spacing:normal}.fb_reset>div{overflow:hidden}@keyframes fb_transform{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}.fb_animate{animation:fb_transform .3s forwards}
+.fb_dialog{background:rgba(82, 82, 82, .7);position:absolute;top:-10000px;z-index:10001}.fb_dialog_advanced{border-radius:8px;padding:10px}.fb_dialog_content{background:#fff;color:#373737}.fb_dialog_close_icon{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 0 transparent;cursor:pointer;display:block;height:15px;position:absolute;right:18px;top:17px;width:15px}.fb_dialog_mobile .fb_dialog_close_icon{left:5px;right:auto;top:5px}.fb_dialog_padding{background-color:transparent;position:absolute;width:1px;z-index:-1}.fb_dialog_close_icon:hover{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -15px transparent}.fb_dialog_close_icon:active{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/IE9JII6Z1Ys.png) no-repeat scroll 0 -30px transparent}.fb_dialog_iframe{line-height:0}.fb_dialog_content .dialog_title{background:#6d84b4;border:1px solid #365899;color:#fff;font-size:14px;font-weight:bold;margin:0}.fb_dialog_content .dialog_title>span{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/yd/r/Cou7n-nqK52.gif) no-repeat 5px 50%;float:left;padding:5px 0 7px 26px}body.fb_hidden{height:100%;left:0;margin:0;overflow:visible;position:absolute;top:-10000px;transform:none;width:100%}.fb_dialog.fb_dialog_mobile.loading{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/ya/r/3rhSv5V8j3o.gif) white no-repeat 50% 50%;min-height:100%;min-width:100%;overflow:hidden;position:absolute;top:0;z-index:10001}.fb_dialog.fb_dialog_mobile.loading.centered{background:none;height:auto;min-height:initial;min-width:initial;width:auto}.fb_dialog.fb_dialog_mobile.loading.centered #fb_dialog_loader_spinner{width:100%}.fb_dialog.fb_dialog_mobile.loading.centered .fb_dialog_content{background:none}.loading.centered #fb_dialog_loader_close{clear:both;color:#fff;display:block;font-size:18px;padding-top:20px}#fb-root #fb_dialog_ipad_overlay{background:rgba(0, 0, 0, .4);bottom:0;left:0;min-height:100%;position:absolute;right:0;top:0;width:100%;z-index:10000}#fb-root #fb_dialog_ipad_overlay.hidden{display:none}.fb_dialog.fb_dialog_mobile.loading iframe{visibility:hidden}.fb_dialog_mobile .fb_dialog_iframe{position:sticky;top:0}.fb_dialog_content .dialog_header{background:linear-gradient(from(#738aba), to(#2c4987));border-bottom:1px solid;border-color:#043b87;box-shadow:white 0 1px 1px -1px inset;color:#fff;font:bold 14px Helvetica, sans-serif;text-overflow:ellipsis;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0;vertical-align:middle;white-space:nowrap}.fb_dialog_content .dialog_header table{height:43px;width:100%}.fb_dialog_content .dialog_header td.header_left{font-size:12px;padding-left:5px;vertical-align:middle;width:60px}.fb_dialog_content .dialog_header td.header_right{font-size:12px;padding-right:5px;vertical-align:middle;width:60px}.fb_dialog_content .touchable_button{background:linear-gradient(from(#4267B2), to(#2a4887));background-clip:padding-box;border:1px solid #29487d;border-radius:3px;display:inline-block;line-height:18px;margin-top:3px;max-width:85px;padding:4px 12px;position:relative}.fb_dialog_content .dialog_header .touchable_button input{background:none;border:none;color:#fff;font:bold 12px Helvetica, sans-serif;margin:2px -12px;padding:2px 6px 3px 6px;text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog_content .dialog_header .header_center{color:#fff;font-size:16px;font-weight:bold;line-height:18px;text-align:center;vertical-align:middle}.fb_dialog_content .dialog_content{background:url(https://static.xx.fbcdn.net/rsrc.php/v3/y9/r/jKEcVPZFk-2.gif) no-repeat 50% 50%;border:1px solid #4a4a4a;border-bottom:0;border-top:0;height:150px}.fb_dialog_content .dialog_footer{background:#f5f6f7;border:1px solid #4a4a4a;border-top-color:#ccc;height:40px}#fb_dialog_loader_close{float:left}.fb_dialog.fb_dialog_mobile .fb_dialog_close_button{text-shadow:rgba(0, 30, 84, .296875) 0 -1px 0}.fb_dialog.fb_dialog_mobile .fb_dialog_close_icon{visibility:hidden}#fb_dialog_loader_spinner{animation:rotateSpinner 1.2s linear infinite;background-color:transparent;background-image:url(https://static.xx.fbcdn.net/rsrc.php/v3/yD/r/t-wz8gw1xG1.png);background-position:50% 50%;background-repeat:no-repeat;height:24px;width:24px}@keyframes rotateSpinner{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+.fb_iframe_widget{display:inline-block;position:relative}.fb_iframe_widget span{display:inline-block;position:relative;text-align:justify}.fb_iframe_widget iframe{position:absolute}.fb_iframe_widget_fluid_desktop,.fb_iframe_widget_fluid_desktop span,.fb_iframe_widget_fluid_desktop iframe{max-width:100%}.fb_iframe_widget_fluid_desktop iframe{min-width:220px;position:relative}.fb_iframe_widget_lift{z-index:1}.fb_iframe_widget_fluid{display:inline}.fb_iframe_widget_fluid span{width:100%}</style><script async="" src="AK_files/js"></script></head>
+  <body><style type="text/css">div#hs-eu-cookie-confirmation{background:#fff;height:auto;left:0;position:absolute;top:0;width:100%;z-index:100000000!important;border-bottom:1px solid #cbd6e2;border-top:1px solid #cbd6e2;box-shadow:0 1px 5px #eaf0f6;color:#33475b;font-family:inherit;font-size:inherit;font-weight:400!important;line-height:inherit;text-align:left;text-shadow:none!important;font-size:12px;font-family:Helvetica Neue,Helvetica,Arial,sans-serif;line-height:18px}div#hs-eu-cookie-confirmation *{box-sizing:border-box!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner{background:#fff;margin:0 auto;max-width:1000px;padding:20px}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a{text-decoration:none!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a,div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a:hover{background:none!important;border:none!important;box-shadow:none!important;color:#0091ae;font-family:inherit;font-size:inherit;font-weight:400!important;line-height:inherit;text-align:left;text-shadow:none!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a:hover{text-decoration:underline!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner div#hs-eu-policy-wording{margin-bottom:12px}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner div#hs-en-cookie-confirmation-buttons-area{margin:10px 0 0!important;text-align:right!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a#hs-eu-confirmation-button,div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a#hs-eu-decline-button{border-radius:3px;display:inline-block;padding:10px 16px!important;text-decoration:none!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a#hs-eu-confirmation-button{background-color:#00d563!important;border:1px solid #00d563!important;margin-right:12px!important;color:#fff;font-family:inherit;font-size:inherit;font-weight:400!important;line-height:inherit;text-align:left;text-shadow:none!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a#hs-eu-decline-button{border:1px solid #00d563!important;color:#00d563;font-family:inherit;font-size:inherit;font-weight:400!important;line-height:inherit;text-align:left;text-shadow:none!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a#hs-eu-cookie-settings-button{color:#00d563!important;margin-right:12px!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner p{margin:0 0 12px;color:#33475b;font-family:inherit;font-size:inherit;font-weight:400!important;line-height:inherit;text-align:left;text-shadow:none!important}@media print{div#hs-eu-cookie-confirmation{display:none!important}}@media screen and (max-width:480px){div#hs-eu-cookie-confirmation{font-size:12px!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner{padding:8px 14px 14px!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a,div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner a#hs-eu-confirmation-button{font-size:12px!important}div#hs-eu-cookie-confirmation div#hs-eu-cookie-confirmation-inner p{font-size:12px!important;margin-bottom:12px!important;line-height:15px!important}}@media only screen and (min-width:960px){div#hs-eu-cookie-confirmation{position:fixed}div#hs-eu-cookie-confirmation.hs-cookie-notification-position-bottom{border-bottom:0;bottom:0;top:auto;box-shadow:0 -1px 3px #eaf0f6}div#hs-eu-cookie-confirmation.hs-cookie-notification-position-bottom-left{border-bottom:0;border-right:1px solid #cbd6e2;bottom:0;box-shadow:1px -1px 3px #eaf0f6;left:0;max-width:600px;right:auto;top:auto;width:45%}}</style><div id="hs-eu-cookie-confirmation" class="" data-nosnippet="" style="display: none;">
+            <div id="hs-eu-cookie-confirmation-inner">
+              <div id="hs-eu-policy-wording"><p>I agree to and accept 
+that Netguru S.A. will collect, make automatic decisions about, analyze 
+and catalog information about Internet electronic addresses which have 
+connected with the device I have used, information about the type of the
+ device I have used, including the type and version of software 
+installed on the device, for the purpose of determining my Internet 
+activities (the user profile). Automatic decision-making does not 
+involve sensitive data. The agreement is in force for the period when it
+ is legally binding, or until a Party withdraws from the agreement. 
+Withdrawing from the agreement shall result in removing the user’s 
+profile.</p></div>
+              
+              <div id="hs-en-cookie-confirmation-buttons-area">
+                
+                <a href="javascript:void(0);" id="hs-eu-confirmation-button">
+    Accept
+  </a>
+                <a href="javascript:void(0);" id="hs-eu-decline-button">Decline</a>
+              </div>
+            </div>
+          </div><style type="text/css">html.hs-messages-widget-open.hs-messages-mobile,html.hs-messages-widget-open.hs-messages-mobile body{overflow:hidden!important;position:relative!important}html.hs-messages-widget-open.hs-messages-mobile body{height:100%!important;margin:0!important}#hubspot-messages-iframe-container{display:initial!important;z-index:2147483647;position:fixed!important;bottom:0!important}#hubspot-messages-iframe-container.widget-align-left{left:0!important}#hubspot-messages-iframe-container.widget-align-right{right:0!important}#hubspot-messages-iframe-container.internal{z-index:1016}#hubspot-messages-iframe-container.internal iframe{min-width:108px}#hubspot-messages-iframe-container .shadow-container{display:initial!important;z-index:-1;position:absolute;width:0;height:0;bottom:0;content:""}#hubspot-messages-iframe-container .shadow-container.internal{display:none!important}#hubspot-messages-iframe-container .shadow-container.active{width:400px;height:400px}#hubspot-messages-iframe-container iframe{display:initial!important;width:100%!important;height:100%!important;border:none!important;position:absolute!important;bottom:0!important;right:0!important;background:transparent!important}</style>
+    
+    <span><div data-reactroot=""><div class="cookie-msg"><!-- react-text: 3 -->We use cookies to make your exploring a better experience. Please see our<!-- /react-text --><a href="https://www.netguru.com/tos"> cookies' policy. </a><div role="button" class="cookie-msg__close">✕</div></div></div></span><script>
+      renderComponent('CookieMessage');
+    </script>
+    
+
+    
+    
+
+    <div class="page blog-page navbar-expanded">
+      
+        
+          <div id="hs_cos_wrapper_Social_header" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_custom_widget" style="" data-hs-cos-general-type="widget" data-hs-cos-type="custom_widget"><span><div data-reactroot="" class="cm-social-header hidden-sm hidden-xs"><div class="container"><div class="row"><div class="col-xs-8"><div class="cm-social-header__on-blog"><!-- react-text: 6 -->Check out our blog:<!-- /react-text --><a href="https://www.netguru.com/blog/event-companies-pivots-covid-19" class="cm-social-header__title">10 Event Companies Pivoting Their Business Due to COVID-19</a></div></div><div class="col-xs-4"><div class="cm-social-header__socials"><a href="https://twitter.com/netguru" target="_blank" rel="noopener noreferrer" class="cm-social-header__social-item"><span aria-hidden="true" class="fa fa-twitter"></span></a><a href="https://www.facebook.com/netguru" target="_blank" rel="noopener noreferrer" class="cm-social-header__social-item"><span aria-hidden="true" class="fa fa-facebook"></span></a><a href="https://www.linkedin.com/company/netguru" target="_blank" rel="noopener noreferrer" class="cm-social-header__social-item"><span aria-hidden="true" class="fa fa-linkedin"></span></a><a href="https://github.com/netguru" target="_blank" rel="noopener noreferrer" class="cm-social-header__social-item"><span aria-hidden="true" class="fa fa-github"></span></a><a href="https://dribbble.com/netguru" target="_blank" rel="noopener noreferrer" class="cm-social-header__social-item"><span aria-hidden="true" class="fa fa-dribbble"></span></a><a href="https://www.behance.net/netguru" target="_blank" rel="noopener noreferrer" class="cm-social-header__social-item"><span aria-hidden="true" class="fa fa-behance"></span></a></div></div></div></div></div></span><script>
+    params = {
+      recentBlogpost: {
+        
+          
+            name: "10 Event Companies Pivoting Their Business Due to COVID-19",
+            url: 'https://www.netguru.com/blog/event-companies-pivots-covid-19'
+          
+        
+      }
+    };
+    renderComponent('SocialHeader', params);
+</script>
+</div>
+        
+      
+
+      
+
+<!-- start coded_template: id:7978644382 path:basic/Coded files/Custom/email/netguru-onboarding/page/shared/new-blog-codestories-categories.html -->
+<section class="blog__header">
+    
+      <div id="hs_cos_wrapper_Navbar" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_custom_widget" style="" data-hs-cos-general-type="widget" data-hs-cos-type="custom_widget"><style>
+  .nav li a{
+    transition:250ms;
+  }
+  
+  .navbar-module.fixed {
+    position: absolute;
+}
+  
+</style>
+<div class="cm-navbar" role="navigation">
+  <nav class="cm-navbar__nav navbar navbar-default js-navbar cm-navbar--fixed cm-navbar--animate cm-navbar--fixed-in">
+    <div class="cm-navbar__nav-bg">
+    <div class="container">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="https://www.netguru.com/">
+        </a>
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="main-nav">
+        <ul class="nav navbar-nav">
+          <li>
+            <a href="https://www.netguru.com/services">Services</a>
+          </li>
+          <li>
+            <a href="https://www.netguru.com/featured-clients">Clients</a>
+          </li>
+          <li>
+            <a href="https://www.netguru.com/about-us">About us</a>
+          </li>
+          <li>
+            <a href="https://www.netguru.com/resources">Resources</a>
+          </li>
+          <li>
+            <a href="https://www.netguru.com/blog">Blog</a>
+          </li>
+          <li>
+            <a href="https://www.netguru.com/codestories" style="color: rgb(3, 213, 99);">Codestories</a>
+          </li>
+          <li>
+            <a href="https://www.netguru.com/career">Careers</a>
+          </li>
+        </ul>
+        <a href="https://www.netguru.com/estimate-project?ref=navbar" class="btn btn-default btn-green cm-navbar__estimate-project">
+          Estimate project
+        </a>
+      </div>
+    </div>
+    </div>
+  </nav>
+</div>
+
+<script>
+  var currentPage = window.location.href.split('/')[3]
+  document.querySelector('.nav li a[href="/' + currentPage + '"]').style.color = '#03d563';
+</script>
+</div>
+    
+
+    <div class="blog-sections">
+      <div class="container">
+        <div class="blog-sections__wrapper js-blog-sections-wrapper">
+          <a href="https://www.netguru.com/codestories">All</a>
+          <a href="https://www.netguru.com/codestories/topic/ruby-on-rails">Ruby on Rails</a>
+          <a href="https://www.netguru.com/codestories/topic/nodejs">Node JS</a>
+          <a href="https://www.netguru.com/codestories/topic/android">Android</a>
+          <a href="https://www.netguru.com/codestories/topic/ios">iOS</a>
+          <a href="https://www.netguru.com/codestories/topic/react-native">React Native</a>
+          <a href="https://www.netguru.com/codestories/topic/frontend">Frontend</a>
+          <a href="https://www.netguru.com/codestories/topic/flutter">Flutter</a>
+          <a href="https://www.netguru.com/codestories/topic/qa">QA</a>
+
+          <span></span><script>
+            params = {
+              categories: [
+                { value: 'all', label: 'All' },
+                { value: 'ruby-on-rails', label: 'Ruby on Rails' },
+                { value: 'nodejs', label: 'Node JS' },
+                { value: 'android', label: 'Android' },
+                { value: 'ios', label: 'iOS' },
+                { value: 'react-native', label: 'React Native' },
+                { value: 'frontend', label: 'Frontend' },
+                { value: 'flutter', label: 'Flutter' },
+                { value: 'qa', label: 'QA' },
+              ],
+              concern: 'blog',
+              namespace: 'topic',
+              defaultCategory: 'all'
+            }
+            renderComponent('CategoryMenuBlog', params);
+          </script>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  
+  <script>
+    $('.js-blog-search').on('focusin focusout', (e) => {
+      $('.js-blog-sections-wrapper > span').toggle();
+    });
+  </script><!-- end coded_template: id:7978644382 path:basic/Coded files/Custom/email/netguru-onboarding/page/shared/new-blog-codestories-categories.html -->
+
+
+<section class="padded-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-7">
+        <div>
+          <h1 class="large-title blog-post__heading">
+            
+              <span id="hs_cos_wrapper_name" class="hs_cos_wrapper hs_cos_wrapper_meta_field hs_cos_wrapper_type_text" style="" data-hs-cos-general-type="meta_field" data-hs-cos-type="text">Comparison of Text to Speech Solutions for React Native</span>
+            
+          </h1>
+          <div id="hs_cos_wrapper_blogpost-metadata" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_custom_widget" style="" data-hs-cos-general-type="widget" data-hs-cos-type="custom_widget"><div class="blog-post__metadata">
+  <img src="AK_files/Daniel_autor.jpg" class="blog-post__metadata__author-img">
+  <div>
+    Daniel Idaszak
+    <div class="blog-post__metadata__post-info">
+      <div class="blog-post__metadata__read-time">
+        Feb 4, 2020 | 11 min read
+      </div>
+      <div class="blog-post__metadata__topics">
+      
+        <a href="https://www.netguru.com/codestories/topic/react-native" class="blog-post__metadata__topic">
+          React Native
+        </a>
+      
+        <a href="https://www.netguru.com/codestories/topic/text-to-speech" class="blog-post__metadata__topic">
+          Text to speech
+        </a>
+      
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+          
+            <div class="blog-post__resource">
+              <div class="blog-post__image-container" style="background-image: url(https://www.netguru.com/hubfs/dan-farrell-aW9_Lo2AiGg-unsplash.jpg)"></div>
+            </div>
+          
+        </div>
+        <div class="blog-post__content">
+          <span id="hs_cos_wrapper_post_body" class="hs_cos_wrapper hs_cos_wrapper_meta_field hs_cos_wrapper_type_rich_text" style="" data-hs-cos-general-type="meta_field" data-hs-cos-type="rich_text"><h2>A comparison of text to speech solutions</h2>
+<p>There are many text to speech solutions on the market, starting from 
+Google Cloud Text To Speech, Microsoft Azure Text To Speech, Amazon AWS 
+Polly and finishing with natively implemented solutions for Android and 
+iOS devices. While the last one seems easier to implement, is reliable, 
+and offers possibilities like using it without an internet connection, 
+the “bigger” solutions are backed by machine learning and provide higher
+ quality voices. The biggest downside is support for <a href="https://www.netguru.com/what-is-react-native" rel="noopener" target="_blank">React Native</a> - while all of them have official iOS and Android SDKs, it’s really hard to find a library for React Native.<br>In
+ this article, we present a comparison of native solutions for normal 
+React Native apps, Expo ones, and the Rest API of Google Speech To 
+Text.&nbsp;</p>
+<!--more-->
+<h2>React-Native-TTS library</h2>
+<p>The simplest way to implement Text to Speech functionality in React Native apps is by using the <a href="https://github.com/ak1394/react-native-tts">React-Native-TTS library</a>. It is very easy to set up and the library is ready to use with auto-linking from React-Native version 0.60+.<br>What
+ is the biggest advantage of this solution? Native text to speech 
+engines on both platforms allow you to easily use this feature in your 
+app, and, more importantly, enable you to use some of the voices without
+ a network connection.</p>
+<p>The downside of this solution is the lack of consistency. Android and
+ iOS have different text to speech engines, so the selection of voices 
+is different on each platform. This could be an issue if you want to 
+create a chatbot that speaks its own voice.</p>
+<p>You can choose from 281 voices in different languages on Android and 38 provided by Apple on iOS.</p>
+<p>While configuring your voice you can set parameters like:</p>
+<ul>
+<li>Language<br>
+<div class="code-toolbar"><pre class=" language-js"><code class=" language-js">Tts<span class="token punctuation">.</span><span class="token function">setDefaultLanguage</span><span class="token punctuation">(</span><span class="token string">'en-IE'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>Js</span></div></div></div>
+</li>
+<li>Voice<br>
+<div class="code-toolbar"><pre class=" language-js"><code class=" language-js">Tts<span class="token punctuation">.</span><span class="token function">setDefaultVoice</span><span class="token punctuation">(</span><span class="token string">'com.apple.ttsbundle.Moira-compact'</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>Js</span></div></div></div>
+</li>
+<li>Speech rate<br>
+<div class="code-toolbar"><pre class=" language-js"><code class=" language-js">Tts<span class="token punctuation">.</span><span class="token function">setDefaultRate</span><span class="token punctuation">(</span><span class="token number">0.6</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>Js</span></div></div></div>
+</li>
+<li>Pitch<br>
+<div class="code-toolbar"><pre class=" language-js"><code class=" language-js">Tts<span class="token punctuation">.</span><span class="token function">setDefaultPitch</span><span class="token punctuation">(</span><span class="token number">1.5</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>Js</span></div></div></div>
+</li>
+</ul>
+<p>On Android there are also Pan and Volume:</p>
+<div class="code-toolbar"><pre class=" language-js"><code class=" language-js">Tts<span class="token punctuation">.</span><span class="token function">speak</span><span class="token punctuation">(</span><span class="token string">'Hello, world!'</span><span class="token punctuation">,</span> <span class="token punctuation">{</span> androidParams<span class="token punctuation">:</span> <span class="token punctuation">{</span> <span class="token constant">KEY_PARAM_PAN</span><span class="token punctuation">:</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token constant">KEY_PARAM_VOLUME</span><span class="token punctuation">:</span> <span class="token number">0.5</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>Js</span></div></div></div>
+<p>Setup is as easy as typing:&nbsp;</p>
+<div class="code-toolbar"><pre class=" language-bash"><code class=" language-bash">yarn add react-native-tts</code></pre><div class="toolbar"><div class="toolbar-item"><span>Bash</span></div></div></div>
+<p>and the library should link itself while running pod install.</p>
+<p>Let’s create a simple component with speech to text:</p>
+<div class="code-toolbar"><pre class=" language-js"><code class=" language-js">
+<span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Button <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span>
+<span class="token keyword">import</span> Tts <span class="token keyword">from</span> <span class="token string">'react-native-tts'</span>
+ 
+Tts<span class="token punctuation">.</span><span class="token function">setDefaultLanguage</span><span class="token punctuation">(</span><span class="token string">'en-GB'</span><span class="token punctuation">)</span>
+Tts<span class="token punctuation">.</span><span class="token function">setDefaultVoice</span><span class="token punctuation">(</span><span class="token string">'com.apple.ttsbundle.Daniel-compact'</span><span class="token punctuation">)</span>
+ 
+<span class="token keyword">const</span> <span class="token function-variable function">NativeSpeech</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span>
+ <span class="token operator">&lt;</span>Button
+   title<span class="token operator">=</span><span class="token string">"Speak!"</span>
+   onPress<span class="token operator">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Tts<span class="token punctuation">.</span><span class="token function">speak</span><span class="token punctuation">(</span><span class="token string">'Hello World!'</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+ <span class="token operator">/</span><span class="token operator">&gt;</span>
+<span class="token punctuation">)</span>
+ 
+<span class="token keyword">export</span> <span class="token keyword">default</span> NativeSpeech
+</code></pre><div class="toolbar"><div class="toolbar-item"><span>Js</span></div></div></div>
+<h2>Speech React Native Expo module</h2>
+<p>If you are using expo, React-Native-TTS library is not for you. Instead, you should use <a href="https://docs.expo.io/versions/latest/sdk/speech/">Expo-speech SDK</a>. You just need to run:</p>
+<div class="code-toolbar"><pre class=" language-bash"><code class=" language-bash">expo <span class="token function">install</span> expo-speech</code></pre><div class="toolbar"><div class="toolbar-item"><span>Bash</span></div></div></div>
+<p>If you want to use this library in a non-expo project, you can use the <a href="https://github.com/unimodules/react-native-unimodules">unimodules</a> package. Just follow the <a href="https://github.com/unimodules/react-native-unimodules">unimodules</a> documentation, run expo install expo-speech, and then run pod install.</p>
+<p>The speech library from expo uses the same native text to speech 
+engine as the React-Native-TTS library, so you can use the same voices 
+you would use with this library and the configuration process is 
+similar. For more info, head to the expo-speech documentation.<br>Let’s create a simple component with the expo speaking service:</p>
+<div class="code-toolbar"><pre class=" language-jsx"><code class=" language-jsx">
+<span class="token keyword">import</span> React <span class="token keyword">from</span> <span class="token string">'react'</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Button <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> Speech <span class="token keyword">from</span> <span class="token string">'expo-speech'</span>
+ 
+<span class="token keyword">const</span> <span class="token function-variable function">NativeSpeech</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span>
+ <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Button</span> <span class="token attr-name">title</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>Speak!<span class="token punctuation">"</span></span> <span class="token attr-name">onPress</span><span class="token script language-javascript"><span class="token script-punctuation punctuation">=</span><span class="token punctuation">{</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> Speech<span class="token punctuation">.</span><span class="token function">speak</span><span class="token punctuation">(</span><span class="token string">'Hello World!'</span><span class="token punctuation">)</span><span class="token punctuation">}</span></span> <span class="token punctuation">/&gt;</span></span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+ 
+<span class="token keyword">export</span> <span class="token keyword">default</span> NativeSpeech
+</code></pre><div class="toolbar"><div class="toolbar-item"><span>React JSX</span></div></div></div>
+<h2>Google Cloud Speech To Text&nbsp;</h2>
+<p>Google Cloud Speech to Text is a solution without a client library 
+for React Native. We can use its rest API to request base64 encoded mp3 
+with our text. The biggest advantage of this service is the ability to 
+choose one voice that would be available on both platforms. It’s also 
+highly configurable. You can choose from sets of standard voices, but 
+you can also choose from a library of higher quality voices.</p>
+<p>Head to the <a href="https://cloud.google.com/text-to-speech/">Google Text to Speech website</a>. You can test all of the available voices in the panel below.</p>
+<p><img loading="lazy" src="AK_files/Screenshot%25202019-12-17%2520at%252014.png" alt="Screenshot 2019-12-17 at 14.32.07" style="width: 653px;" srcset="https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.32.07.png?width=327&amp;name=Screenshot%202019-12-17%20at%2014.32.07.png 327w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.32.07.png?width=653&amp;name=Screenshot%202019-12-17%20at%2014.32.07.png 653w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.32.07.png?width=980&amp;name=Screenshot%202019-12-17%20at%2014.32.07.png 980w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.32.07.png?width=1306&amp;name=Screenshot%202019-12-17%20at%2014.32.07.png 1306w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.32.07.png?width=1633&amp;name=Screenshot%202019-12-17%20at%2014.32.07.png 1633w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.32.07.png?width=1959&amp;name=Screenshot%202019-12-17%20at%2014.32.07.png 1959w" sizes="(max-width: 653px) 100vw, 653px" width="653"></p>
+<p>In order to start using text to speech, hit the “Get started for free” button and create an account.</p>
+<p>If you are ready, the first thing to do before starting would be 
+creating an API key. Of course, you can create a simple API key to test 
+text to speech, but if you want to use it in a real app, you should 
+restrict this key as described in this blog post.</p>
+<p>Open the <a href="https://console.cloud.google.com/">Google Cloud Console</a>
+ and from the menu choose “APIs &amp; services”, then head to the 
+credentials section. Click “Create Credentials” and use “API key”. The 
+key will be created; click the “Restrict key” button. You will see a 
+screen like this:</p>
+<p><img loading="lazy" src="AK_files/Screenshot%2525202019-12-17%252520at%25252014_002.png" alt="Screenshot 2019-12-17 at 14.39.28" style="width: 653px;" srcset="https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.39.28.png?width=327&amp;name=Screenshot%202019-12-17%20at%2014.39.28.png 327w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.39.28.png?width=653&amp;name=Screenshot%202019-12-17%20at%2014.39.28.png 653w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.39.28.png?width=980&amp;name=Screenshot%202019-12-17%20at%2014.39.28.png 980w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.39.28.png?width=1306&amp;name=Screenshot%202019-12-17%20at%2014.39.28.png 1306w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.39.28.png?width=1633&amp;name=Screenshot%202019-12-17%20at%2014.39.28.png 1633w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.39.28.png?width=1959&amp;name=Screenshot%202019-12-17%20at%2014.39.28.png 1959w" sizes="(max-width: 653px) 100vw, 653px" width="653"></p>
+<p>Choose a name for your key. We will be creating one key for Android 
+and one for iOS apps, so you can name them “API key - iOS” and “API key -
+ Android”. Then go to application restrictions:</p>
+<p><img loading="lazy" src="AK_files/Screenshot%2525202019-12-17%252520at%25252014_004.png" alt="Screenshot 2019-12-17 at 14.40.03" style="width: 653px;" srcset="https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.40.03.png?width=327&amp;name=Screenshot%202019-12-17%20at%2014.40.03.png 327w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.40.03.png?width=653&amp;name=Screenshot%202019-12-17%20at%2014.40.03.png 653w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.40.03.png?width=980&amp;name=Screenshot%202019-12-17%20at%2014.40.03.png 980w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.40.03.png?width=1306&amp;name=Screenshot%202019-12-17%20at%2014.40.03.png 1306w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.40.03.png?width=1633&amp;name=Screenshot%202019-12-17%20at%2014.40.03.png 1633w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.40.03.png?width=1959&amp;name=Screenshot%202019-12-17%20at%2014.40.03.png 1959w" sizes="(max-width: 653px) 100vw, 653px" width="653"></p>
+<p>You can restrict your API key for your app bundle. It will prevent 
+attackers from stealing your keys and using them outside of your app. 
+You have to prepare two different keys, one for Android and one for iOS.
+ If you want, you can also restrict those keys to Text to Speech only:</p>
+<p><img loading="lazy" src="AK_files/Screenshot%2525202019-12-17%252520at%25252014_003.png" alt="Screenshot 2019-12-17 at 14.42.22" style="width: 653px;" srcset="https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.42.22.png?width=327&amp;name=Screenshot%202019-12-17%20at%2014.42.22.png 327w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.42.22.png?width=653&amp;name=Screenshot%202019-12-17%20at%2014.42.22.png 653w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.42.22.png?width=980&amp;name=Screenshot%202019-12-17%20at%2014.42.22.png 980w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.42.22.png?width=1306&amp;name=Screenshot%202019-12-17%20at%2014.42.22.png 1306w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.42.22.png?width=1633&amp;name=Screenshot%202019-12-17%20at%2014.42.22.png 1633w, https://www.netguru.com/hs-fs/hubfs/Screenshot%202019-12-17%20at%2014.42.22.png?width=1959&amp;name=Screenshot%202019-12-17%20at%2014.42.22.png 1959w" sizes="(max-width: 653px) 100vw, 653px" width="653"></p>
+<p>Now you can safely store your keys in your ENV file by using the <a href="https://github.com/luggit/react-native-config">React-Native-Config</a> library and then fetch API key according to the platform.<span><br></span></p>
+<p>Google’s speech to text is a REST API, There is no client library for
+ React Native. That’s why we need to fetch base64 encoded voice to our 
+app and then play It.</p>
+<p>A huge advantage of using this solution is better quality voices 
+backed by machine learning. You can choose from a huge list of voices 
+for every language. Every language has a few voices, both male and 
+female, but also standard ones and WaveNet voices, whose pricing is a 
+little bit higher because of better voice quality. You can check them 
+all out on the <a href="https://cloud.google.com/text-to-speech/docs/voices">Reference list of Google Text to Speech voices</a>. How to set the voice of your choice? It’s as simple as adding the setting to the body of an API call:<span><br></span></p>
+<div class="code-toolbar"><pre class=" language-jsx"><code class=" language-jsx">
+voice<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+     languageCode<span class="token punctuation">:</span> <span class="token string">'en-US'</span><span class="token punctuation">,</span>
+     name<span class="token punctuation">:</span> <span class="token string">'en-US-Standard-B'</span><span class="token punctuation">,</span>
+     ssmlGender<span class="token punctuation">:</span> <span class="token string">'FEMALE'</span>
+   <span class="token punctuation">}</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>React JSX</span></div></div></div>
+<p>Let’s create an API call to fetch this data.<br>Our goal is to fetch 
+data from the https://texttospeech.googleapis.com/v1/text:synthesize 
+endpoint, so first, we can create a function returning an object with 
+our headers and body:</p>
+<div class="code-toolbar"><pre class=" language-jsx"><code class=" language-jsx">
+<span class="token keyword">const</span> <span class="token function-variable function">createRequest</span> <span class="token operator">=</span> text <span class="token operator">=&gt;</span> <span class="token punctuation">(</span><span class="token punctuation">{</span>
+ headers <span class="token punctuation">:</span> <span class="token punctuation">{</span>
+   <span class="token string">'Content-Type'</span><span class="token punctuation">:</span> <span class="token string">'application/json'</span>
+ <span class="token punctuation">}</span><span class="token punctuation">,</span>
+ body<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+   input<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+     text
+   <span class="token punctuation">}</span><span class="token punctuation">,</span>
+   voice<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+     languageCode<span class="token punctuation">:</span> <span class="token string">'en-US'</span><span class="token punctuation">,</span>
+     name<span class="token punctuation">:</span> <span class="token string">'en-US-Standard-B'</span><span class="token punctuation">,</span>
+     ssmlGender<span class="token punctuation">:</span> <span class="token string">'FEMALE'</span>
+   <span class="token punctuation">}</span><span class="token punctuation">,</span>
+   audioConfig<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+     audioEncoding<span class="token punctuation">:</span> <span class="token string">'MP3'</span><span class="token punctuation">,</span>
+   <span class="token punctuation">}</span>
+ <span class="token punctuation">}</span><span class="token punctuation">,</span>
+ method<span class="token punctuation">:</span> <span class="token string">'POST'</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>React JSX</span></div></div></div>
+<p>The createRequest function has some settings for voice and config for
+ audio type, but the most important thing is the “text” argument, which 
+is our text we want Google to say. Now we can create a function which 
+will fetch our mp3.</p>
+<div class="code-toolbar"><pre class=" language-jsx"><code class=" language-jsx">
+<span class="token keyword">import</span> Config <span class="token keyword">from</span> <span class="token string">'react-native-config'</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Platform <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">'react-native'</span>
+ 
+<span class="token keyword">const</span> speech <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span>text<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+ <span class="token keyword">const</span> key <span class="token operator">=</span> Platform<span class="token punctuation">.</span><span class="token constant">OS</span> <span class="token operator">===</span> <span class="token string">'ios'</span> <span class="token operator">?</span> Config<span class="token punctuation">.</span><span class="token constant">KEY_IOS</span> <span class="token punctuation">:</span> Config<span class="token punctuation">.</span><span class="token constant">KEY_ANDROID</span>
+ <span class="token keyword">const</span> address <span class="token operator">=</span> <span class="token template-string"><span class="token string">`https://texttospeech.googleapis.com/v1/text:synthesize?key=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>key<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span>
+ <span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token function">createRequest</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+ <span class="token keyword">try</span> <span class="token punctuation">{</span>
+   <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>address<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span>
+   <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">await</span> response<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+ <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+ <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="toolbar"><div class="toolbar-item"><span>React JSX</span></div></div></div>
+<p>As you can see, we are using react-native-config to fetch the API key
+ depending on the current platform, using the createRequest function 
+with the passed text, and then fetching from the Google Text to Speech 
+API. It should return base64 encoded data to the console, just run:</p>
+<pre><code class="js">speech(‘Hello world!’)</code></pre>
+<p>If we want to decode base64 and play it on our device, we need to use the <a href="https://github.com/itinance/react-native-fs">react-native-fs </a>library, so we can create createFile function:</p>
+<div class="code-toolbar"><pre class=" language-jsx"><code class=" language-jsx">
+<span class="token keyword">const</span> <span class="token constant">RNFS</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'react-native-fs'</span><span class="token punctuation">)</span>
+ 
+<span class="token keyword">const</span> createFile <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span>path<span class="token punctuation">,</span> data<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+ <span class="token keyword">try</span> <span class="token punctuation">{</span>
+   <span class="token keyword">return</span> <span class="token keyword">await</span> <span class="token constant">RNFS</span><span class="token punctuation">.</span><span class="token function">writeFile</span><span class="token punctuation">(</span>path<span class="token punctuation">,</span> data<span class="token punctuation">,</span> <span class="token string">'base64'</span><span class="token punctuation">)</span>
+ <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+ <span class="token punctuation">}</span>
+ 
+ <span class="token keyword">return</span> <span class="token keyword">null</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="toolbar"><div class="toolbar-item"><span>React JSX</span></div></div></div>
+<p>As the first argument, we need to pass the path and our base64 
+encoded data. It will save It in our device memory as an mp3, which can 
+be played by the <a href="https://github.com/zmxv/react-native-sound">React-Native-Sound</a> library. So right now we need a function to play our sound:</p>
+<div class="code-toolbar"><pre class=" language-jsx"><code class=" language-jsx">
+<span class="token keyword">const</span> Sound <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">'react-native-sound'</span><span class="token punctuation">)</span>
+ 
+<span class="token keyword">const</span> <span class="token function-variable function">playMusic</span> <span class="token operator">=</span> <span class="token punctuation">(</span>music<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+ <span class="token keyword">const</span> speech <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Sound</span><span class="token punctuation">(</span>music<span class="token punctuation">,</span> <span class="token string">''</span><span class="token punctuation">,</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+   <span class="token keyword">if</span> <span class="token punctuation">(</span>error<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+     console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span><span class="token string">'failed to load the sound'</span><span class="token punctuation">,</span> error<span class="token punctuation">)</span>
+ 
+     <span class="token keyword">return</span> <span class="token keyword">null</span>
+   <span class="token punctuation">}</span>
+   speech<span class="token punctuation">.</span><span class="token function">play</span><span class="token punctuation">(</span><span class="token punctuation">(</span>success<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>success<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+       console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span><span class="token string">'playback failed due to audio decoding errors'</span><span class="token punctuation">)</span>
+     <span class="token punctuation">}</span>
+   <span class="token punctuation">}</span><span class="token punctuation">)</span>
+ 
+   <span class="token keyword">return</span> <span class="token keyword">null</span>
+ <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>React JSX</span></div></div></div>
+<p>We need to pass the previously created path as an argument to the playMusic function.<br>Now we can connect our code and try our new speaking service:</p>
+<div class="code-toolbar"><pre class=" language-jsx"><code class=" language-jsx">
+<span class="token keyword">const</span> speech <span class="token operator">=</span> <span class="token keyword">async</span> <span class="token punctuation">(</span>text<span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+ <span class="token keyword">const</span> key <span class="token operator">=</span> Platform<span class="token punctuation">.</span><span class="token constant">OS</span> <span class="token operator">===</span> <span class="token string">'ios'</span> <span class="token operator">?</span> Config<span class="token punctuation">.</span><span class="token constant">KEY_IOS</span> <span class="token punctuation">:</span> Config<span class="token punctuation">.</span><span class="token constant">KEY_ANDROID</span>
+ <span class="token keyword">const</span> address <span class="token operator">=</span> <span class="token template-string"><span class="token string">`https://texttospeech.googleapis.com/v1/text:synthesize?key=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>key<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span>
+ <span class="token keyword">const</span> payload <span class="token operator">=</span> <span class="token function">createRequest</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+ <span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span><span class="token constant">RNFS</span><span class="token punctuation">.</span>DocumentDirectoryPath<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/voice.mp3`</span></span>
+ <span class="token keyword">try</span> <span class="token punctuation">{</span>
+   <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>address<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">`</span></span><span class="token punctuation">,</span> payload<span class="token punctuation">)</span>
+   <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token keyword">await</span> response<span class="token punctuation">.</span><span class="token function">json</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span>
+   <span class="token keyword">await</span> <span class="token function">createFile</span><span class="token punctuation">(</span>path<span class="token punctuation">,</span> result<span class="token punctuation">.</span>audioContent<span class="token punctuation">)</span>
+   <span class="token function">playMusic</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span>
+ <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+   console<span class="token punctuation">.</span><span class="token function">warn</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+ <span class="token punctuation">}</span>
+<span class="token punctuation">}</span></code></pre><div class="toolbar"><div class="toolbar-item"><span>React JSX</span></div></div></div>
+<h2>Summary</h2>
+<p>In this article, we compared speech to text solutions - native ones 
+and the Google Cloud Speech To Text. We also provided some information 
+about using this service in Expo-based projects and native projects.</p>
+<p><br>When choosing a speech to text solution we have to decide on the 
+most important features - whether it’s using this service offline, or 
+maybe having the same voice on all platforms? It’s also possible to use 
+both solutions, with the native one as a fallback, so feel free to 
+experiment with the code!</p>
+<p>&nbsp;</p>
+<p><span>Photo by&nbsp;</span><a href="https://unsplash.com/@farreal?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Dan Farrell</a><span>&nbsp;on&nbsp;</span><a href="https://unsplash.com/?utm_source=unsplash&amp;utm_medium=referral&amp;utm_content=creditCopyText">Unsplash</a></p></span>
+        </div>
+        <div class="blog-post__authors">
+          <div class="blog-post__author">
+            
+              <img class="blog-post__author__picture" src="AK_files/Daniel_autor_002.jpg">
+            
+            <div>
+              <div class="bold blog-post__author__name">
+                
+                  Daniel Idaszak
+                
+                
+                
+              </div>
+              
+            </div>
+          </div>
+          
+        </div>
+        <div class="row">
+          <div class="col-md-12 blog-post__cta-caution">
+            <!-- start coded_template: id:5231754851 path:custom/page/shared/codestories-bottom-cta.html -->
+
+  <span id="hs_cos_wrapper_custom_btm_cta" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_cta" style="" data-hs-cos-general-type="widget" data-hs-cos-type="cta"><!--HubSpot Call-to-Action Code --><span class="hs-cta-wrapper" id="hs-cta-wrapper-f869f20d-aae9-4efc-8189-5464e3bf47a1"><span class="hs-cta-node hs-cta-f869f20d-aae9-4efc-8189-5464e3bf47a1" id="hs-cta-f869f20d-aae9-4efc-8189-5464e3bf47a1" style="visibility: visible;" data-hs-drop="true"><a id="cta_button_493098_38386b9e-1ccd-4da4-8393-c6bca957157c" class="cta_button" href="https://www.netguru.com/cs/c/?cta_guid=38386b9e-1ccd-4da4-8393-c6bca957157c&amp;signature=AAH58kEuEHHhgy9d3KPpqGQfL6peD30cXQ&amp;placement_guid=f869f20d-aae9-4efc-8189-5464e3bf47a1&amp;click=c8519fb7-1044-4a31-9e66-e7359e6b5ad5&amp;hsutk=6c25a4302b13f6d780ed7df77b25b7ff&amp;canon=https%3A%2F%2Fwww.netguru.com%2Fcodestories%2Freact-native-text-to-speech&amp;portal_id=493098&amp;redirect_url=APefjpHpQIwW0H3Yk7g__PC3DyN9pB8kpUfEcKZkRIsqfshy-S6C4k-i08HctD5hyaj-uXBqnAHCdDlP4aEoEKib9oJDOdo7WF4AL91hA4KnpR5XzXRhjgs&amp;__hstc=199729585.6c25a4302b13f6d780ed7df77b25b7ff.1602906598700.1602906598700.1602906598700.1&amp;__hssc=199729585.1.1602906598700&amp;__hsfp=412467850&amp;contentType=blog-post" target="_blank" cta_dest_link="https://www.netguru.com/career"><img id="hs-cta-img-f869f20d-aae9-4efc-8189-5464e3bf47a1" class="hs-cta-img " style="border-width: 0px; " mce_noresize="1" alt="New call-to-action" src="AK_files/3c01ef18-03bf-45b7-a297-0e1faa643dbf.webp"></a></span><script charset="utf-8" src="AK_files/current.js"></script><script type="text/javascript"> hbspt.cta._relativeUrls=true;hbspt.cta.load(493098, 'f869f20d-aae9-4efc-8189-5464e3bf47a1', {}); </script></span><!-- end HubSpot Call-to-Action Code --></span>
+<!-- end coded_template: id:5231754851 path:custom/page/shared/codestories-bottom-cta.html -->
+
+          </div>
+        </div>
+        <div class="row disqus">
+          <div class="col-lg-12">
+            <div id="disqus_thread">
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1">
+        <div class="text-center blog-post__shares">
+          <a href="javascript:void(0)" class="blog-post__shares__icon blog-post__shares__icon--facebook js-share" data-type="fb">
+            <i class="fa fa-facebook fa-2" aria-hidden="true"></i>
+          </a>
+          <a href="javascript:void(0)" class="blog-post__shares__icon blog-post__shares__icon--twitter js-share" data-type="twitter">
+            <i class="fa fa-twitter fa-2" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="js-sticky fixed" style="width: 360px; top: 100px;">
+            <div class="row">
+              <div class="col-md-12 blog-post__cta-caution">
+                <!-- start coded_template: id:5231754857 path:custom/page/shared/codestories-sidebar-cta.html -->
+
+
+  <span id="hs_cos_wrapper_custom_sticky_cta" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_cta" style="" data-hs-cos-general-type="widget" data-hs-cos-type="cta"><!--HubSpot Call-to-Action Code --><span class="hs-cta-wrapper" id="hs-cta-wrapper-1ee45616-dbb2-4166-bbdc-b48682356f8d"><span class="hs-cta-node hs-cta-1ee45616-dbb2-4166-bbdc-b48682356f8d" id="hs-cta-1ee45616-dbb2-4166-bbdc-b48682356f8d" style="visibility: visible;" data-hs-drop="true"><a id="cta_button_493098_1846ffc1-8544-4c9a-a4b9-7a27bbfb0512" class="cta_button" href="https://www.netguru.com/cs/c/?cta_guid=1846ffc1-8544-4c9a-a4b9-7a27bbfb0512&amp;signature=AAH58kGrbriuDzkfSlKxiOWLWL759p4UXw&amp;placement_guid=1ee45616-dbb2-4166-bbdc-b48682356f8d&amp;click=5b0589bc-2a63-4a59-a79c-051d373ae7f9&amp;hsutk=6c25a4302b13f6d780ed7df77b25b7ff&amp;canon=https%3A%2F%2Fwww.netguru.com%2Fcodestories%2Freact-native-text-to-speech&amp;portal_id=493098&amp;redirect_url=APefjpHja_oUkt0DK-XkXZj2sP98dkKHh2p9nWb9F9NkK-2vM5RYeBhC06y-booeI4rVIkAeosRmJH7LIQoI89YGIRAu-iit-iZ1hfP5qTUVhp8fA0SnvRE&amp;__hstc=199729585.6c25a4302b13f6d780ed7df77b25b7ff.1602906598700.1602906598700.1602906598700.1&amp;__hssc=199729585.1.1602906598700&amp;__hsfp=412467850&amp;contentType=blog-post" cta_dest_link="https://www.netguru.com/career/"><img id="hs-cta-img-1ee45616-dbb2-4166-bbdc-b48682356f8d" class="hs-cta-img " style="border-width: 0px; " mce_noresize="1" alt="Looking for new opportunities? Check our offers!" src="AK_files/68f7984b-49b0-4b97-85c7-8b614318a607.webp"></a></span><script charset="utf-8" src="AK_files/current.js"></script><script type="text/javascript"> hbspt.cta._relativeUrls=true;hbspt.cta.load(493098, '1ee45616-dbb2-4166-bbdc-b48682356f8d', {}); </script></span><!-- end HubSpot Call-to-Action Code --></span>
+<!-- end coded_template: id:5231754857 path:custom/page/shared/codestories-sidebar-cta.html -->
+
+              </div>
+            </div>
+            
+            
+        </div>
+      </div>
+    </div>
+    
+      <div class="blog-post__related">
+        <div class="bold text-center blog-post__related__title small-title">
+          READ ALSO FROM React Native
+        </div>
+        <div class="blog-post__related__break">
+          <div class="bold blog-post__related__break__read-more">
+            Read also
+          </div>
+        </div>
+        <div class="more-posts">
+          
+          
+          <div class="row">
+            
+              
+                
+                <div class="col-md-4 more-posts__col">
+                  <a href="https://www.netguru.com/codestories/firebase-smart-reply" class="more-posts__link">
+                    <div class="more-posts__image-container" style="background-image: url(https://www.netguru.com/hubfs/Zrzut%20ekranu%202020-10-12%20o%2011.58.11.png)">
+                      <div class="more-posts__image-overlay">
+                      </div>
+                    </div>
+                    <div class="semibold more-posts__post-title">
+                      Firebase Smart Reply: A Simple Trick That Will Make Your App Smarter
+                    </div>
+                  </a>
+                </div>
+              
+            
+              
+                
+                <div class="col-md-4 more-posts__col">
+                  <a href="https://www.netguru.com/codestories/querying-and-sorting-firestore-data" class="more-posts__link">
+                    <div class="more-posts__image-container" style="background-image: url(https://www.netguru.com/hubfs/Zrzut%20ekranu%202020-09-14%20o%2012.48.25.png)">
+                      <div class="more-posts__image-overlay">
+                      </div>
+                    </div>
+                    <div class="semibold more-posts__post-title">
+                      Querying and Sorting Firestore Data
+                    </div>
+                  </a>
+                </div>
+              
+            
+              
+                
+                <div class="col-md-4 more-posts__col">
+                  <a href="https://www.netguru.com/codestories/how-to-make-your-app-respond-gracefully-to-region-change" class="more-posts__link">
+                    <div class="more-posts__image-container" style="background-image: url(https://www.netguru.com/hubfs/firebase_remote_config_blogpost_img.jpg)">
+                      <div class="more-posts__image-overlay">
+                      </div>
+                    </div>
+                    <div class="semibold more-posts__post-title">
+                      How to Make Your App Respond Gracefully to Region Change
+                    </div>
+                  </a>
+                </div>
+              
+            
+              
+            
+          </div>
+        </div>
+      </div>
+    
+  </div>
+</section>
+<!-- start coded_template: id:4344400523 path:custom/page/shared/new-successful-project.html -->
+<div class="green-bg map-bottom successful-project">
+  <span><div data-reactroot="" class="cm-parallax-logo"><div class="_container_1wabf_1" style="width: 525px; top: -547.8px; left: inherit; height: auto; right: inherit;"><div><img alt="Parallax" src="AK_files/ng_sign_bg_dark.webp" class="cm-parallax-logo__image"></div></div></div></span><script>
+    params = {
+      left: 'inherit',
+      top: '30%',
+      color: 'dark'
+    }
+    renderComponent('ParallaxLogo', params)
+  </script>
+
+  <div class="successful-project__content">
+    <div class="successful-project__heading">
+      <span id="hs_cos_wrapper_successful_project_title" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="text">Need a successful project?</span>
+    </div>
+    <a href="https://www.netguru.com/estimate-project?ref=successful-project-footer-cta" class="btn btn-lg btn-default btn-green text-center successful-project__estimate-project">
+      Estimate project
+    </a>
+    <a href="https://www.netguru.com/contact" class="small-title--inverted successful-project__contact-us">
+      or contact us
+    </a>
+  </div>
+</div><!-- end coded_template: id:4344400523 path:custom/page/shared/new-successful-project.html -->
+
+<div id="hs_cos_wrapper_module_16000882812582" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_module" style="" data-hs-cos-general-type="widget" data-hs-cos-type="module"><div class="module-wrapper footer-module--hidden">
+	<span hidden=""></span>
+  <div class="footer-module">
+    <div class="footer-module--logo">
+      <a href="https://www.netguru.com/">
+        <svg width="165px" height="32px" viewBox="0 0 322 62" version="1.1" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink">
+            <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+            <title>netguru_logo</title>
+            <desc>Created with Sketch.</desc>
+            <defs></defs>
+            <g id="Netguru-Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                <g id="MobileDevelopment_LP" transform="translate(-598.000000, -100.000000)" fill-rule="nonzero">
+                    <g id="Slider">
+                        <g id="netguru_logo" transform="translate(598.000000, 99.000000)">
+                            <path d="M4.35,62.31 C3.45887259,62.31 2.60424345,61.956001 1.97412122,61.3258788 C1.34399898,60.6957566 0.99,59.8411274 0.99,58.95 L0.99,4.35 C0.994728698,2.99465389 1.81330603,1.77485725 3.06575614,1.25682815 C4.31820625,0.738799044 5.75926243,1.02398287 6.72,1.98 L26.72,21.98 C27.6455511,22.8099887 28.0371768,24.0831992 27.7380819,25.2898758 C27.4389869,26.4965523 26.4980576,27.4394668 25.292014,27.7411041 C24.0859704,28.0427414 22.8119375,27.6537999 21.98,26.73 L7.71,12.47 L7.71,58.97 C7.70735179,59.8584765 7.3518641,60.7095108 6.72174101,61.3358832 C6.09161792,61.9622555 5.23847644,62.3126561 4.35,62.31 Z" id="Shape" fill="#00D664"></path>
+                            <path d="M58.96,62.31 C58.0684021,62.3053391 57.2154457,61.9454418 56.59,61.31 L36.59,41.31 C35.2810853,40.0010851 35.2810854,37.8789149 36.5900001,36.5700001 C37.8989149,35.2610854 40.0210851,35.2610853 41.33,36.57 L55.6,50.83 L55.6,4.33 C55.6,2.47708466 57.1020847,0.975 58.955,0.975 C60.8079153,0.975 62.31,2.47708466 62.31,4.33 L62.31,58.93 C62.3153186,59.8228572 61.9650415,60.6811145 61.3365055,61.3152791 C60.7079696,61.9494438 59.8528691,62.3073585 58.96,62.31 Z" id="Shape" fill="#00D664"></path>
+                            <path class="logo-letter" d="M121.47,27.75 L121.47,47.02 L114.75,47.02 L114.75,29.95 C114.75,24.8 112.09,21.95 107.61,21.95 C103.29,21.95 99.67,24.8 99.67,30.05 L99.67,47.05 L92.95,47.05 L92.95,16.53 C92.9540704,16.0154436 93.2658756,15.5533496 93.7415085,15.3569873 C94.2171415,15.1606251 94.7641208,15.2681751 95.13,15.63 L99.6,20.1 L99.6,20.1 C101.757301,17.0810885 105.304386,15.3697425 109.01,15.56 C116.3,15.56 121.47,20.58 121.47,27.75 Z" id="Shape" fill="#FFFFFF"></path>
+                            <path class="logo-letter" d="M157.91,31.65 C157.91,32.51 157.85,33.38 157.78,34.15 L135.13,34.15 C136.03,39.65 139.9,41.96 144.25,41.96 C147.478614,41.8892936 150.593394,40.7537698 153.11,38.73 L156.44,43.5 C152.920922,46.4594092 148.424527,47.9998078 143.83,47.82 C134.65,47.82 128.15,41.42 128.15,31.69 C128.15,21.96 134.39,15.56 143.41,15.56 C151.99,15.56 157.88,22.08 157.91,31.65 Z M135.16,29.02 L151.06,29.02 C150.32,24.25 147.54,21.47 143.28,21.47 C138.52,21.51 135.86,24.58 135.16,29.02 Z" id="Shape" fill="#FFFFFF"></path>
+                            <path class="logo-letter" d="M185.49,22.44 L173.74,22.44 L173.74,35.78 C173.74,39.91 175.92,41.51 178.6,41.51 C180.809896,41.3867482 182.945305,40.6680345 184.78,39.43 L187.44,44.77 C184.681502,46.7038743 181.398798,47.7504325 178.03,47.77 C171.09,47.77 167.03,44.03 167.03,35.87 L167.03,22.44 L160.92,22.44 L160.92,16.36 L167.03,16.36 L167.03,7.08 L173.75,7.08 L173.75,16.36 L185.49,16.36 L185.49,22.44 L185.49,22.44 Z" id="Shape" fill="#FFFFFF"></path>
+                            <path class="logo-letter" d="M214.57,20.02 L214.57,16.34 L221.3,16.34 L221.3,44.85 C221.3,54.48 215.09,60.4 204.85,60.4 C200.28,60.4 195.25,59.15 192.02,56.85 L194.45,51.19 C197.566866,53.1573332 201.164674,54.2297568 204.85,54.29 C211.12,54.29 214.58,50.83 214.58,45.14 L214.58,42.68 C212.28,45.62 208.82,47.16 204.37,47.16 C197.37,47.16 190.16,41.27 190.16,31.35 C190.16,21.43 197.36,15.54 204.37,15.54 C208.81,15.56 212.3,17.12 214.57,20.02 Z M197.03,31.35 C197.03,36.5 200.42,40.85 206.08,40.85 C211.49,40.85 215.13,36.72 215.13,31.35 C215.13,25.98 211.48,21.85 206.08,21.85 C200.42,21.86 197.03,26.18 197.03,31.36 L197.03,31.35 Z" id="Shape" fill="#FFFFFF"></path>
+                            <path class="logo-letter" d="M288.14,16.42 L286.54,23.04 C284.946613,22.2960953 283.208475,21.9136367 281.45,21.92 C277.19,21.92 274.16,24.92 274.16,30.14 L274.16,47.02 L267.47,47.02 L267.47,16.36 L274.09,16.36 L274.09,19.82 C276.09,16.91 279.24,15.56 282.98,15.56 C284.739831,15.5043652 286.493339,15.7966165 288.14,16.42 L288.14,16.42 Z" id="Shape" fill="#FFFFFF"></path>
+                            <path class="logo-letter" d="M230.07,35.62 L230.07,16.35 L236.79,16.35 L236.79,33.41 C236.79,38.56 239.45,41.41 243.93,41.41 C248.25,41.41 251.87,38.56 251.87,33.31 L251.87,16.31 L258.59,16.31 L258.59,46.79 C258.58593,47.3045564 258.274124,47.7666504 257.798491,47.9630127 C257.322858,48.1593749 256.775879,48.0518249 256.41,47.69 L251.94,43.22 L251.94,43.22 C249.782699,46.2389115 246.235614,47.9502575 242.53,47.76 C235.23,47.81 230.07,42.79 230.07,35.62 Z" id="Shape" fill="#FFFFFF"></path>
+                            <path class="logo-letter" d="M292.98,35.62 L292.98,16.35 L299.7,16.35 L299.7,33.41 C299.7,38.56 302.36,41.41 306.84,41.41 C311.16,41.41 314.77,38.56 314.77,33.31 L314.77,16.31 L321.49,16.31 L321.49,46.79 C321.48593,47.3045564 321.174124,47.7666504 320.698491,47.9630127 C320.222858,48.1593749 319.675879,48.0518249 319.31,47.69 L314.84,43.22 L314.84,43.22 C312.682699,46.2389115 309.135614,47.9502575 305.43,47.76 C298.13,47.81 292.98,42.79 292.98,35.62 Z" id="Shape" fill="#FFFFFF"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg>
+      </a>
+    </div>
+    <div class="footer-module--content">
+      <div class="footer-module--data">
+        <div class="footer-module--address">
+          <ul>
+            
+          </ul>
+        </div>
+        <div class="footer-module--finances">
+          <ul>
+            
+              <li><a id="mailto_hello" href="mailto:hello@netguru.com">hello@netguru.com</a></li>
+          </ul>
+        </div>
+      </div>
+      
+<!--       <div class="footer-module--links"> -->
+        
+<!--       </div> -->
+    </div>
+    <div class="footer-module--awards">
+      
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-main">
+    <span id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_menu" style="" data-hs-cos-general-type="widget" data-hs-cos-type="menu"><div id="hs_menu_wrapper_module_16000882812582_" class="hs-menu-wrapper active-branch flyouts hs-menu-flow-horizontal" role="navigation" data-sitemap-name="default" data-menu-id="30765701848" aria-label="Navigation Menu">
+ <ul>
+  <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="menu"><a href="javascript:;" aria-haspopup="true" aria-expanded="false" role="menuitem"></a>
+   <ul class="hs-menu-children-wrapper">
+    <li class="hs-menu-item hs-menu-depth-2 hs-item-has-children" role="menuitem"><a href="https://www.netguru.com/services" role="menuitem">Services</a>
+     <ul class="hs-menu-children-wrapper">
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/research-and-development" role="menuitem">Research &amp; Development</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/product-design" role="menuitem">Product Design</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/ux-design" role="menuitem">UX Design</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/branding-services" role="menuitem">Branding</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/software-development" role="menuitem">Software Development</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/web-development" role="menuitem">Web Development</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/mobile-development" role="menuitem">Mobile Development</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/digital-transformation" role="menuitem">Digital Transformation</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/machine-learning" role="menuitem">Machine Learning</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/services/cloud-technology" role="menuitem">Cloud Technology</a></li>
+     </ul></li>
+    <li class="hs-menu-item hs-menu-depth-2 hs-item-has-children" role="menuitem"><a href="https://www.netguru.com/industries" role="menuitem">Industries</a>
+     <ul class="hs-menu-children-wrapper">
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/industries/fintech" role="menuitem">Fintech</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/industries/healthcare" role="menuitem">Healthcare</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/industries/retail" role="menuitem">Retail</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/industries/education" role="menuitem">Education</a></li>
+     </ul></li>
+   </ul></li>
+  <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="menu"><a href="javascript:;" aria-haspopup="true" aria-expanded="false" role="menuitem"></a>
+   <ul class="hs-menu-children-wrapper">
+    <li class="hs-menu-item hs-menu-depth-2 hs-item-has-children" role="menuitem"><a href="https://www.netguru.com/featured-clients" role="menuitem">Customers</a>
+     <ul class="hs-menu-children-wrapper">
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/featured/solarisbank-the-first-banking-platform-for-corporations-and-startup" role="menuitem">solarisBank</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/featured/volkswagen-home-first-in-the-world-concept-store-for-volkswagen" role="menuitem">Volkswagen</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/featured/keller-williams-digital-transformation" role="menuitem">Keller Williams</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/featured/babbel" role="menuitem">Babbel</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/featured/damac" role="menuitem">Damac</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/featured/enterprise-mobile-app-for-workspace-management" role="menuitem">IKEA</a></li>
+     </ul></li>
+    <li class="hs-menu-item hs-menu-depth-2 hs-item-has-children" role="menuitem"><a href="javascript:;" role="menuitem">Reports</a>
+     <ul class="hs-menu-children-wrapper">
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/healthcare-report-download" role="menuitem">Patient Management Apps </a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/payday-startups-report" role="menuitem">Payday Startups</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/resources/electric-scooters-report" role="menuitem">Electric Scooter Market</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/en/edtech-report" role="menuitem">Online Education</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/online-grocery-shopping-report" role="menuitem">Online Grocery Shopping </a></li>
+     </ul></li>
+   </ul></li>
+  <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="menu"><a href="javascript:;" aria-haspopup="true" aria-expanded="false" role="menuitem"></a>
+   <ul class="hs-menu-children-wrapper">
+    <li class="hs-menu-item hs-menu-depth-2 hs-item-has-children" role="menuitem"><a href="https://www.netguru.com/blog" role="menuitem">Blog</a>
+     <ul class="hs-menu-children-wrapper">
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/blog/topic/product-design" role="menuitem">Design</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/blog/topic/software-development" role="menuitem">Development</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/blog/topic/digital-transformation" role="menuitem">Digital Transformation</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/blog/topic/machine-learning" role="menuitem">Machine Learning</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/blog/topic/project-management" role="menuitem">Project Management</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/blog/topic/interview" role="menuitem">Interviews</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/blog/topic/trends" role="menuitem">Trends</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/blog/topic/sustainability" role="menuitem">Sustainability</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/newsletter/codestories-european-tech-newsletter" role="menuitem">Join Our Newsletter</a></li>
+     </ul></li>
+    <li class="hs-menu-item hs-menu-depth-2 hs-item-has-children" role="menuitem"><a href="https://www.netguru.com/resources" role="menuitem">Publications</a>
+     <ul class="hs-menu-children-wrapper">
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://disruption-guide-nyc.netguru.com/" role="menuitem">Disruption Guide NYC 2020</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/design-process" role="menuitem">Design Proces for Pros</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://pm-guide.netguru.com/" role="menuitem">Project Management Guide</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/scaling-fintech-ebook" role="menuitem">Scaling Fintech</a></li>
+     </ul></li>
+   </ul></li>
+  <li class="hs-menu-item hs-menu-depth-1 hs-item-has-children" role="menu"><a href="javascript:;" aria-haspopup="true" aria-expanded="false" role="menuitem"></a>
+   <ul class="hs-menu-children-wrapper">
+    <li class="hs-menu-item hs-menu-depth-2 hs-item-has-children" role="menuitem"><a href="https://www.netguru.com/about-us" role="menuitem">About us</a>
+     <ul class="hs-menu-children-wrapper">
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/about-us#our-values" role="menuitem">Our Values</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/about-us#howWeWork" role="menuitem">How We Work</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/about-us/team-netguru" role="menuitem">Meet Our Team</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/about-us/press" role="menuitem">Press Office</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/sustainability" role="menuitem">Sustainability Policies</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/covid19-netguru-policy" role="menuitem">COVID-19 Policy Statement</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/partners/apply" role="menuitem">Become a Partner</a></li>
+     </ul></li>
+    <li class="hs-menu-item hs-menu-depth-2 hs-item-has-children" role="menuitem"><a href="https://www.netguru.com/career" role="menuitem">Join Netguru</a>
+     <ul class="hs-menu-children-wrapper">
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/career" role="menuitem">Open Positions</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/career/paths" role="menuitem">Careers Paths</a></li>
+      <li class="hs-menu-item hs-menu-depth-3" role="menuitem"><a href="https://www.netguru.com/talent/marketplace" role="menuitem">Join as a Freelancer</a></li>
+     </ul></li>
+   </ul></li>
+ </ul>
+</div></span>
+  </div>
+  <div class="footer-details">
+    <a href="https://www.netguru.com/">
+      <!-- start coded_template: id:34056729102 path:N20/templates/partials/svg/logo.html -->
+<svg class="footer__logo" width="322px" height="62px" viewBox="0 0 322 62" version="1.1" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink">
+  <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+  <title>Netguru logo</title>
+  <defs></defs>
+  <g id="Netguru-Mobile" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="MobileDevelopment_LP" transform="translate(-598.000000, -100.000000)" fill-rule="nonzero">
+      <g id="Slider">
+        <g id="netguru_logo" transform="translate(598.000000, 99.000000)">
+          <path d="M4.35,62.31 C3.45887259,62.31 2.60424345,61.956001 1.97412122,61.3258788 C1.34399898,60.6957566 0.99,59.8411274 0.99,58.95 L0.99,4.35 C0.994728698,2.99465389 1.81330603,1.77485725 3.06575614,1.25682815 C4.31820625,0.738799044 5.75926243,1.02398287 6.72,1.98 L26.72,21.98 C27.6455511,22.8099887 28.0371768,24.0831992 27.7380819,25.2898758 C27.4389869,26.4965523 26.4980576,27.4394668 25.292014,27.7411041 C24.0859704,28.0427414 22.8119375,27.6537999 21.98,26.73 L7.71,12.47 L7.71,58.97 C7.70735179,59.8584765 7.3518641,60.7095108 6.72174101,61.3358832 C6.09161792,61.9622555 5.23847644,62.3126561 4.35,62.31 Z" fill="#00D664"></path>
+          <path d="M58.96,62.31 C58.0684021,62.3053391 57.2154457,61.9454418 56.59,61.31 L36.59,41.31 C35.2810853,40.0010851 35.2810854,37.8789149 36.5900001,36.5700001 C37.8989149,35.2610854 40.0210851,35.2610853 41.33,36.57 L55.6,50.83 L55.6,4.33 C55.6,2.47708466 57.1020847,0.975 58.955,0.975 C60.8079153,0.975 62.31,2.47708466 62.31,4.33 L62.31,58.93 C62.3153186,59.8228572 61.9650415,60.6811145 61.3365055,61.3152791 C60.7079696,61.9494438 59.8528691,62.3073585 58.96,62.31 Z" fill="#00D664"></path>
+          <path class="logo-letter" d="M121.47,27.75 L121.47,47.02 L114.75,47.02 L114.75,29.95 C114.75,24.8 112.09,21.95 107.61,21.95 C103.29,21.95 99.67,24.8 99.67,30.05 L99.67,47.05 L92.95,47.05 L92.95,16.53 C92.9540704,16.0154436 93.2658756,15.5533496 93.7415085,15.3569873 C94.2171415,15.1606251 94.7641208,15.2681751 95.13,15.63 L99.6,20.1 L99.6,20.1 C101.757301,17.0810885 105.304386,15.3697425 109.01,15.56 C116.3,15.56 121.47,20.58 121.47,27.75 Z" fill="#FFFFFF"></path>
+          <path class="logo-letter" d="M157.91,31.65 C157.91,32.51 157.85,33.38 157.78,34.15 L135.13,34.15 C136.03,39.65 139.9,41.96 144.25,41.96 C147.478614,41.8892936 150.593394,40.7537698 153.11,38.73 L156.44,43.5 C152.920922,46.4594092 148.424527,47.9998078 143.83,47.82 C134.65,47.82 128.15,41.42 128.15,31.69 C128.15,21.96 134.39,15.56 143.41,15.56 C151.99,15.56 157.88,22.08 157.91,31.65 Z M135.16,29.02 L151.06,29.02 C150.32,24.25 147.54,21.47 143.28,21.47 C138.52,21.51 135.86,24.58 135.16,29.02 Z" fill="#FFFFFF"></path>
+          <path class="logo-letter" d="M185.49,22.44 L173.74,22.44 L173.74,35.78 C173.74,39.91 175.92,41.51 178.6,41.51 C180.809896,41.3867482 182.945305,40.6680345 184.78,39.43 L187.44,44.77 C184.681502,46.7038743 181.398798,47.7504325 178.03,47.77 C171.09,47.77 167.03,44.03 167.03,35.87 L167.03,22.44 L160.92,22.44 L160.92,16.36 L167.03,16.36 L167.03,7.08 L173.75,7.08 L173.75,16.36 L185.49,16.36 L185.49,22.44 L185.49,22.44 Z" fill="#FFFFFF"></path>
+          <path class="logo-letter" d="M214.57,20.02 L214.57,16.34 L221.3,16.34 L221.3,44.85 C221.3,54.48 215.09,60.4 204.85,60.4 C200.28,60.4 195.25,59.15 192.02,56.85 L194.45,51.19 C197.566866,53.1573332 201.164674,54.2297568 204.85,54.29 C211.12,54.29 214.58,50.83 214.58,45.14 L214.58,42.68 C212.28,45.62 208.82,47.16 204.37,47.16 C197.37,47.16 190.16,41.27 190.16,31.35 C190.16,21.43 197.36,15.54 204.37,15.54 C208.81,15.56 212.3,17.12 214.57,20.02 Z M197.03,31.35 C197.03,36.5 200.42,40.85 206.08,40.85 C211.49,40.85 215.13,36.72 215.13,31.35 C215.13,25.98 211.48,21.85 206.08,21.85 C200.42,21.86 197.03,26.18 197.03,31.36 L197.03,31.35 Z" fill="#FFFFFF"></path>
+          <path class="logo-letter" d="M288.14,16.42 L286.54,23.04 C284.946613,22.2960953 283.208475,21.9136367 281.45,21.92 C277.19,21.92 274.16,24.92 274.16,30.14 L274.16,47.02 L267.47,47.02 L267.47,16.36 L274.09,16.36 L274.09,19.82 C276.09,16.91 279.24,15.56 282.98,15.56 C284.739831,15.5043652 286.493339,15.7966165 288.14,16.42 L288.14,16.42 Z" fill="#FFFFFF"></path>
+          <path class="logo-letter" d="M230.07,35.62 L230.07,16.35 L236.79,16.35 L236.79,33.41 C236.79,38.56 239.45,41.41 243.93,41.41 C248.25,41.41 251.87,38.56 251.87,33.31 L251.87,16.31 L258.59,16.31 L258.59,46.79 C258.58593,47.3045564 258.274124,47.7666504 257.798491,47.9630127 C257.322858,48.1593749 256.775879,48.0518249 256.41,47.69 L251.94,43.22 L251.94,43.22 C249.782699,46.2389115 246.235614,47.9502575 242.53,47.76 C235.23,47.81 230.07,42.79 230.07,35.62 Z" fill="#FFFFFF"></path>
+          <path class="logo-letter" d="M292.98,35.62 L292.98,16.35 L299.7,16.35 L299.7,33.41 C299.7,38.56 302.36,41.41 306.84,41.41 C311.16,41.41 314.77,38.56 314.77,33.31 L314.77,16.31 L321.49,16.31 L321.49,46.79 C321.48593,47.3045564 321.174124,47.7666504 320.698491,47.9630127 C320.222858,48.1593749 319.675879,48.0518249 319.31,47.69 L314.84,43.22 L314.84,43.22 C312.682699,46.2389115 309.135614,47.9502575 305.43,47.76 C298.13,47.81 292.98,42.79 292.98,35.62 Z" fill="#FFFFFF"></path>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg><!-- end coded_template: id:34056729102 path:N20/templates/partials/svg/logo.html -->
+
+    </a>
+    <div class="footer-details__content">
+      
+        <div class="footer__detail">
+          <h2 class="footer-details__header">
+            <div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_header">Netguru S.A</div>
+          </h2>
+          <ul class="footer-details__wrapper">
+            
+              <li><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_details">Nowe Garbary Office Center</div></li>
+            
+              <li><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_details">ul. Małe Garbary 9</div></li>
+            
+              <li><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_details">61-756 Poznań, Poland</div></li>
+            
+          </ul>
+        </div>
+      
+        <div class="footer__detail">
+          <h2 class="footer-details__header">
+            <div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_header"></div>
+          </h2>
+          <ul class="footer-details__wrapper">
+            
+              <li><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_details">VAT-ID: PL7781454968</div></li>
+            
+              <li><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_details">REGON: 300826280</div></li>
+            
+              <li><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_details">KRS: 0000745671</div></li>
+            
+          </ul>
+        </div>
+      
+      
+        <div class="footer__detail">
+          
+            <h2 class="footer-details__header">
+              <div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_header">Contact</div>
+            </h2>
+          
+          <ul class="footer-details__wrapper">
+            
+              <li>
+                <a href="mailto:hello@netguru.com"><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_details">hello@netguru.com</div></a>
+              </li>
+            
+          </ul>
+        </div>
+      
+      
+        <div class="footer__detail">
+          <h2 class="footer-details__header">
+            <div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_social_header">Follow us</div>
+          </h2>
+          <ul class="footer-details__social-wrapper">
+            
+              <li class="footer-details__social-item">
+                
+                  
+                  
+                    
+                  
+                  <a href="https://www.behance.net/netguru">
+                    <img class="footer-details__social-icon" src="AK_files/behance.svg" alt="behance" style="max-width: 100%; height: auto;">
+                  </a>
+                
+              </li>
+            
+              <li class="footer-details__social-item">
+                
+                  
+                  
+                    
+                  
+                  <a href="https://dribbble.com/netguru">
+                    <img class="footer-details__social-icon" src="AK_files/dribbble.svg" alt="dribbble" style="max-width: 100%; height: auto;">
+                  </a>
+                
+              </li>
+            
+              <li class="footer-details__social-item">
+                
+                  
+                  
+                    
+                  
+                  <a href="https://www.facebook.com/netguru">
+                    <img class="footer-details__social-icon" src="AK_files/facebook.svg" alt="facebook" style="max-width: 100%; height: auto;">
+                  </a>
+                
+              </li>
+            
+              <li class="footer-details__social-item">
+                
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/netguru">
+                    <img class="footer-details__social-icon" src="AK_files/github.svg" alt="github" style="max-width: 100%; height: auto;">
+                  </a>
+                
+              </li>
+            
+              <li class="footer-details__social-item">
+                
+                  
+                  
+                    
+                  
+                  <a href="https://pl.linkedin.com/company/netguru">
+                    <img class="footer-details__social-icon" src="AK_files/linkedin.svg" alt="linkedin" style="max-width: 100%; height: auto;">
+                  </a>
+                
+              </li>
+            
+              <li class="footer-details__social-item">
+                
+                  
+                  
+                    
+                  
+                  <a href="https://twitter.com/netguru">
+                    <img class="footer-details__social-icon" src="AK_files/twitter.svg" alt="twitter" style="max-width: 100%; height: auto;">
+                  </a>
+                
+              </li>
+            
+          </ul>
+        </div>
+      
+    </div>
+  </div>
+  <div class="footer-awards">
+    <div class="footer-awards__content">
+      
+        
+          <a href="https://clutch.co/profile/netguru">
+            <div class="footer-award" style="background-image: url('https://www.netguru.com/hubfs/_N19%20Modules/Footer/clutch.svg')"></div>
+          </a>
+        
+      
+        
+          <div class="footer-award" style="background-image: url('https://www.netguru.com/hubfs/_N19%20Modules/Footer/2018-B-Corp-Logo-Black.svg')"></div>
+        
+      
+        
+          <div class="footer-award" style="background-image: url('https://www.netguru.com/hubfs/_N19%20Modules/Footer/inc.svg')"></div>
+        
+      
+        
+          <div class="footer-award" style="background-image: url('https://www.netguru.com/hubfs/_N19%20Modules/Footer/icons.svg')"></div>
+        
+      
+        
+          <div class="footer-award" style="background-image: url('https://www.netguru.com/hubfs/_N19%20Modules/Footer/forbes.svg')"></div>
+        
+      
+        
+          <div class="footer-award" style="background-image: url('https://www.netguru.com/hubfs/_N19%20Modules/Footer/deloitte.svg')"></div>
+        
+      
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom__links">
+      <ul>
+        
+          <li><a href="https://www.netguru.com/tou#privacy-policy"><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_bottom_link_label">Privacy Policy</div></a></li>
+        
+          <li><a href="https://www.netguru.com/tou"><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_bottom_link_label">Terms of use</div></a></li>
+        
+          <li><a href="https://www.netguru.com/sitemap.xml"><div id="hs_cos_wrapper_module_16000882812582_" class="hs_cos_wrapper hs_cos_wrapper_widget hs_cos_wrapper_type_inline_text" style="" data-hs-cos-general-type="widget" data-hs-cos-type="inline_text" data-hs-cos-field="footer_bottom_link_label">Sitemap</div></a></li>
+        
+      </ul>
+    </div>
+    <div class="footer-copyrights">
+      ©2020 Netguru S.A. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+
+
+<script>
+  function getCookie(cname) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(document.cookie);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+  }
+  
+  setTimeout(function() {
+    var utk = getCookie("hubspotutk");
+    var mailto_hello = "hello@netguru.com";
+    if ( utk ) {
+      mailto_hello = "hello+" + utk + "@netguru.com";
+      document.getElementById("mailto_hello").setAttribute('href', "mailto:" + mailto_hello);
+    }
+  }, 2000);
+</script>
+
+</div>
+
+    </div><div style="width:0px; height:0px; display:none; visibility:hidden;" id="batBeacon829217912064"><img style="width:0px; height:0px; display:none; visibility:hidden;" id="batBeacon619022358935" alt="" src="AK_files/0.txt" width="0" height="0"></div><script type="text/javascript" id="">function getParameterByName(a){return(a=RegExp("[?\x26]"+a+"\x3d([^\x26]*)").exec(window.location.search))&&decodeURIComponent(a[1].replace(/\+/g," "))}var _hsq=window._hsq=window._hsq||[];_hsq.push(["identify",{email:getParameterByName("email"),leadsource:getParameterByName("ls")}]);</script><script type="text/javascript" id="gtm-engagement-timer">(function(e,g){function c(a){if(!a.each&&!a.every)throw Error("Requires opts.each or opts.every.");if((a.idleAfter||a.engagementEvents)&&!(a.idleAfter&&a.engagementEvents&&a.engagementEvents.length))throw Error("Configure opts.idleAfter \x26 opts.engagementEvents for idling.");if(!(this instanceof c))return new c(a);var b=a.context||e;"string"===typeof b&&(b=e.querySelector(a.context));if(!b)throw Error("Unable to find context "+a.context);this._context=b;this._startTime=a.startTime||q;this._trackedTime=
+Math.ceil((+new Date-this._startTime)/1E3);this._max=a.max||Infinity;this._min=a.min||0;this._every=a.every||[];this._each=a.each||[];this._gcd=r(this._every.concat(this._each));this._each._originals=this._each.slice(0);this._every._originals=this._every.slice(0);this._events={};this._cache={};this._lastTick=this._startTime;setTimeout(this.start.bind(this),0);if(a.idleAfter&&a.engagementEvents){this._idleAfter=1E3*a.idleAfter+100;this._idleTimer=this._resetIdleTimeout();var f=t(this._preventIdle.bind(this),
+this._idleTimeout/2);a.engagementEvents.forEach(function(a){this._context.addEventListener(a,f)}.bind(this))}a.idleOnVisibilityChange&&u(function(a){a?this.pause():this.start()}.bind(this))}function n(a,b,f){var d;for(d=a.length-1;0<=d;d--)b(a[d])&&f(a[d],d,a)}function v(a,b){return a>b?1:b>a?-1:0}function p(a,b){a=Math.abs(a);b=Math.abs(b);if(b>a)return p(b,a);for(;;){if(0===b)return a;a%=b;if(0===a)return b;b%=a}}function r(a){if(1===a.length)return a[0];var b=a.pop();return a.reduce(function(a,
+b){return p(a,b)},b)}function l(a){return"undefined"!==typeof a}function u(a){if(l(e.hidden)){var b="hidden";var f="visibilitychange"}else l(e.mozHidden)?(b="mozHidden",f="mozvisibilitychange"):l(e.msHidden)?(b="msHidden",f="msvisibilitychange"):l(e.webkitHidden)&&(b="webkitHidden",f="webkitvisibilitychange");f?e.addEventListener(f,function(){a(e[b])}):(g.addEventListener("blur",function(){a(!0)}),g.addEventListener("focus",function(){a(!1)}))}function t(a,b){var f,c,m,h=null,k=0,e=function(){k=new Date;
+h=null;m=a.apply(f,c)};return function(){var d=new Date;k||(k=d);var g=b-(d-k);f=this;c=arguments;0>=g?(clearTimeout(h),h=null,k=d,m=a.apply(f,c)):h||(h=setTimeout(e,g));return m}}var q=+new Date;g.EngagementTimer=g.EngagementTimer||c;var w=function(){function a(a,h,k){if(1E3>h)throw Error("Interval is too frequent.");var d=this.tickId=c++;k?f[d]=setTimeout(function(){a();b(a,h,d)}.bind(this),k):b(a,h,this.tickId)}function b(a,c,d){f[d]=setTimeout(function(){a();b(a,c,d)},c)}var f={},c=1;a.prototype.clear=
+function(){clearTimeout(f[this.tickId])};return a}();c.prototype._timer=function(a){return new w(function(){var a=+new Date;this._trackedTime+=Math.floor((a-this._lastTick)/1E3);this._lastTick=a;if(!(this._trackedTime<this._min)){if(this._trackedTime>this._max)return this.destroy();this._checkMarks()}}.bind(this),1E3*this._gcd,a)};c.prototype.on=function(a,b){(this._events[a]=this._events[a]||[]).push(b)};c.prototype.reset=function(){this._each=this._each._originals.slice(0);this._every=this._every._originals.slice(0);
+this._trackedTime=0;this._startTime=+new Date;this._cache={};this.emit("reset",{data:{timestamp:+new Date}})};c.prototype.start=function(){console.log(this._offset);this._tick||(this._tick=this._timer(this._offset));this.emit("start",{data:{timestamp:+new Date}})};c.prototype.pause=function(){var a=+new Date;this._offset=Math.floor((a-this._lastTick)/1E3);this._tick&&this._tick.clear();this._tick=null;this._running=0;this.emit("pause",{data:{timestamp:+new Date}})};c.prototype.emit=function(a,b){var c=
+this._events[a];c&&this._events[a].forEach(function(a){setTimeout(function(){a(b)},0)})};c.prototype.destroy=function(){this._tick&&this._tick.clear()};c.prototype._checkMarks=function(){function a(a){return d>=a}function b(a,b,c){var d=this._every._originals[b];e.push(a);c[b]=(a/d+1)*d}function c(a,b){e=e.concat(this._each.slice(b,1))}var d=this._trackedTime,e=[];n(this._each,a,c.bind(this));n(this._every,a,b.bind(this));e.sort(v).forEach(this._checkMark.bind(this))};c.prototype._checkMark=function(a){this._cache[a]||
+(this._cache[a]=!0,this.emit("interval",{data:{time:a}}))};c.prototype._preventIdle=function(){this._tick||this.start();clearTimeout(this._idleTimer);this._idleTimer=this._resetIdleTimeout()};c.prototype._resetIdleTimeout=function(){return setTimeout(function(){this.pause()}.bind(this),this._idleAfter)}})(document,window);
+(function(e){var g=EngagementTimer({every:[Number(google_tag_manager["GTM-TC2LVR"].macro(19))],idleAfter:Number(google_tag_manager["GTM-TC2LVR"].macro(20)),engagementEvents:["click","touchstart","scroll","keydown","mousemove"],idleOnVisibilityChange:!0,max:Number(google_tag_manager["GTM-TC2LVR"].macro(21)),min:Number(google_tag_manager["GTM-TC2LVR"].macro(22))});g.on("interval",function(c){e.dataLayer.push({event:"engagementTimer",attributes:{counter:c.data.time}})});delete e.EngagementTimer})(window);</script>
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","725955437490668");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=725955437490668&amp;ev=PageView&amp;noscript=1"></noscript>
+<script type="text/javascript" id="">fbq("trackCustom","Referrer",{Source:google_tag_manager["GTM-TC2LVR"].macro(47),Medium:google_tag_manager["GTM-TC2LVR"].macro(48),Term:google_tag_manager["GTM-TC2LVR"].macro(49),Referrer:google_tag_manager["GTM-TC2LVR"].macro(50)});</script><script type="text/javascript" id="">window.addEventListener("message",function(a){"hsFormCallback"===a.data.type&&"onFormSubmitted"===a.data.eventName&&window.dataLayer.push({event:"hubspot-form-success","hs-form-guid":a.data.id})});</script><script type="text/javascript" id="">rudderanalytics=window.rudderanalytics=[];for(var methods="load page track identify alias group ready reset getAnonymousId setAnonymousId".split(" "),i=0;i<methods.length;i++){var method=methods[i];rudderanalytics[method]=function(a){return function(){rudderanalytics.push([a].concat(Array.prototype.slice.call(arguments)))}}(method)}rudderanalytics.load("1gXi1ODmULYDEB5XJIm2TM24JId","https://rudder.netguru.com");</script>
+<script type="text/javascript" id="">google_tag_manager["GTM-TC2LVR"].macro(23)&&rudderanalytics.identify(google_tag_manager["GTM-TC2LVR"].macro(24),{email:google_tag_manager["GTM-TC2LVR"].macro(25),company_name:google_tag_manager["GTM-TC2LVR"].macro(26),company_domain:google_tag_manager["GTM-TC2LVR"].macro(27),lifecycle_stage:google_tag_manager["GTM-TC2LVR"].macro(28),netguru_employee:google_tag_manager["GTM-TC2LVR"].macro(29),adblock:google_tag_manager["GTM-TC2LVR"].macro(30),interest_in_services:google_tag_manager["GTM-TC2LVR"].macro(31)});
+rudderanalytics.page({content_campaign:google_tag_manager["GTM-TC2LVR"].macro(32),content_topics:google_tag_manager["GTM-TC2LVR"].macro(33),content_publish_date:google_tag_manager["GTM-TC2LVR"].macro(34),content_modified_date:google_tag_manager["GTM-TC2LVR"].macro(35),content_blog_author:google_tag_manager["GTM-TC2LVR"].macro(36),content_word_count:google_tag_manager["GTM-TC2LVR"].macro(45),social_network:google_tag_manager["GTM-TC2LVR"].macro(46)});</script> 
+
+
+<script type="text/javascript" id="" src="AK_files/rudder-analytics.js"></script><script type="text/javascript" id="">(function(){window.ldfdr=window.ldfdr||{};(function(b,c,e,a){function f(g){var d=b.createElement(c);d.src=g;setTimeout(function(){a.parentNode.insertBefore(d,a)},1)}a=b.getElementsByTagName(c)[0];f(e)})(document,"script","https://sc.lfeeder.com/lftracker_v1_DzLR5a5Rbkx8BoQ2.js")})();</script>
+
+    
+      <!-- just in case <template/> isn't supported -->
+      
+    
+    <script>
+      !function(t){function r(e){if(c[e])return c[e].exports;var n=c[e]={i:e,l:!1,exports:{}};return t[e].call(n.exports,n,n.exports,r),n.l=!0,n.exports}var c={};r.m=t,r.c=c,r.i=function(t){return t},r.d=function(t,c,e){r.o(t,c)||Object.defineProperty(t,c,{configurable:!1,enumerable:!0,get:e})},r.n=function(t){var c=t&&t.__esModule?function(){return t.default}:function(){return t};return r.d(c,"a",c),c},r.o=function(t,r){return Object.prototype.hasOwnProperty.call(t,r)},r.p="https://www.netguru.co/hubfs/js/",r(r.s=260)}({260:function(module,exports){function loadScript(scripts,callback){var script=scripts.shift();if(script||scripts.length>0)if(""===script.src)try{eval(script.textContent),window.hsVars=hsVars,loadScript(scripts,callback),script.parentNode.removeChild(script)}catch(t){callback(t)}else document.body.appendChild(script),script.onerror=function(t){callback(t)},script.onload=function(){loadScript(scripts,callback)};else callback(null)}var hbScripts=document.getElementById("footer-includes");awaitjQuery(function(){var t=hbScripts.content;if(t){t.removeChild(t.querySelector("script[src^='https://code.jquery.com']"));var r=[].filter.call(t.querySelectorAll("script"),function(t,r){return r<3||""===t.src&&-1!==t.textContent.indexOf("hsVars")});r.unshift(r.pop()),loadScript(r,function(r){null===r&&hbScripts.parentNode.replaceChild(document.importNode(t,!0),hbScripts)})}})}});
+    </script>
+
+    
+    
+    
+    
+	<script src="AK_files/prism.js"></script>
+
+    <script src="AK_files/jquery-1.js"></script>
+<script>hsjQuery = window['jQuery'];</script>
+<script>
+(function () {
+    window.addEventListener('load', function () {
+        setTimeout(function () {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/_hcms/perf', true /*async*/);
+            xhr.setRequestHeader("Content-type", "application/json");
+            xhr.onreadystatechange = function () {
+                // do nothing.
+            };
+            var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            function populateNetworkInfo(name, connection, info) {
+                if (name in connection) {
+                    info[name] = connection[name];
+                }
+            }
+            var networkInfo = {};
+            if (connection) {
+                ['type', 'effectiveType', 'downlink', 'rtt'].forEach(function(name) {
+                    populateNetworkInfo(name, connection, networkInfo);
+                });
+            }
+            var perfData = {
+                url: location.href,
+                portal: 493098,
+                content: 25219719295,
+                group: -1,
+                connection: networkInfo,
+                timing: performance.timing
+            };
+            xhr.send(JSON.stringify(perfData));
+        }, 3000);  // Execute this 3 seconds after onload.
+    });
+})();
+</script>
+
+<script>
+if (typeof hsVars !== 'undefined') { hsVars['language'] = 'en-us'; }
+</script>
+
+<script src="AK_files/project.js"></script>
+<script src="AK_files/project_002.js"></script>
+
+<!-- Start of HubSpot Analytics Code -->
+<script type="text/javascript">
+var _hsq = _hsq || [];
+_hsq.push(["setContentType", "blog-post"]);
+_hsq.push(["setCanonicalUrl", "https:\/\/www.netguru.com\/codestories\/react-native-text-to-speech"]);
+_hsq.push(["setPageId", "25219719295"]);
+_hsq.push(["setContentMetadata", {
+    "contentPageId": 25219719295,
+    "legacyPageId": "25219719295",
+    "contentFolderId": null,
+    "contentGroupId": 5117769011,
+    "abTestId": null,
+    "languageVariantId": 25219719295,
+    "languageCode": "en-us",
+    
+}]);
+</script>
+
+<script type="text/javascript" id="hs-script-loader" async="" defer="defer" src="AK_files/493098_002.js"></script>
+<!-- End of HubSpot Analytics Code -->
+
+
+<script type="text/javascript">
+var hsVars = {
+    ticks: 1602906575683,
+    page_id: 25219719295,
+
+    content_group_id: 5117769011,
+    portal_id: 493098,
+    app_hs_base_url: "https://app.hubspot.com",
+    cp_hs_base_url: "https://cp.hubspot.com",
+    language: "en",
+    analytics_page_type: "blog-post",
+    category_id: 3,
+    folder_id: 0,
+    is_hubspot_user: false
+}
+</script>
+
+
+<script defer="defer" src="AK_files/index.js"></script>
+
+
+<script type="text/javascript">
+  function trackCustomTags() {
+    // get the url and the keys to find
+    var url = window.location.href;
+    var keysToFind = ['utm_source', 'utm_medium', 'utm_term', 'utm_campaign', 'utm_content', 'ad_campaign', 'source', 'ad', 'campaign', 'ref', 'gclid'];
+	var timestamp = Date.now() / 1000 | 0
+    
+    for (key of keysToFind) {
+      // if UTM tag is found in url
+      if (url.indexOf(key + '=') > -1) {
+        var valueFound = url.substr(url.indexOf(key + '=') + key.length + 1).split('&')[0];
+        // save custom UTM tags to localstorage
+        localStorage.setItem(key, decodeURIComponent(valueFound));
+        
+        // save first touch value only if it doesn't exist yet
+        var first_touch = localStorage.getItem(key + "_first_touch");
+        if (!first_touch) {
+          localStorage.setItem(key + "_first_touch", decodeURIComponent(valueFound));
+        }
+        
+        var versioned_field = JSON.parse( localStorage.getItem(key + "_versioned") );
+        // if field is empty (not Array), create empty Array
+        if ( !(versioned_field instanceof Array) ) {
+          versioned_field = [];
+        }
+
+        // push value to Array
+        versioned_field.push({
+          "timestamp": timestamp,
+          "value": decodeURIComponent(valueFound)
+        })
+        
+        localStorage.setItem(key + "_versioned", JSON.stringify(versioned_field));
+      }
+    }
+    // save referrer
+    if (document.referrer && !document.referrer.includes("https://www.netguru.com")) {
+      localStorage.setItem('referrer', document.referrer);
+
+      var versioned_field = JSON.parse( localStorage.getItem("referrer_versioned") );
+
+      if ( !(versioned_field instanceof Array) ) {
+        versioned_field = [];
+      }
+
+      // push value to Array
+      versioned_field.push({
+        "timestamp": timestamp,
+        "value": decodeURIComponent(document.referrer)
+      })
+      
+      localStorage.setItem("referrer_versioned", JSON.stringify(versioned_field));
+    }
+  }
+
+  function saveCustomTagsDataToHubspot() {
+    var _hsq = window._hsq = window._hsq || [];
+    // send localstorage UTM values to Hubspot
+    _hsq.push(["identify",{
+      custom_utm_source: localStorage.getItem('utm_source'),
+      custom_utm_source_versioned: localStorage.getItem('utm_source_versioned'),
+      custom_utm_medium: localStorage.getItem('utm_medium'),
+      custom_utm_medium_versioned: localStorage.getItem('utm_medium_versioned'),
+      custom_utm_campaign: localStorage.getItem('utm_campaign'),
+      custom_utm_campaign_versioned: localStorage.getItem('utm_campaign_versioned'),
+      custom_utm_term: localStorage.getItem('utm_term'),
+      custom_utm_term_versioned: localStorage.getItem('utm_term_versioned'),
+      custom_utm_content: localStorage.getItem('utm_content'),
+      custom_utm_content_versioned: localStorage.getItem('utm_content_versioned'),
+      custom_referrer: localStorage.getItem('referrer'),
+      custom_referrer_versioned: localStorage.getItem('referrer_versioned'),
+      custom_source: localStorage.getItem('source'),
+      custom_source_versioned: localStorage.getItem('source_versioned'),
+      custom_campaign: localStorage.getItem('campaign'),
+      custom_campaign_versioned: localStorage.getItem('campaign_versioned'),
+      custom_ad: localStorage.getItem('ad'),
+      custom_ad_versioned: localStorage.getItem('ad_versioned'),
+      custom_ref: localStorage.getItem('ref'),
+      custom_ref_versioned: localStorage.getItem('ref_versioned'),
+      custom_gclid: localStorage.getItem('gclid'),
+      custom_ad_campaign_first_touch: localStorage.getItem('ad_campaign_first_touch'),
+      custom_ad_campaign: localStorage.getItem('ad_campaign'),
+      custom_ad_campaign_versioned: localStorage.getItem('ad_campaign_versioned')
+    }]);
+  }
+  
+  function fillFormsWithTags() {
+    var inputs = document.getElementsByTagName('input');
+	for (input of inputs) {
+      
+  		if (input.name.includes("custom_") && input.type == "hidden") {
+    		input.value = localStorage.getItem(input.name.substring(7)); 
+  		}
+	}
+  }
+  _hsq.push(['addPrivacyConsentListener', function(consent) {
+    if (consent.allowed) {
+      trackCustomTags();
+      saveCustomTagsDataToHubspot();
+      setTimeout(function() {
+        fillFormsWithTags()
+      }, 10000); 
+    }
+  }]);
+</script>
+
+
+
+
+<div id="fb-root" class=" fb_reset"><div style="position: absolute; top: -10000px; width: 0px; height: 0px;"><div></div></div></div>
+ <script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&status=0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+ <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+ 
+
+
+  
+<!-- end coded_template: id:7923173462 path:basic/Coded files/Custom/email/netguru-onboarding/page/shared/New-base-meta-tags-fixed.html -->
+<script type="text/javascript" id="">if("".length>0)ga("set","userId","");</script>
+<div style="display: none; visibility: hidden;"><script>if("".length>0){fbq("track","Lead",{content_name:""});ga("set","dimension2","");ga("send","event","Lifecycle stage","",{nonInteraction:true})};</script></div><script type="text/javascript" id="">if("Codestories".length>0){fbq("track","ViewContent",{content_name:"Codestories"});ga("set","dimension3","Codestories");ga("send","event","Campaign name","Codestories",{nonInteraction:true})};</script><div style="display: none; visibility: hidden;"><script>if("undefined"=="true"){fbq("track","ViewContent",{content_type:"Netguru employee"});window._pq=window._pq||[];_pq.push(["track","Netguru employee"]);ga("send","event","Netguru employee","true",{nonInteraction:true})};</script></div>
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","725955437490668");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=725955437490668&amp;ev=PageView&amp;noscript=1"></noscript>
+<script type="text/javascript" id="">fbq("track","ViewContent",{content_type:google_tag_manager["GTM-TC2LVR"].macro(52)});</script><iframe style="display: none; visibility: hidden;" owner="archetype"></iframe><script type="text/javascript" id="">ga(function(a){localStorage.setItem("ga_clientId",ga.getAll()[0].get("clientId"));a=window._hsq=window._hsq||[];a.push(["identify",{custom_ga_clientid:localStorage.getItem("ga_clientId")}])});</script><iframe scrolling="no" allowtransparency="true" src="AK_files/widget_iframe.html" title="Twitter settings iframe" style="display: none;" frameborder="0"></iframe><iframe id="rufous-sandbox" scrolling="no" allowtransparency="true" allowfullscreen="true" style="position: absolute; visibility: hidden; display: none; width: 0px; height: 0px; padding: 0px; border: medium none;" title="Twitter analytics iframe" frameborder="0"></iframe><iframe style="display: none !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important;" name="_hjRemoteVarsFrame" title="_hjRemoteVarsFrame" id="_hjRemoteVarsFrame" src="AK_files/box-469cf41adb11dc78be68c1ae7f9457a4.html"></iframe>
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","725955437490668");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=725955437490668&amp;ev=PageView&amp;noscript=1"></noscript>
+<script type="text/javascript" id="">fbq("trackCustom","EngagementTime",{Page:google_tag_manager["GTM-TC2LVR"].macro(56),Time:google_tag_manager["GTM-TC2LVR"].macro(57)});</script><script src="AK_files/adsct" type="text/javascript"></script>
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","725955437490668");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=725955437490668&amp;ev=PageView&amp;noscript=1"></noscript>
+<script type="text/javascript" id="">fbq("trackCustom","EngagementTime",{Page:google_tag_manager["GTM-TC2LVR"].macro(63),Time:google_tag_manager["GTM-TC2LVR"].macro(64)});</script>
+<script type="text/javascript" id="">!function(b,e,f,g,a,c,d){b.fbq||(a=b.fbq=function(){a.callMethod?a.callMethod.apply(a,arguments):a.queue.push(arguments)},b._fbq||(b._fbq=a),a.push=a,a.loaded=!0,a.version="2.0",a.queue=[],c=e.createElement(f),c.async=!0,c.src=g,d=e.getElementsByTagName(f)[0],d.parentNode.insertBefore(c,d))}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init","725955437490668");fbq("track","PageView");</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=725955437490668&amp;ev=PageView&amp;noscript=1"></noscript>
+<script type="text/javascript" id="">fbq("trackCustom","EngagementTime",{Page:google_tag_manager["GTM-TC2LVR"].macro(75),Time:google_tag_manager["GTM-TC2LVR"].macro(76)});</script></body><script src="AK_files/a_002.js"></script><script src="AK_files/a.js"></script><script src="AK_files/a_003.js"></script></html>
