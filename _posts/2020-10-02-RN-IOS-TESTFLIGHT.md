@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
-title:      RN iOS Certification 				# 标题 
-subtitle:   iOS Certification   #副标题
+title:      RN iOS TestFlight 				# 标题 
+subtitle:   iOS TestFlight   #副标题
 date:       2020-10-02				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
@@ -9,24 +9,24 @@ catalog: true 						# 是否归档
 tags:	APP							#标签
 ---
 
-# iOS Certification
-[https://dev-yakuza.github.io/en/react-native/ios-certification/](https://dev-yakuza.github.io/en/react-native/ios-certification/)   
+# iOS TestFlight
+[https://dev-yakuza.github.io/en/react-native/ios-testflight/](https://dev-yakuza.github.io/en/react-native/ios-testflight/)   
 
-iOS Certification
-=================
+iOS TestFlight
+==============
 
-2020-10-02 ![hit count image](/img/blog/AM_files/a.svg)
+2020-10-02 ![hit count image](/img/blog/AN_files/a.svg)
 
-if you enrolled Apple Developer Program, let's see how to configure iOS developer Certification.
-------------------------------------------------------------------------------------------------
+let's test the app by tester via TestFlight..
+---------------------------------------------
 
-[Github Sponsor](https://github.com/sponsors/dev-yakuza) .bmc-button img { width: 27px !important; margin-bottom: 1px !important; border: none !important; vertical-align: middle !important; } .bmc-button { line-height: 36px !important; height: 37px !important; text-decoration: none !important; display: inline-block !important; color: #ffffff !important; background-color: #ff813f !important; border-radius: 3px !important; border: 1px solid transparent !important; padding: 0px 9px !important; font-size: 17px !important; letter-spacing: -0.08px !important; margin: 10px !important; font-family: 'Lato', sans-serif !important; -webkit-box-sizing: border-box !important; box-sizing: border-box !important; -o-transition: 0.3s all linear !important; -webkit-transition: 0.3s all linear !important; -moz-transition: 0.3s all linear !important; -ms-transition: 0.3s all linear !important; transition: 0.3s all linear !important; } .bmc-button:hover, .bmc-button:active, .bmc-button:focus { -webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important; text-decoration: none !important; box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important; opacity: 0.85 !important; color: #ffffff !important; }[![Buy me a coffee](/img/blog/AM_files/BMC-btn-logo.svg)Buy me a coffee](https://www.buymeacoffee.com/j0cXhWiza)
+[Github Sponsor](https://github.com/sponsors/dev-yakuza) .bmc-button img { width: 27px !important; margin-bottom: 1px !important; border: none !important; vertical-align: middle !important; } .bmc-button { line-height: 36px !important; height: 37px !important; text-decoration: none !important; display: inline-block !important; color: #ffffff !important; background-color: #ff813f !important; border-radius: 3px !important; border: 1px solid transparent !important; padding: 0px 9px !important; font-size: 17px !important; letter-spacing: -0.08px !important; margin: 10px !important; font-family: 'Lato', sans-serif !important; -webkit-box-sizing: border-box !important; box-sizing: border-box !important; -o-transition: 0.3s all linear !important; -webkit-transition: 0.3s all linear !important; -moz-transition: 0.3s all linear !important; -ms-transition: 0.3s all linear !important; transition: 0.3s all linear !important; } .bmc-button:hover, .bmc-button:active, .bmc-button:focus { -webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important; text-decoration: none !important; box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important; opacity: 0.85 !important; color: #ffffff !important; }[![Buy me a coffee](/img/blog/AN_files/BMC-btn-logo.svg)Buy me a coffee](https://www.buymeacoffee.com/j0cXhWiza)
 
 (adsbygoogle=window.adsbygoogle||\[\]).push({});
 
 1.  [Home](https://dev-yakuza.github.io/en/)
 2.  [react-native](https://dev-yakuza.github.io/en/react-native)
-3.  [iOS Certification](https://dev-yakuza.github.io/en/react-native/ios-certification/)
+3.  [iOS TestFlight](https://dev-yakuza.github.io/en/react-native/ios-testflight/)
 
 (adsbygoogle=window.adsbygoogle||\[\]).push({});
 
@@ -34,202 +34,181 @@ Content
 -------
 
 1.  [outline](#outline)
-2.  [donwload certification](#donwload-certification)
-3.  [create certification](#create-certification)
-4.  [register certification](#register-certification)
-5.  [configure Apple Developer account](#configure-apple-developer-account)
-6.  [create Provisioning Profiles](#create-provisioning-profiles)
-7.  [connect Provisioning Profiles](#connect-provisioning-profiles)
-8.  [completed](#completed)
+2.  [create App](#create-app)
+3.  [build app](#build-app)
+4.  [upload app](#upload-app)
+5.  [create test group](#create-test-group)
+6.  [add build file](#add-build-file)
+7.  [add Tester](#add-tester)
+8.  [public link](#public-link)
+9.  [completed](#completed)
 
 outline
 -------
 
-this blog post is for developers who already enrolled Apple Developer Program. if you don’t enroll Apple Developer Program, see previous blog post [enroll iOS developer](https://dev-yakuza.github.io/en/react-native/ios-enroll-developer-program/) and enroll Apple Developer Program.
+iOS has `TestFlight` system that you can test your app by your tester or public test URL. in here, we introduce how to use `TestFlight` for the app test.
 
 this blog post is a series. it’s better to see below together.
 
 *   [iOS device test](https://dev-yakuza.github.io/en/react-native/ios-test-on-device/)
 *   [iOS build and test](https://dev-yakuza.github.io/en/react-native/ios-running-on-device/)
 *   [enroll iOS developer](https://dev-yakuza.github.io/en/react-native/ios-enroll-developer-program/)
-*   [iOS TestFlight](https://dev-yakuza.github.io/en/react-native/ios-testflight/)
+*   [iOS Certification](https://dev-yakuza.github.io/en/react-native/ios-certification/)
 *   [register iOS App store](https://dev-yakuza.github.io/en/react-native/ios-app-store/)
 *   [Deploy automatically applications via Fastlane](https://dev-yakuza.github.io/en/react-native/fastlane/)
 
-let’s see how to create iOS developer certification and configure it.
+if you don’t know how to enroll Apple Developer Program or how to configure certification, see above blogs firts.
 
-donwload certification
-----------------------
+create App
+----------
 
-if you get purchase approved email from Apple after buying Apple Developer Program, go to `Account` page on Apple Developer site([https://developer.apple.com/](https://developer.apple.com/))
+we need to create new App to Apple Store Connect to use `TestFlight`. click below link to go to Apple Store Connect.
 
-![apple developer site after enrolling](/img/blog/AM_files/apple-developer-site-after-enrolling.jpg)
+*   App Store Connect: [https://appstoreconnect.apple.com/](https://appstoreconnect.apple.com/)
 
-you can see different screen before you enroll Apple Developer Program. click `Certificates, IDs & Profiles` to go to the certification page.
+![App Store Connect](/img/blog/AN_files/app-store-connect.jpg)
 
-![download certification](/img/blog/AM_files/download-certification.jpg)
+sign in with Developer Account which you enroll Apple Developer Program. if you don’t enroll Apple Developer Program, see [enroll iOS developer](https://dev-yakuza.github.io/en/react-native/ios-enroll-developer-program/) blog and enroll.
 
-you have already one certification. select the certification and click `Download` button and save it on your PC. if you don’t have the certification, create it by following create certification section.
+after login, you can see below screen. click `My Apps` to go to app management page.
 
-this certification is for development. if you already have this one, you need to create production certification. so create it by following create certification section.
+![app store connect main](/img/blog/AN_files/en-app-store-connect-main.jpg)
 
-(adsbygoogle=window.adsbygoogle||\[\]).push({});
+click `+` button on the left top of the page and select `New App` menu.
 
-create certification
---------------------
+![app list](/img/blog/AN_files/en-app-list.jpg)
 
-execute `Keychain Access` program on your Mac.
+if you see app registration screen, insert your app information. if you don’t know exactly what it is, click `?` mark to see details. you can change `Name` and `Primary Language` afterwards.
 
-![Keychain Access](/img/blog/AM_files/en-keychain.jpg)
+![Create new App](/img/blog/AN_files/en-new-app.jpg)
 
-after Keychain is executed, click `Keychain accesss` > `Certification Assistant` > `Request a Certificate From a Certificate Authority...` on the left top of the PC screen.
+*   Bundle ID: when you developed the app, you used `bundle ID` in xcode. if you don’t know where it is, check previous blog [iOS device test](https://dev-yakuza.github.io/en/react-native/ios-test-on-device/).
+*   SKU: a unique ID for your app that is not visible on the App Store. normally use URL pattern.(ex> io.github.dev-yakuza.blaboo)
 
-![Request a Certificate From a Certificate Authority...](/img/blog/AM_files/en-request-certification.jpg)
+![app menu](/img/blog/AN_files/en-app-menu.jpg)
 
-if you click `Request a Certificate From a Certificate Authority...` menu, you can see `Certificate Assistant` like below screen.
+after creating new app, you can see above screen. click `TestFlight` menu.
 
-![insert certification info to Keychain access](/img/blog/AM_files/en-certification-info.jpg)
+now we need to upload production build app to App Store Connect for using `TestFlight`.
 
-inser `User Email Address` and `Common Name`. select `Saved to disk` and `Let me specify key pair information`. click `Continue` button and save the file to your PC.
+build app
+---------
 
-![Keychain Access select key](/img/blog/AM_files/en-certification-key.jpg)
+let’s see how to build and upload the app to App Store Connect. if you have already production build app, it’s better to skip this section.
 
-click `Continue` if you are same value in `Key Size` and `Algorithm`.
+execute `ios/projectname.xcodeproj` file in RN(react native) project folder.
 
-![completed to creact keychain](/img/blog/AM_files/en-certification-completed.jpg)
+![build for production](/img/blog/AN_files/build-for-production.jpg)
 
-completed to create KeyChain Certification file.
+after xcode is exectued, click `Product` > `Archive` menu on the top of the screen. if you don’t enroll Apple Developer Program or connect certification, see previous blogs([enroll iOS developer](https://dev-yakuza.github.io/en/react-native/ios-enroll-developer-program/), [iOS Certification](https://dev-yakuza.github.io/en/react-native/ios-certification/)).
 
-![download certification](/img/blog/AM_files/download-certification.jpg)
+after building, you can see below screen.
 
-go to `Account` page in Apple Developer site([https://developer.apple.com/](https://developer.apple.com/)) and select `Certificates, IDs & Profiles` menu. click `+` button on the right top of the screen.
-
-![certification selection](/img/blog/AM_files/select-certification.jpg)
-
-click `iOS App Development`. scroll down and click `Continue` button in `Select Type` page.
-
-if you want to create a production certification, click `App Store and ad Hoc` in `Production` section.
-
-next screen is detail about how to create certification file(CSR file). we already created this file by `Keychain Access` so just scroll down and click `Continue`.
-
-![create csr file](/img/blog/AM_files/create-csr-file.jpg)
-
-click `Choose File` to select certification file(CSR file) created by `Keychain Access` and click \`\`\`Continue\`\` to go to the next page.
-
-![choose csr file](/img/blog/AM_files/choose-csr-file.jpg)
-
-completed to create certification. click `Download` to save certification to your PC.
-
-![complete create certification file](/img/blog/AM_files/complete-create-certification.jpg)
-
-register certification
-----------------------
-
-we need to insert certification created above to `Keychain Access`. execute `Keychain Access` program.
-
-![keychain acceess](/img/blog/AM_files/en-keychain.jpg)
-
-after `Keychain Access` is executed, click `My certificates` on the left bottom of the screen and drag your certification which you made via Apple Developer site before to here for adding.
-
-![Keychain Access my certificates](/img/blog/AM_files/en-keychain-certification.jpg)
+![build for production](/img/blog/AN_files/distribute-app.jpg)
 
 (adsbygoogle=window.adsbygoogle||\[\]).push({});
 
-configure Apple Developer account
----------------------------------
+upload app
+----------
 
-we need to connect Apple Developer Account to the iOS project. execute `iOS/projectname.xcodeproj` in RN(react native) project folder.
+if you close the window which is appeared after building or if you have already production build file, click `Window` > `Organizer` menu on the top of xcode.
 
-after xcode is executed, click `projectname` on the left top and select `General` tab.
+![organizer menu](/img/blog/AN_files/organizer-menu.jpg)
 
-![xcode certification](/img/blog/AM_files/xcode-certification.jpg)
+you can see below screen after building or clicking the menu.
 
-click `Team` dropdown menu in `Signing` on above screen.
+![build for production](/img/blog/AN_files/distribute-app.jpg)
 
-![xcode certification add new](/img/blog/AM_files/xcode-certification-add-new.jpg)
+click `Distribute App` on the right side. this button doesn’t deploy the app, just upload the app to App Store Connect.
 
-if you have already connected Apple Developer Account, just select that account. if you don’t have connected, select `Add an Account`.
+![select platfom](/img/blog/AN_files/select-platform.jpg)
 
-![xcode certification login](/img/blog/AM_files/xcode-certification-login.jpg)
+select the platform of the app. we selected `iOS App Store` in here.
 
-login Apple Developer account. if you don’t have Apple Developer account, see [iOS device test](https://dev-yakuza.github.io/en/react-native/ios-test-on-device/) blog post and create Apple Developer account.
+![upload or export](/img/blog/AN_files/upload-export.jpg)
 
-![xcode certification add new](/img/blog/AM_files/xcode-certification-add-new.jpg)
+you can see the choice screen for uploading to App Store Connect or exporting ipa file. we will upload to App Store Connect, so select `Upload`.
 
-click dropdown menu beside `Team` and select Apple Developer account we created above.
+![options](/img/blog/AN_files/options.jpg)
 
-connet also Apple Developer account to Test section.
+next is option selection screen. just click `Next` with all checked status. select your certification and Provisioning Profile created before. if you don’t have certification or Provisioning Profile, see previous blog [iOS Certification](https://dev-yakuza.github.io/en/react-native/ios-certification/).
 
-![xcode certification add test](/img/blog/AM_files/xcode-certification-add-test.jpg)
+if xcode ready to upload, you can see below screen. click `Upload` button to upload the build app to App Store Connect.
 
-completed to connect Apple Developer account. let’s see about how to make Provisioning Profiles for production build.
+![upload](/img/blog/AN_files/upload.jpg)
 
-(adsbygoogle=window.adsbygoogle||\[\]).push({});
+completed to upload the app to App Store Connect. if uploaded file is ready to use, you can get email from Apple. It takes a time from upload to arrival of mail.
 
-create Provisioning Profiles
-----------------------------
+create test group
+-----------------
 
-scroll down `Account` page in Apple Developer site and click `Provisioning Profiles` menu.
+after getting email from Apple, go to `TestFlight` page on App Store Connect.
 
-we need development Provisioing Profile and production Provisioning Profile. so do below procedure double times for development and production.
+![build file list](/img/blog/AN_files/en-testflight-build-file-list.jpg)
 
-![provisioning profiles](/img/blog/AM_files/provisioning-profiles.jpg)
+you can see the uploaded app on `TestFlight` screen. click `Add External Testers` button on the left side.
 
-select `All` menu in Provisioning Profiles section.
+![create test group](/img/blog/AN_files/en-create-test-group.jpg)
 
-![provisioning profiles detail](/img/blog/AM_files/provisioning-profiles-detail.jpg)
+after creating new test group, you can see test group name on the left side menu. click group name.
 
-you can see above screen. click `+` button for adding new Provisioning Profile
+![test group](/img/blog/AN_files/en-test-group.jpg)
 
-![provisioning profiles ios](/img/blog/AM_files/provisioning-profiles-ios.jpg)
-
-select `iOS App Development` and click `Continue`.
-
-if you want to create Production Provisioning Profiles, select `App Store` in `Distribution` section.
-
-![provisioning profiles app id](/img/blog/AM_files/provisioning-profiles-app-id.jpg)
-
-select `Bundle Identifier` when we use in development. you can find `Bundle Identifier` in `Identity` section on xcode `General` tab.
-
-![xcode bundle identifier](/img/blog/AM_files/xcode-certification.jpg)
-
-click `Continue` button and select Apple Develop account and test device.
-
-![provisioning profiles name](/img/blog/AM_files/provisioning-profiles-name.jpg)
-
-insert Provisioning Profile name and click `Continue`.
-
-completed to create Provisioning Profile. click `Download` and save it on your PC.
+completed to create new test group. we will add build file and tester for testing.
 
 (adsbygoogle=window.adsbygoogle||\[\]).push({});
 
-connect Provisioning Profiles
------------------------------
+add build file
+--------------
 
-xcode has default setting which manage automatically `Signing`(`Automatically manage signing` in `Signing` section)
+select `builds` tab on the top of the screen
 
-![xcode bundle identifier](/img/blog/AM_files/xcode-certification.jpg)
+![select build tab](/img/blog/AN_files/en-build-tab.jpg)
 
-if you don’t have any problem in this status, you develop and build in this status.(you don’t have any red error text in `Signing` section) we have Provisioning Profile connection error so we unchecked this option and connect Provisioning Profile manually.
+click `+` button on the beside of `Builds(0)`. select build file you want to test and click `Next` button.
 
-below is about how to connect Provisioning Profile manually.
+![select build](/img/blog/AN_files/en-select-build.jpg)
 
-![xcode bundle identifier](/img/blog/AM_files/xcode-certification.jpg)
+if your app need to signing for test, select `Sign-in required` and insert login info. click `Next` button.
 
-uncheck `Automatically manage signing` in `Signing` section.
+![sign-in required](/img/blog/AN_files/en-need-login.jpg)
 
-![disable automatically manage signing](/img/blog/AM_files/disable_auto.jpg)
+if you see below screen, insert a message to tester or how to test the app and click `Submit for Review` button.
 
-you can see `Signing(Debug)` and `Signing(Release)` after unchecking. click `Provision Profile` and select `Import Profile` and choose Provisioning Profile created above in both. in Test, do same procedure.
+![insert message](/img/blog/AN_files/en-test-message.jpg)
 
-![disable automatically manage signing test](/img/blog/AM_files/disable_auto_test.jpg)
+it is a simple Apple review procedure in `TestFlight` even if `TestFlight` is for your testers. after Apple’s review, you can test your app.
+
+(adsbygoogle=window.adsbygoogle||\[\]).push({});
+
+add Tester
+----------
+
+Apple’s `TestFlight` has two big features. add testers you already know or create public test URL. first, we will introduce how to add testers. click `test group` on `TestFlight` page and click `+` button on the beside of `Testers(0)`. select `Add New Testers` menu.
+
+![add new tester](/img/blog/AN_files/en-add-new-tester.jpg)
+
+insert tester’s email and name. click `Add` button. tester’s email sould be App Store ID which testers download the app on their phone.
+
+![completed to add new tester](/img/blog/AN_files/en-added-new-tester.jpg)
+
+completed to add new testers. new testers will get email from `TestFlight`.
+
+![testflight email](/img/blog/AN_files/testflight-email.jpg)
+
+testers should search and donwload `TestFlight` app from App store and test the app.
+
+public link
+-----------
+
+if you create public link, you can see the link from `TestFlight` page. copy and share public link for testing.
 
 completed
 ---------
 
-completed all settings. we are ready to develop and release. next, we will introduce how to use `TestFlight` and release.
+we saw how to test the app using `TestFlight`. next, we will introduce how to public your app.
 
-[Github Sponsor](https://github.com/sponsors/dev-yakuza) .bmc-button img { width: 27px !important; margin-bottom: 1px !important; border: none !important; vertical-align: middle !important; } .bmc-button { line-height: 36px !important; height: 37px !important; text-decoration: none !important; display: inline-block !important; color: #ffffff !important; background-color: #ff813f !important; border-radius: 3px !important; border: 1px solid transparent !important; padding: 0px 9px !important; font-size: 17px !important; letter-spacing: -0.08px !important; margin: 10px !important; font-family: 'Lato', sans-serif !important; -webkit-box-sizing: border-box !important; box-sizing: border-box !important; -o-transition: 0.3s all linear !important; -webkit-transition: 0.3s all linear !important; -moz-transition: 0.3s all linear !important; -ms-transition: 0.3s all linear !important; transition: 0.3s all linear !important; } .bmc-button:hover, .bmc-button:active, .bmc-button:focus { -webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important; text-decoration: none !important; box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important; opacity: 0.85 !important; color: #ffffff !important; }[![Buy me a coffee](/img/blog/AM_files/BMC-btn-logo.svg)Buy me a coffee](https://www.buymeacoffee.com/j0cXhWiza)
+[Github Sponsor](https://github.com/sponsors/dev-yakuza) .bmc-button img { width: 27px !important; margin-bottom: 1px !important; border: none !important; vertical-align: middle !important; } .bmc-button { line-height: 36px !important; height: 37px !important; text-decoration: none !important; display: inline-block !important; color: #ffffff !important; background-color: #ff813f !important; border-radius: 3px !important; border: 1px solid transparent !important; padding: 0px 9px !important; font-size: 17px !important; letter-spacing: -0.08px !important; margin: 10px !important; font-family: 'Lato', sans-serif !important; -webkit-box-sizing: border-box !important; box-sizing: border-box !important; -o-transition: 0.3s all linear !important; -webkit-transition: 0.3s all linear !important; -moz-transition: 0.3s all linear !important; -ms-transition: 0.3s all linear !important; transition: 0.3s all linear !important; } .bmc-button:hover, .bmc-button:active, .bmc-button:focus { -webkit-box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important; text-decoration: none !important; box-shadow: 0px 1px 2px 2px rgba(190, 190, 190, 0.5) !important; opacity: 0.85 !important; color: #ffffff !important; }[![Buy me a coffee](/img/blog/AN_files/BMC-btn-logo.svg)Buy me a coffee](https://www.buymeacoffee.com/j0cXhWiza)
 
 `Was my blog helpful? Please leave a comment at the bottom. it will be a great help to me!`
 
@@ -654,7 +633,7 @@ document.addEventListener("DOMContentLoaded",function(){function e(e,a){$(".page
 
 * * *
 
-var disqus\_config=function(){this.page.url="https://dev-yakuza.github.io/react-native/ios-certification/",this.page.identifier="https://dev-yakuza.github.io/react-native/ios-certification/"};!function(){var t=document,i=t.createElement("script");i.src="https://https-dev-yakuza-github-io-en.disqus.com/embed.js",i.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(i)}();
+var disqus\_config=function(){this.page.url="https://dev-yakuza.github.io/react-native/ios-testflight/",this.page.identifier="https://dev-yakuza.github.io/react-native/ios-testflight/"};!function(){var t=document,e=t.createElement("script");e.src="https://https-dev-yakuza-github-io-en.disqus.com/embed.js",e.setAttribute("data-timestamp",+new Date),(t.head||t.body).appendChild(e)}();
 
 Please enable JavaScript to view the [comments powered by Disqus.](https://disqus.com/?ref_noscript)
 
@@ -664,12 +643,12 @@ SHARE
     
     Twitter
     
-    ](https://twitter.com/intent/tweet?text=iOS%20Certification&url=https://dev-yakuza.github.io/react-native/ios-certification/)
+    ](https://twitter.com/intent/tweet?text=iOS%20TestFlight&url=https://dev-yakuza.github.io/react-native/ios-testflight/)
 *   [
     
     Facebook
     
-    ](https://www.facebook.com/sharer/sharer.php?u=https://dev-yakuza.github.io/react-native/ios-certification/)
+    ](https://www.facebook.com/sharer/sharer.php?u=https://dev-yakuza.github.io/react-native/ios-testflight/)
 *   [
     
     RSS
