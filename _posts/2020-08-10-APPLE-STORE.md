@@ -25,7 +25,7 @@ Xcode Setup -
 ```  
 
 ## ios-certification:
-* [ios-certification](https://dev-yakuza.github.io/en/react-native/ios-certification/ ) 
+* [ios-certification](https://joelpub.github.io/2020/10/02/RN-IOS-CERT/ ) 
 
 ```javascript
     this certification is for development. if you already have this one, you need to create production certification
@@ -35,7 +35,7 @@ Xcode Setup -
   
 ```  
 ## iOS TestFlight:
-* [iOS TestFlight](https://dev-yakuza.github.io/en/react-native/ios-testflight/ ) 
+* [iOS TestFlight](https://joelpub.github.io/2020/10/02/RN-IOS-TESTFLIGHT/ ) 
 
 ```javascript
      如果这里有缺少出口合规证明的警告,只需要在Xcode的info.plist中增加键值对，ITSAppUsesNonExemptEncryption 设置为NO即可.
