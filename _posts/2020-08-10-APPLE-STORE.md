@@ -19,7 +19,7 @@ Bundle ID - Choose “Explicit” and create bundle ID com.haidanmm.video
 App Icons and Launch Images - You’ll need to add an app icon, otherwise you’ll run into an error later on. You can use https://makeappicon.com/  
 将生成的AppIcon.appiconset拷贝到Images.xcassets下，拖动图标直到没有黄色提示
 Xcode Setup - 
-    You can find the file inside the /ios folder name of yourprojectname.xcworkspace(prevent YogaKit.modulemap' not found error).   
+    You can find the file inside the /ios folder name of yourprojectname.xcworkspace(normally open the .xcodeproj file, but if you are using CocoaPods open .xcworkspace to prevent YogaKit.modulemap' not found error).   
     Identity - Update the Bundle Identifier with the bundle ID that we created earlier com.haidanmm.video.  
       
 ```  
