@@ -1,0 +1,2017 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><script src="img-full-screen_files/osd.js"></script><script src="img-full-screen_files/cookie.js"></script><script src="img-full-screen_files/show_ads_impl_fy2019.js" id="google_shimpl"></script><script type="text/javascript" async="" src="img-full-screen_files/auto_dup"></script><script type="text/javascript" charset="utf-8" async="" src="img-full-screen_files/apiaccept"></script><script type="text/javascript" async="" src="img-full-screen_files/a_003"></script><script type="text/javascript" async="" src="img-full-screen_files/trackad.js"></script><script src="img-full-screen_files/push.js"></script><script type="text/javascript" async="" src="img-full-screen_files/a"></script><script src="img-full-screen_files/hm.js"></script><script src="img-full-screen_files/push_002.js" id="ttzz"></script><script>(function() {
+		window.addEventListener('message', function(event) {
+			if (
+				event.data &&
+				event.data.id &&
+				typeof event.data.id.startsWith === 'function' &&
+				event.data.id.startsWith('adobeExperienceCloudDebuggerContentMessagingIdentifier-')
+			) {
+				event.stopImmediatePropagation();
+			}
+		},
+		{capture: true});
+	})();</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-1', data: data });
+			}
+			const DATA_LAYER_LOCAL_STORAGE_KEY = 'com.adobe.experiencePlatformDebugger.dataLayer.key';
+const dataLayerKey = window.localStorage.getItem(DATA_LAYER_LOCAL_STORAGE_KEY);
+
+if (dataLayerKey) {
+	// sindresorhus/on-change
+	// MIT - License
+	// https://github.com/sindresorhus/on-change
+	const PATH_SEPARATOR = '.';
+	const TARGET = Symbol('target');
+	const UNSUBSCRIBE = Symbol('unsubscribe');
+
+	const isPrimitive = value =>
+		value === null || (typeof value !== 'object' && typeof value !== 'function');
+
+	const isBuiltinWithoutMutableMethods = value =>
+		value instanceof RegExp || value instanceof Number;
+
+	const isBuiltinWithMutableMethods = value => value instanceof Date;
+
+	const concatPath = (path, property) => {
+		if (property && property.toString) {
+			if (path) {
+				path += PATH_SEPARATOR;
+			}
+
+			path += property.toString();
+		}
+
+		return path;
+	};
+
+	const walkPath = (path, callback) => {
+		let index;
+
+		while (path) {
+			index = path.indexOf(PATH_SEPARATOR);
+
+			if (index === -1) {
+				index = path.length;
+			}
+
+			callback(path.slice(0, index));
+
+			path = path.slice(index + 1);
+		}
+	};
+
+	const shallowClone = value => {
+		if (Array.isArray(value)) {
+			return value.slice();
+		}
+
+		return Object.assign({}, value);
+	};
+
+	const onChange = (object, onChange, options = {}) => {
+		const proxyTarget = Symbol('ProxyTarget');
+		let inApply = false;
+		let changed = false;
+		let applyPath;
+		let applyPrevious;
+		let isUnsubscribed = false;
+		const equals = options.equals || Object.is;
+		let propCache = new WeakMap();
+		let pathCache = new WeakMap();
+		let proxyCache = new WeakMap();
+
+		const handleChange = (path, property, previous, value) => {
+			if (isUnsubscribed) {
+				return;
+			}
+
+			if (!inApply) {
+				onChange(concatPath(path, property), value, previous);
+				return;
+			}
+
+			if (
+				inApply &&
+				applyPrevious &&
+				previous !== undefined &&
+				value !== undefined &&
+				property !== 'length'
+			) {
+				let item = applyPrevious;
+
+				if (path !== applyPath) {
+					path = path.replace(applyPath, '').slice(1);
+
+					walkPath(path, key => {
+						item[key] = shallowClone(item[key]);
+						item = item[key];
+					});
+				}
+
+				item[property] = previous;
+			}
+
+			changed = true;
+		};
+
+		const getOwnPropertyDescriptor = (target, property) => {
+			let props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				return props;
+			}
+
+			props = new Map();
+			propCache.set(target, props);
+
+			let prop = props.get(property);
+			if (!prop) {
+				prop = Reflect.getOwnPropertyDescriptor(target, property);
+				props.set(property, prop);
+			}
+
+			return prop;
+		};
+
+		const invalidateCachedDescriptor = (target, property) => {
+			const props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				props.delete(property);
+			}
+		};
+
+		const buildProxy = (value, path) => {
+			if (isUnsubscribed) {
+				return value;
+			}
+
+			pathCache.set(value, path);
+
+			let proxy = proxyCache.get(value);
+
+			if (proxy === undefined) {
+				proxy = new Proxy(value, handler);
+				proxyCache.set(value, proxy);
+			}
+
+			return proxy;
+		};
+
+		const unsubscribe = target => {
+			isUnsubscribed = true;
+			propCache = null;
+			pathCache = null;
+			proxyCache = null;
+
+			return target;
+		};
+
+		const ignoreChange = property => {
+			return isUnsubscribed || (options.ignoreSymbols === true && typeof property === 'symbol');
+		};
+
+		const handler = {
+			get(target, property, receiver) {
+				if (property === proxyTarget || property === TARGET) {
+					return target;
+				}
+
+				if (property === UNSUBSCRIBE && pathCache.get(target) === '') {
+					return unsubscribe(target);
+				}
+
+				const value = Reflect.get(target, property, receiver);
+				if (
+					isPrimitive(value) ||
+					isBuiltinWithoutMutableMethods(value) ||
+					property === 'constructor' ||
+					options.isShallow === true
+				) {
+					return value;
+				}
+
+				// Preserve invariants
+				const descriptor = getOwnPropertyDescriptor(target, property);
+				if (descriptor && !descriptor.configurable) {
+					if (descriptor.set && !descriptor.get) {
+						return undefined;
+					}
+
+					if (descriptor.writable === false) {
+						return value;
+					}
+				}
+
+				return buildProxy(value, concatPath(pathCache.get(target), property));
+			},
+
+			set(target, property, value, receiver) {
+				if (value && value[proxyTarget] !== undefined) {
+					value = value[proxyTarget];
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property, receiver);
+				const result = Reflect.set(target[proxyTarget] || target, property, value);
+
+				if (!ignore && !equals(previous, value)) {
+					handleChange(pathCache.get(target), property, previous, value);
+				}
+
+				return result;
+			},
+
+			defineProperty(target, property, descriptor) {
+				const result = Reflect.defineProperty(target, property, descriptor);
+
+				if (!ignoreChange(property)) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, undefined, descriptor.value);
+				}
+
+				return result;
+			},
+
+			deleteProperty(target, property) {
+				if (!Reflect.has(target, property)) {
+					return true;
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property);
+				const result = Reflect.deleteProperty(target, property);
+
+				if (!ignore) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, previous);
+				}
+
+				return result;
+			},
+
+			apply(target, thisArg, argumentsList) {
+				const compare = isBuiltinWithMutableMethods(thisArg);
+
+				if (compare) {
+					thisArg = thisArg[proxyTarget];
+				}
+
+				if (!inApply) {
+					inApply = true;
+
+					if (compare) {
+						applyPrevious = thisArg.valueOf();
+					}
+
+					if (Array.isArray(thisArg) || toString.call(thisArg) === '[object Object]') {
+						applyPrevious = shallowClone(thisArg[proxyTarget]);
+					}
+
+					applyPath = pathCache.get(target);
+					applyPath = applyPath.slice(0, Math.max(applyPath.lastIndexOf(PATH_SEPARATOR), 0));
+
+					const result = Reflect.apply(target, thisArg, argumentsList);
+
+					inApply = false;
+
+					if (changed || (compare && !equals(applyPrevious, thisArg.valueOf()))) {
+						handleChange(applyPath, '', applyPrevious, thisArg[proxyTarget] || thisArg);
+						applyPrevious = null;
+						changed = false;
+					}
+
+					return result;
+				}
+
+				return Reflect.apply(target, thisArg, argumentsList);
+			}
+		};
+
+		const proxy = buildProxy(object, '');
+		onChange = onChange.bind(proxy);
+
+		return proxy;
+	};
+
+	onChange.target = proxy => proxy[TARGET] || proxy;
+	onChange.unsubscribe = proxy => proxy[UNSUBSCRIBE] || proxy;
+
+	let proxy;
+	let previousDataLayer;
+
+	function _serialize(dataLayer) {
+		try {
+			return JSON.stringify({ ...dataLayer }, null, 2);
+		} catch (e) {
+			return JSON.stringify(dataLayer, null, 2);
+		}
+	}
+
+	function _notify(dataLayer) {
+		contentScriptEventTrigger({
+			data: {
+				dataLayer
+			},
+			timestamp: Date.now(),
+			timeSincePageLoad: window.performance.now()
+		});
+	}
+
+	function onDataLayerUpdate() {
+		const dataLayer = _serialize(this);
+
+		if (previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	function onDataLayerSet(newDataLayer) {
+		const dataLayer = _serialize(newDataLayer);
+		if (!previousDataLayer || previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	Object.defineProperty(window, dataLayerKey, {
+		get() {
+			return proxy;
+		},
+		set(newDataLayer) {
+			onDataLayerSet(newDataLayer);
+			proxy = onChange(newDataLayer, onDataLayerUpdate);
+		},
+		enumerable: true,
+		configurable: true
+	});
+
+	const oldObjectDefine = Object.defineProperty.bind(Object);
+	Object.defineProperty = function(obj, prop, descriptor) {
+		if (prop === dataLayerKey) {
+			console.debug(
+				'Data layer being overwritten by Object.defineProperty(). Falling back to polling...'
+			);
+
+			function pollForChanges() {
+				const dataLayer = _serialize(window[dataLayerKey]);
+				if (previousDataLayer !== dataLayer) {
+					previousDataLayer = dataLayer;
+					_notify(dataLayer);
+				}
+				window.requestAnimationFrame(pollForChanges);
+			}
+
+			window.requestAnimationFrame(pollForChanges);
+		}
+		return oldObjectDefine(obj, prop, descriptor);
+	};
+}
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-2', data: data });
+			}
+			/**
+ * Hooks into both DTM's and Launch's logging mechanisms in order to capture all log messages and
+ * send them to the UI to display to the user
+ */
+function notifyContentScript(log) {
+	contentScriptEventTrigger({
+		data: log,
+		timestamp: Date.now(),
+		timeSincePageLoad: window.performance.now()
+	});
+}
+
+window._satellite = window._satellite || {};
+window._satellite.override = window._satellite.override || {};
+
+// Hook into _satellite in order to capture DTM logs
+if (window.Object && window.Object.defineProperty) {
+	window.Object.defineProperty(window._satellite.override, 'adobe.aepDebugger.dtmInitHook', {
+		enumerable: true,
+		get: function() {
+			onSatelliteInit();
+			return '';
+		},
+		set: function() {}
+	});
+}
+
+function onSatelliteInit() {
+	// This function will run when DTM is loaded on the page. We use it to hook into DTM logs
+	let _satellite = window._satellite;
+	if (_satellite.Logger) {
+		_satellite.Logger.keepLimit = 9999;
+	}
+
+	// override notify
+	// Reason: we want to intercept messages that go through here
+	// without worrying about limits or messing anything up internally
+	let originalNotify = _satellite.notify;
+	_satellite.notify = function(message, level) {
+		const logLevel = ['log', 'log', 'log', 'info', 'warn', 'error'];
+
+		// call original
+		originalNotify(message, level);
+
+		const log = {
+			solution: 'dtm',
+			solutions: ['dtm'],
+			level: logLevel[level] || 'log',
+			message: ''
+		};
+
+		// make sure that we have a message
+		if (message && typeof message === 'string') {
+			// only add it
+			log.message = message;
+
+			// check to see what solution it came from
+			if (message.indexOf('Adobe Analytics:') !== -1) {
+				log.solutions.push('analytics');
+			} else if (message.indexOf('Test & Target:') !== -1) {
+				log.solutions.push('target');
+			} else if (message.indexOf('Visitor ID:') !== -1) {
+				log.solutions.push('visitorService');
+			} else if (message.indexOf('AdLens:') !== -1) {
+				log.solutions.push('mediaOptimizer');
+			}
+		}
+		notifyContentScript(log);
+	};
+}
+
+function _overrideConsoleLogFunction(prefix, solution, level) {
+	const originalFunction = console[level];
+	console[level] = function() {
+		const argsAsArray = Array.prototype.slice.call(arguments);
+		originalFunction.apply(console, argsAsArray);
+		const mappedArgs = argsAsArray.map(arg => {
+			let result = '';
+			if (arg && typeof arg.toString === 'function') {
+				result = arg.toString();
+			}
+			if (!result || result === '[object Object]') {
+				try {
+					result = JSON.stringify(arg);
+				} catch (e) {
+					return '';
+				}
+			}
+			return result;
+		});
+
+		const message = mappedArgs.join(' ');
+
+		if (typeof message === 'string') {
+			if (message.indexOf(prefix) === 0) {
+				const log = {
+					solution: solution,
+					solutions: [solution],
+					level: level,
+					message: message,
+					searchIndex: message,
+					params: mappedArgs
+				};
+
+				// check to see what solution it came from
+				if (message.indexOf('[Adobe Analytics]') !== -1) {
+					log.solutions.push('analytics');
+				} else if (message.indexOf('[Adobe Target]') !== -1) {
+					log.solutions.push('target');
+				} else if (message.indexOf('[Experience Cloud ID Service]') !== -1) {
+					log.solutions.push('visitorService');
+				} else if (message.indexOf('[Adobe Media Optimizer]') !== -1) {
+					log.solutions.push('mediaOptimizer');
+				}
+				notifyContentScript(log);
+			}
+		}
+	};
+}
+
+/**
+ * Overrides the various console.* methods in order to intercept messages that
+ * are sent to the console by launch. A message was sent be launch if it starts
+ * with the rocket emoji 🚀. Note that this is a somewhat brittle solution
+ * since if the emoji ever changes this integration will break. However this
+ * is the only solution that works for now.
+ *
+ * Any messages that are not prefixed with the rocket emoji are ignored and passed
+ * through to the original console function
+ */
+function _overrideConsoleForLaunch() {
+	const prefix = '\uD83D\uDE80';
+	['error', 'info', 'log', 'warn'].forEach(
+		_overrideConsoleLogFunction.bind(null, prefix, 'launch')
+	);
+}
+
+/**
+ * Intercepts console messages made by alloy (prefixed with [alloy]) and notifies content script about each one.
+ * Note that this is a brittle solution and should not be used long term.
+ *
+ * Ideally there will be some debugging hooks built into alloy itself that we can connect to
+ */
+function _overrideConsoleForAlloy() {
+	window.__alloyNS = [];
+	const originalPush = window.__alloyNS.push;
+	window.__alloyNS.push = function(namespace) {
+		['error', 'info', 'log', 'warn'].forEach(
+			_overrideConsoleLogFunction.bind(null, `[${namespace}]`, 'alloy')
+		);
+
+		originalPush.apply(window.__alloyNS, Array.prototype.slice.call(arguments));
+	};
+}
+
+_overrideConsoleForLaunch();
+_overrideConsoleForAlloy();
+
+// Once the page has finished loading, remove _satellite if both DTM and Launch were not found
+window.addEventListener('load', function() {
+	if (!_hasDtm() && !_hasLaunch()) {
+		delete window._satellite;
+	}
+});
+
+/**
+ * @returns {boolean} whether launch is present on the page
+ */
+function _hasLaunch() {
+	return !!(window._satellite && window._satellite._container);
+}
+
+/**
+ * @returns {boolean} whether DTM is present on the page
+ */
+function _hasDtm() {
+	return !!(window._satellite && window._satellite.configurationSettings);
+}
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-3', data: data });
+			}
+			window.___target_traces = window.___target_traces || [];
+var originalPush = window.___target_traces.push;
+
+window.___target_traces.push = function(trace) {
+	contentScriptEventTrigger({ trace });
+	originalPush.call(this, trace);
+};
+
+		})();
+	</script><head>
+    <style>.login-box{position: fixed;display: none;left: 50%;top: 50%;z-index: 10000;-webkit-transform: translate(-50%, -50%);-ms-transform: translate(-50%, -50%);-o-transform: translate(-50%, -50%);-moz-transform: translate(-50%, -50%);transform: translate(-50%, -50%);background-color: #fff;}.login-mark{position: fixed;top: 0;left: 0;z-index: 9999;background-color: rgba(0, 0, 0, 0.5);width: 100%;height: 100%;display: none;}</style><meta charset="utf-8">
+    <link rel="canonical" href="https://blog.csdn.net/xiaoya_syt/article/details/75045505">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta name="force-rendering" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="report" content="{&quot;pid&quot;: &quot;blog&quot;, &quot;spm&quot;:&quot;1001.2101&quot;}">
+    <meta name="referrer" content="always">
+    <meta http-equiv="Cache-Control" content="no-siteapp"><link rel="alternate" media="handheld" href="#">
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <meta name="applicable-device" content="pc">
+    <link href="https://g.csdnimg.cn/static/logo/favicon32.ico" rel="shortcut icon" type="image/x-icon">
+    <title>img撑满全屏的方法（img非背景图）_小丫007的博客-CSDN博客_img 铺满</title>
+    <script>
+      (function(){ 
+        var el = document.createElement("script"); 
+        el.src = "https://s3a.pstatp.com/toutiao/push.js?1abfa13dfe74d72d41d83c86d240de427e7cac50c51ead53b2e79d40c7952a23ed7716d05b4a0f683a653eab3e214672511de2457e74e99286eb2c33f4428830"; 
+        el.id = "ttzz"; 
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(el, s);
+      })(window)
+    </script>
+        <meta name="keywords" content="img 铺满">
+        <meta name="csdn-baidu-search" content="{&quot;autorun&quot;:true,&quot;install&quot;:true,&quot;keyword&quot;:&quot;img 铺满&quot;}">
+    <meta name="description" content="我有一个模板，想按常规做一个div里面放置一个img图片，并且让图片铺满容器，自适应容器大小。HTML结构代码如下（在这个盒模型上，我已经放置了一些不重要的样式）。div style=&quot;height:270px;width:400px;border:2px black solid;&quot;&gt;    a href=&quot;http://www.paipk.com&quot;&gt;img src=&quot;...&quot; alt=&quot;拍">
+    <script src="img-full-screen_files/blog.js" type="text/javascript"></script>
+        <link rel="stylesheet" type="text/css" href="img-full-screen_files/detail_enter-ace8742f72.css">
+    <script type="application/ld+json">{"@context":"https://ziyuan.baidu.com/contexts/cambrian.jsonld","@id":"https://blog.csdn.net/xiaoya_syt/article/details/75045505","appid":"1638831770136827","pubDate":"2017-07-13T10:45:50","title":"img撑满全屏的方法（img非背景图）_小丫007的博客-CSDN博客_img 铺满","upDate":"2017-07-13T10:45:50"}</script>
+        <link rel="stylesheet" type="text/css" href="img-full-screen_files/skin-blue-5e706cc758.css">
+    <script src="img-full-screen_files/jquery-1.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isCorporate = false;//注释删除enterprise
+        var username =  "xiaoya_syt";
+        var skinImg = "white";
+        var blog_address = "https://blog.csdn.net/xiaoya_syt";
+        var currentUserName = "";
+        var isOwner = false;
+        var loginUrl = "http://passport.csdn.net/account/login?from=https://blog.csdn.net/xiaoya_syt/article/details/75045505";
+        var blogUrl = "https://blog.csdn.net/";
+        var avatar = "https://profile.csdnimg.cn/8/2/F/3_xiaoya_syt";
+        var articleTitle = "img撑满全屏的方法（img非背景图）";
+        var articleDesc = "我有一个模板，想按常规做一个div里面放置一个img图片，并且让图片铺满容器，自适应容器大小。HTML结构代码如下（在这个盒模型上，我已经放置了一些不重要的样式）。div style=\&quot;height:270px;width:400px;border:2px black solid;\&quot;&gt;    a href=\&quot;http://www.paipk.com\&quot;&gt;img src=\&quot;...\&quot; alt=\&quot;拍";
+        var articleTitles = "img撑满全屏的方法（img非背景图）_小丫007的博客-CSDN博客_img 铺满";
+        var nickName = "小丫007";
+        var articleDetailUrl = "https://blog.csdn.net/xiaoya_syt/article/details/75045505";
+        if(window.location.host.split('.').length == 3) {
+            blog_address = blogUrl + username;
+        }
+        var skinStatus = "White";
+        var blogStaticHost = "https://csdnimg.cn/release/blogv2/"
+    </script>
+    <script src="img-full-screen_files/a_004" type="text/javascript"></script>
+    <script src="img-full-screen_files/report.js" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="img-full-screen_files/sandalstrap.css">
+    <style>
+        .MathJax, .MathJax_Message, .MathJax_Preview{
+            display: none
+        }
+    </style>
+    <script src="img-full-screen_files/ds.js"></script>
+<link rel="stylesheet" type="text/css" href="img-full-screen_files/csdn-toolbar-default.css"><link rel="stylesheet" type="text/css" href="img-full-screen_files/collection-box.css"><script type="text/javascript" src="img-full-screen_files/user-login.js"></script><link rel="stylesheet" type="text/css" href="img-full-screen_files/user-tooltip.css"><link rel="stylesheet" type="text/css" href="img-full-screen_files/user-medal.css"><link rel="stylesheet" type="text/css" href="img-full-screen_files/a.css"><style type="text/css">pre{position: relative}pre:hover .hljs-button{display: block}.hljs-button{display: none;position: absolute;right: 4px;top: 4px;font-size: 12px;color: #4d4d4d;background-color: white;padding: 2px 8px;margin: 8px;border-radius: 4px;cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.05);}.hljs-button:after{content: attr(data-title)}code .hljs-button{margin: 2px 8px;}</style><style type="text/css">.hljs-ln{border-collapse:collapse}            .hljs-ln td{padding:0}            .hljs-ln-n{text-align: right;padding-right: 8px;}            .hljs-ln-n:before{content:attr(data-line-number)}</style><link rel="stylesheet" type="text/css" href="img-full-screen_files/side-toolbar.css"><link rel="stylesheet" type="text/css" href="img-full-screen_files/csdn-footer.css"><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1px; bottom: 2px; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><link rel="preload" href="img-full-screen_files/integrator.js" as="script"><script type="text/javascript" src="img-full-screen_files/integrator.js"></script><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><script type="text/javascript" src="img-full-screen_files/baidu_opensug-1.js"></script><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style><style type="text/css"></style></head>
+<body class="nodata " style=""><div id="BAIDU_DUP_fp_wrapper" style="position: absolute; left: -1px; bottom: -1px; z-index: 0; width: 0px; height: 0px; overflow: hidden; visibility: hidden; display: none;"><iframe id="BAIDU_DUP_fp_iframe" src="img-full-screen_files/o.html" style="width: 0px; height: 0px; visibility: hidden; display: none;"></iframe></div><div id="csdn-toolbar" style="position: relative; top: 0px; left: 0px; width: 100%;">
+                    <div class="toolbar-inside">
+                      <div class="toolbar-container">
+                        <div class="toolbar-container-left">
+                          <div class="toolbar-logo toolbar-subMenu-box csdn-toolbar-fl"><a data-report-click="{&quot;spm&quot;:&quot;3001.4476&quot;}" data-report-query="spm=3001.4476" href="https://www.csdn.net/"><img title="CSDN首页" src="img-full-screen_files/20201124032511.png"></a>
+                    <div class="toolbar-subMenu">
+                    <img src="img-full-screen_files/20201120101655.png" width="96" height="96">
+                  </div></div>
+                          <ul class="toolbar-menus csdn-toolbar-fl"><li class="">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://www.csdn.net/&quot;,&quot;spm&quot;:&quot;3001.5359&quot;}" data-report-query="spm=3001.5359" href="https://www.csdn.net/">
+                                  首页
+                                  
+                                </a>
+                                
+                              </li><li class="active ">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/&quot;,&quot;spm&quot;:&quot;3001.4477&quot;}" data-report-query="spm=3001.4477" href="https://blog.csdn.net/">
+                                  博客
+                                  
+                                </a>
+                                
+                              </li><li class="">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://edu.csdn.net/&quot;,&quot;spm&quot;:&quot;3001.4482&quot;}" data-report-query="spm=3001.4482" href="https://edu.csdn.net/">
+                                  程序员学院
+                                  
+                                </a>
+                                
+                              </li><li class="">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://download.csdn.net/&quot;,&quot;spm&quot;:&quot;3001.4483&quot;}" data-report-query="spm=3001.4483" href="https://download.csdn.net/">
+                                  下载
+                                  
+                                </a>
+                                
+                              </li><li class="">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://bbs.csdn.net/&quot;,&quot;spm&quot;:&quot;3001.4491&quot;}" data-report-query="spm=3001.4491" href="https://bbs.csdn.net/">
+                                  论坛
+                                  
+                                </a>
+                                
+                              </li><li class="">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://ask.csdn.net/&quot;,&quot;spm&quot;:&quot;3001.4492&quot;}" data-report-query="spm=3001.4492" href="https://ask.csdn.net/">
+                                  问答
+                                  
+                                </a>
+                                
+                              </li><li class="">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://codechina.csdn.net/?utm_source=csdn_toolbar&quot;,&quot;spm&quot;:&quot;3001.4493&quot;}" data-report-query="spm=3001.4493" href="https://codechina.csdn.net/?utm_source=csdn_toolbar">
+                                  代码
+                                  
+                                </a>
+                                
+                              </li><li class="">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://codechina.csdn.net/?utm_source=csdn_toolbar&quot;,&quot;spm&quot;:&quot;3001.5342&quot;}" data-report-query="spm=3001.5342" href="https://live.csdn.net/?utm_source=csdn_toolbar">
+                                  直播
+                                  
+                                </a>
+                                
+                              </li><li class="">
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://book.csdn.net/&quot;,&quot;spm&quot;:&quot;3001.4495&quot;}" data-report-query="spm=3001.4495" href="https://book.csdn.net/">
+                                  电子书
+                                  
+                                </a>
+                                
+                              </li></ul>
+                        </div>
+                        <div class="toolbar-container-middle">
+                          <div class="toolbar-search onlySearch"><div class="toolbar-search-container">
+                    <input id="toolbar-search-input" autocomplete="off" type="text" placeholder="img css">
+                    <button id="toolbar-search-button"></button>
+                    <input type="password" autocomplete="new-password" readonly="readonly" disabled="true" style="display: none; position:absolute;left:-9999999px;width:0;height:0;">
+                  </div></div>
+                        </div>
+                        <div class="toolbar-container-right">
+                          <div class="toolbar-btns onlyUser"><div class="toolbar-btn toolbar-btn-login csdn-toolbar-fl ">
+                       <a data-report-click="{&quot;spm&quot;:&quot;3001.5105&quot;}" data-report-query="spm=3001.5105" href="https://passport.csdn.net/account/login">登录/注册</a>
+                      </div>
+                    <div class="toolbar-btn toolbar-btn-vip csdn-toolbar-fl">
+                      <a data-report-click="{&quot;mod&quot;:&quot;popu_336&quot;,&quot;dest&quot;:&quot;https://mall.csdn.net/vip&quot;,&quot;spm&quot;:&quot;3001.4496&quot;}" data-report-query="spm=3001.4496" href="https://mall.csdn.net/vip">会员中心 </a>
+                    </div>
+                    <div class="toolbar-btn toolbar-btn-collect csdn-toolbar-fl">
+                      <a data-report-click="{&quot;spm&quot;:&quot;3001.4506&quot;}" data-report-query="spm=3001.4506" href="https://i.csdn.net/#/user-center/collection-list?type=1">收藏</a>
+                    </div>
+                    
+                    <div class="toolbar-btn toolbar-btn-msg csdn-toolbar-fl">
+                      <div class="toolbar-subMenu-box">
+                        <a data-report-click="{&quot;spm&quot;:&quot;3001.4508&quot;}" data-report-query="spm=3001.4508" id="toolbar-remind" href="https://blog.csdn.net/blogdevteam/article/details/112280974?utm_source=gonggao_0107">消息</a>
+                      <div class="toolbar-subMenu">
+                    <a id="toolbar-announcement" href="https://blog.csdn.net/blogdevteam/article/details/112280974?utm_source=gonggao_0107">公告</a>
+                         
+                  </div></div>
+                      <div class="toolbar-msg-box"></div>
+                    </div>
+                    <div class="toolbar-btn toolbar-btn-write csdn-toolbar-fl ">
+                      <a data-report-click="{&quot;spm&quot;:&quot;3001.4503&quot;}" data-report-query="spm=3001.4503" href="https://mp.csdn.net/"><i></i>创作中心</a>
+                    </div></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div><div id="MathJax_Message" style="display: none;"></div>
+        <script>
+            var toolbarSearchExt = {"landingWord":["img 铺满"],"queryWord":"","tag":["img css"],"title":"img撑满全屏的方法（img非背景图）"};
+        </script>
+    <script src="img-full-screen_files/csdn-toolbar.js" type="text/javascript"></script>
+    <script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https') {
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else {
+            bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+    })();
+    </script>
+<link rel="stylesheet" href="img-full-screen_files/blog_code-01256533b5.css">
+<link rel="stylesheet" href="img-full-screen_files/chart-3456820cac.css">
+<div class="main_father clearfix d-flex justify-content-center" style="height:100%;"> 
+    <div class="container clearfix" id="mainBox">
+        <main>
+<script type="text/javascript">
+    var blogSensitiveWords = "";
+    function getQueryString(name) {   
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象  
+      var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+      if( r != null ) return decodeURIComponent( r[2] ); return '';   
+    }
+    function stripscript(s){ 
+      var pattern = new RegExp("[`~!@#$^&*()=|{}':;',\\[\\].<>/?~！@#￥……&*（）——|{}【】‘；：”“'。，、？%]") 
+      var rs = ""; 
+      for (var i = 0; i < s.length; i++) { 
+        rs = rs+s.substr(i, 1).replace(pattern, ''); 
+      } 
+      return rs; 
+    }
+    var blogHotWords = stripscript(getQueryString('utm_term')).length > 1 ? stripscript(getQueryString('utm_term')) : ''
+</script>
+<div class="blog-content-box">
+    <div class="article-header-box">
+        <div class="article-header">
+            <div class="article-title-box">
+                <h1 class="title-article" id="articleContentId">img撑满全屏的方法（img非背景图）</h1>
+            </div>
+            <div class="article-info-box">
+                <div class="article-bar-top">
+                    <img class="article-type-img" src="img-full-screen_files/original.png" alt="">
+                    <div class="bar-content">
+                    <a class="follow-nickName " href="https://blog.csdn.net/xiaoya_syt" target="_blank" rel="noopener">小丫007</a>
+                    <span class="time">2017-07-13 10:45:50</span>
+                    <img class="article-read-img article-heard-img" src="img-full-screen_files/articleReadEyes.png" alt="">
+                    <span class="read-count">25758</span>
+                    <a id="blog_detail_zk_collection" class="un-collection" data-report-click="{&quot;mod&quot;:&quot;popu_823&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4232&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                        <img class="article-collect-img article-heard-img un-collect-status isdefault" style="display:inline-block" src="img-full-screen_files/tobarCollect.png" alt="">
+                        <img class="article-collect-img article-heard-img collect-status isactive" style="display:none" src="img-full-screen_files/tobarCollectionActive.png" alt="">
+                        <span class="name">收藏</span>
+                        <span class="get-collection">
+                            5
+                        </span>
+                    </a>
+                    </div>
+                </div>
+                <div class="blog-tags-box">
+                    <div class="tags-box artic-tag-box">
+                            <span class="label">分类专栏：</span>
+                                <a class="tag-link" href="https://blog.csdn.net/xiaoya_syt/category_6768970.html" target="_blank" rel="noopener">css</a>
+                            <span class="label">文章标签：</span>
+                                <a data-report-click="{&quot;mod&quot;:&quot;popu_626&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4223&quot;,&quot;strategy&quot;:&quot;img css&quot;,&quot;ab&quot;:&quot;new&quot;}" class="tag-link" href="https://so.csdn.net/so/search/s.do?q=img%20css&amp;t=blog&amp;o=vip&amp;s=&amp;l=&amp;f=&amp;viparticle=" target="_blank" rel="noopener">img css</a>
+                    </div>
+                </div>
+                <div class="up-time"><span>最后发布:2017-07-13 10:45:50</span><span>首次发布:2017-07-13 10:45:50</span></div>
+                <div class="slide-content-box">
+                    <div class="article-copyright">
+                        <div class="creativecommons">
+                            版权声明：本文为博主原创文章，遵循<a href="http://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener"> CC 4.0 BY-SA </a>版权协议，转载请附上原文出处链接和本声明。
+                        </div>
+                        <div class="article-source-link">
+                            本文链接：<a href="https://blog.csdn.net/xiaoya_syt/article/details/75045505" target="_blank">https://blog.csdn.net/xiaoya_syt/article/details/75045505</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="operating">
+                    <a class="href-article-edit slide-toggle">版权</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <article class="baidu_pl">
+        <div id="article_content" class="article_content clearfix">
+        <link rel="stylesheet" href="img-full-screen_files/ck_htmledit_views-b5506197d8.css">
+                <div id="content_views" class="htmledit_views">
+                    <p style="margin-top:0px; margin-bottom:1.5em; color:rgb(51,51,51); font-size:14px; orphans:2; widows:2"> 我有一个模板，想按常规做一个div里面放置一个img图片，并且让图片铺满容器，自适应容器大小。HTML结构代码如下（在这个盒模型上，我已经放置了一些不重要的样式）。</p> 
+<pre class="hljs stylus" style="overflow:auto; font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; font-size:0.93em; padding:1em; margin-bottom:1.5em; line-height:1.45; word-break:break-all; word-wrap:break-word; color:rgb(51,51,51); border:none; max-height:35em; position:relative; orphans:2; widows:2; margin-top:0px!important" name="code"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs xml"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-tag">&lt;</span><span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-tag"><span class="hljs-name">div</span></span></span><span class="hljs-tag"> <span class="hljs-attr">style</span>=</span><span class="hljs-string" style="color:rgb(221,17,68)"><span class="hljs-tag"><span class="hljs-string">"height:270px;width:400px;border:2px black solid;"</span></span></span><span class="hljs-tag">&gt;</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line">    <span class="hljs-tag">&lt;</span><span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-tag"><span class="hljs-name">a</span></span></span><span class="hljs-tag"> <span class="hljs-attr">href</span>=</span><span class="hljs-string" style="color:rgb(221,17,68)"><span class="hljs-tag"><span class="hljs-string">"http://www.paipk.com"</span></span></span><span class="hljs-tag">&gt;</span><span class="hljs-tag">&lt;</span><span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-tag"><span class="hljs-name">img</span></span></span><span class="hljs-tag"> <span class="hljs-attr">src</span>=</span><span class="hljs-string" style="color:rgb(221,17,68)"><span class="hljs-tag"><span class="hljs-string">"..."</span></span></span><span class="hljs-tag"> <span class="hljs-attr">alt</span>=</span><span class="hljs-string" style="color:rgb(221,17,68)"><span class="hljs-tag"><span class="hljs-string">"拍拍看科技"</span></span></span><span class="hljs-tag">&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span></div></div></li></ol></code><div class="hljs-button signin" data-title="登录后复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}" onclick="hljs.signin(event)"></div></pre> 
+<p style="margin-top:1.5em; margin-bottom:1.5em; color:rgb(51,51,51); font-size:14px; orphans:2; widows:2"> 现在我初步想了两个方案，但都不是太完善的，想请高手帮忙参考下：</p> 
+<h2 style="font-weight:500; line-height:1.2; color:rgb(51,51,51); margin:1.5em 0px 0px; font-size:1.75em; border-bottom-width:1px; border-bottom-style:solid; border-bottom-color:rgb(238,238,238); padding-bottom:10px; orphans:2; widows:2"><a name="t0"></a> object-fit解决方法：</h2> 
+<p style="margin-top:1.5em; margin-bottom:1.5em; color:rgb(51,51,51); font-size:14px; orphans:2; widows:2"> 直接给img套用一个object-fit:cover;让img填满盒模型。</p> 
+<pre><code class="language-css hljs"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs"><span style="font-size:18px"><span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-selector-tag">div</span></span> <span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-selector-tag">img</span></span>{</span></code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">width</span></span>: <span class="hljs-number" style="color:rgb(0,128,128)"><span class="hljs-number">100%</span></span>;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">height</span></span>: <span class="hljs-number" style="color:rgb(0,128,128)"><span class="hljs-number">100%</span></span>;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">object-fit</span></span>:cover;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">}</code></div></div></li></ol></code><div class="hljs-button signin" data-title="登录后复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}" onclick="hljs.signin(event)"></div></pre> 
+<p style="margin-top:1.5em; margin-bottom:1.5em; color:rgb(51,51,51); font-size:14px; orphans:2; widows:2">
+ 
+这个方法很简单也很实用，也符合理论上对盒模型和IMG容器的解释。因为img本来也是一个容器，只不过它是公认的用来引导图片的容器，用替换法把图片替
+换成覆盖的尺寸就是我要的效果。这个思路在理论上都是正确的。但由于是新代码，在一些浏览器上还不兼容。回退机制上，如果浏览器不认识object-
+fit，那整个图片就会被强制拉伸成容器的尺寸。所以在回退机制上有待解决！</p> 
+<p style="font-weight:500; line-height:1.2; color:rgb(51,51,51); margin:1.5em 0px 0px; font-size:1.75em; border-bottom-width:1px; border-bottom-style:solid; border-bottom-color:rgb(238,238,238); padding-bottom:10px; orphans:2; widows:2"> min方法:</p> 
+<p style="font-weight:500; line-height:1.2; color:rgb(51,51,51); margin:1.5em 0px 0px; border-bottom-width:1px; border-bottom-style:solid; border-bottom-color:rgb(238,238,238); padding-bottom:10px; orphans:2; widows:2"> </p> 
+<p style="font-size:14px; margin-top:1.5em; margin-bottom:1.5em; color:rgb(51,51,51); orphans:2; widows:2"> 这是我这两天思考出来的，是通过对img元素垂直居中，并将它的高度和宽度设置一个最小满屏值，这样，也能让图片铺满容器：</p> 
+<pre><code class="language-css hljs"><ol class="hljs-ln"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs"><span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-selector-tag">div</span></span>{</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">position</span></span>:relative;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">overflow</span></span>:hidden;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">}</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs"><span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-selector-tag">div</span></span> <span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-selector-tag">img</span></span>{</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">position</span></span>: absolute;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">top</span></span>: <span class="hljs-number" style="color:rgb(0,128,128)"><span class="hljs-number">50%</span></span>;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">left</span></span>: <span class="hljs-number" style="color:rgb(0,128,128)"><span class="hljs-number">50%</span></span>;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">display</span></span>: block;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="10"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">min-width</span></span>: <span class="hljs-number" style="color:rgb(0,128,128)"><span class="hljs-number">100%</span></span>;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="11"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">min-height</span></span>: <span class="hljs-number" style="color:rgb(0,128,128)"><span class="hljs-number">100%</span></span>;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="12"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">    <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">transform</span></span>:<span class="hljs-built_in" style="color:rgb(0,134,179)"><span class="hljs-built_in">translate</span></span>(-<span class="hljs-number">50%</span>,-<span class="hljs-number">50%</span>);</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="13"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:&quot;Source Code Pro&quot;,Consolas,Menlo,Monaco,&quot;Courier New&quot;,monospace; font-size:1em; padding:0px; color:inherit; background:none; white-space:inherit" class="hljs">}</code></div></div></li></ol></code><div class="hljs-button signin" data-title="登录后复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}" onclick="hljs.signin(event)"></div></pre> 
+<p style="font-size:14px; margin-top:1.5em; margin-bottom:1.5em; color:rgb(51,51,51); orphans:2; widows:2"> 图片高度或宽度任意一尺寸小于容器时，这个情况是正常的，但如果图片的高度和宽度尺寸都大于容器，图片也能铺满，但容器就只显示大图的中间部分。这就是这个方法的缺陷。</p> 
+<span style="color:rgb(51,51,51); orphans:2; widows:2"><span style="font-size:18px">last</span></span>
+<span style="font-size:14px; color:rgb(51,51,51); orphans:2; widows:2">如果不需要支持IE老版本的话，可以使用background-size属性cover进行设置。如：（背景图img撑满全屏）</span>
+<br> 
+<p style="font-weight:500; line-height:1.2; color:rgb(51,51,51); margin:1.5em 0px 0px; border-bottom-width:1px; border-bottom-style:solid; border-bottom-color:rgb(238,238,238); padding-bottom:10px; orphans:2; widows:2"> <span style="color:rgb(51,51,51); orphans:2; widows:2"></span></p> 
+<pre><code class="language-javascript hljs"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:initial; word-break:break-word; background-color:initial" class="hljs"><span style="font-size:18px">&lt;div&nbsp;<span class="hljs-class" style=""><span class="hljs-keyword" style="font-weight:bold"><span class="hljs-class"><span class="hljs-keyword">class</span></span></span></span>=<span class="hljs-string" style="color:rgb(221,17,68)"><span class="hljs-string">"img"</span></span>&gt;<span class="xml" style=""><span class="hljs-tag" style="color:rgb(0,0,128)">&lt;/<span class="hljs-name" style="">div</span>&gt;</span></span></span></code></code><div class="hljs-button signin" data-title="登录后复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}" onclick="hljs.signin(event)"></div></pre> 
+<div class="widget-codetool" style="position:relative; margin-top:0px; color:rgb(51,51,51); orphans:2; widows:2"> 
+ <div class="widget-codetool--inner" style="position:absolute; top:-10px; right:0px; z-index:1; height:24px; padding:0px 5px"> 
+  <span class="selectCode code-tool" title="" style="display:block; float:left; height:16px; width:16px; margin:4px 5px"></span>
+  <span type="button" class="copyCode code-tool" title="" style="display:block; float:left; height:16px; width:16px; margin:4px 5px"></span>
+  <span type="button" class="saveToNote code-tool" title="" style="display:block; float:left; height:16px; width:16px; margin:4px 5px"></span>
+ </div> 
+</div> 
+<pre><code class="language-css hljs"><ol class="hljs-ln" style="width:960px"><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="1"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs"><span style="font-size:18px"><span class="hljs-selector-tag" style="font-weight:bold"><span class="hljs-selector-tag">div</span></span><span class="hljs-selector-class" style=""><span class="hljs-selector-class">.img</span></span> {</span></code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="2"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">            <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">width</span></span>: <span class="hljs-number" style="color:rgb(0,128,128)"><span class="hljs-number">400px</span></span>;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="3"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">            <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">height</span></span>: <span class="hljs-number" style="color:rgb(0,128,128)"><span class="hljs-number">200px</span></span>;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="4"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">            <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">background-image</span></span>: <span class="hljs-built_in" style="color:rgb(0,134,179)"><span class="hljs-built_in">url</span></span>(http://img5.imgtn.bdimg.com/it/u=<span class="hljs-number">4021999557</span>,<span class="hljs-number">1995524928</span>&amp;fm=<span class="hljs-number">11</span>&amp;gp=<span class="hljs-number">0</span>.jpg);</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="5"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">            <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">-webkit-background-size</span></span>:cover;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="6"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">            <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">-moz-background-size</span></span>: cover;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="7"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">            <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">-o-background-size</span></span>: cover;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="8"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">            <span class="hljs-attribute" style="color:rgb(0,0,128)"><span class="hljs-attribute">background-size</span></span>: cover;</code></div></div></li><li><div class="hljs-ln-numbers"><div class="hljs-ln-line hljs-ln-n" data-line-number="9"></div></div><div class="hljs-ln-code"><div class="hljs-ln-line"><code style="font-family:'Source Code Pro',Consolas,Menlo,Monaco,'Courier New',monospace; padding:0px; color:inherit; white-space:inherit; background-color:initial" class="hljs">        }</code></div></div></li></ol></code><div class="hljs-button signin" data-title="登录后复制" data-report-click="{&quot;spm&quot;:&quot;1001.2101.3001.4259&quot;}" onclick="hljs.signin(event)"></div></pre> 
+<br> 
+<p></p>
+                </div><div><div></div></div>
+        </div>
+    </article>
+</div>
+<script>
+    // 敏感词替换
+    // replaceArticleContentWords(blogSensitiveWords,'sensitiveWords')
+    // 高亮词
+    // replaceArticleContentWords(blogHotWords,'hotWords')
+    // 公共方法
+    function replaceArticleContentWords(words,type){
+      if(words){   
+        var getContentViews = document.getElementById("content_views");
+        var getContentTitle = document.getElementById("articleContentId");
+        var contentViewsInnerHTML = getContentViews.innerHTML;
+        var contentTitleInnerHTML = getContentTitle.innerHTML;
+        var keyWordsJsonArr = [];
+        var keyWordsArr = words.split(',');
+        function repeatTimes(str, num){
+            return num > 1 ? str += repeatTimes(str, --num): str;
+        }
+        for(var i = 0; i < keyWordsArr.length; i++){
+            var keyWordsJson = {} ;
+            keyWordsJson.key = keyWordsArr[i];
+            if(type == 'hotWords'){
+              keyWordsJson.value = '<span class="hot-words-highlight">'+keyWordsArr[i]+'</span>'
+            }else if(type == 'sensitiveWords'){
+              keyWordsJson.value = repeatTimes("*",keyWordsArr[i].length);
+            }else {
+              keyWordsJson.value = keyWordsArr[i]
+            }
+            keyWordsJsonArr.push(keyWordsJson);
+        }
+        var reg;
+        for(var i = 0; i < keyWordsJsonArr.length; i++){
+            var item = keyWordsJsonArr[i]; 
+            if(type == 'hotWords'){
+              reg = new RegExp(item.key,"ig");
+            }
+            if(type == 'sensitiveWords'){
+              reg = new RegExp(item.key+"(?!([^<]*>)|([^<]*<\/a>))","ig");  
+            }
+            contentViewsInnerHTML = contentViewsInnerHTML.replace(reg,item.value);
+            contentTitleInnerHTML = contentTitleInnerHTML.replace(reg,item.value);
+        }
+        getContentViews.innerHTML=contentViewsInnerHTML;
+        getContentTitle.innerHTML=contentTitleInnerHTML;
+      }
+    }
+</script>
+<div class="more-toolbox more-toolbox-active" id="toolBarBox">
+    <span id="fixedBar"></span>
+    <div class="left-toolbox" style="position: fixed; left: 426.5px; bottom: 0px; width: 820px;">
+        <ul class="toolbox-list">
+            <li class="tool-item tool-item-size tool-active is-like" id="is-like"><a>
+            <img style="display:none;" id="is-like-imgactive-animation-like" class="animation-dom active-animation" src="img-full-screen_files/tobarThumbUpactive.png" alt="">
+            <img class="isactive" style="display: none;" id="is-like-imgactive" src="img-full-screen_files/tobarThumbUpactive.png" alt="">
+            <img class="isdefault" style="display: block;" id="is-like-img" src="img-full-screen_files/tobarThumbUp.png" alt="">   
+            <span class="name" id="is-like-span" style="">点赞</span>
+            <span id="spanCount" class="count" style="">
+                    4
+            </span>
+            </a></li>
+            <li class="tool-item tool-item-size tool-active tool-item-comment">
+                <a href="#commentBox">
+                    <img class="isdefault" src="img-full-screen_files/tobarComment.png" alt="" style="display: block;">
+                    <img class="isactive" src="img-full-screen_files/tobarCommentactive.png" style="display: none;" alt="">
+                    <span class="name">评论</span>
+                    <span class="count">
+                    </span>
+                </a>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-QRcode" id="tool-share" data-flag="">
+                <a href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;1582594662_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4129&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                    <img class="isdefault" src="img-full-screen_files/tobarShare.png" alt="" style="display: block;">
+                    <img class="isactive" src="img-full-screen_files/tobarShareactive.png" style="display: none;" alt="">
+                    <span class="name" style="">分享</span>
+                </a>
+                <div class="QRcode" id="tool-QRcode" style="left:-92%;">
+                    <span id="QRcode-close">x</span>
+                    <p class="title">
+                    海报分享
+                    </p>
+                    <div id="shareCode" title="https://blog.csdn.net/xiaoya_syt/article/shareArticleCardPage?article_id=75045505&amp;utm_source=po_popup"><canvas width="144" height="144" style="display: none;"></canvas><img style="display: block;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAYAAADnRuK4AAAH2UlEQVR4nO2YS5IbMQxD+/6XdjazSKYkEh/KsbuhKm/UFAlATxtf13W93N/fq9pj+vxeqzr07E4D2mf6LJrDVNZTuja/ABSABgBS1ilTU4F0vVdnnX7TjwfV4ICtrABUnHX6BSCxEboXgB4CEGqUvZTu7FSwlQZnhnuGvTQH4qn8gboAhM4IQMu6WYAcA6se1VIu19lDwXC8d17Z+gBUrADU1wegYgWgvv4WAKHmT4XEXDj7Q/UrPdnH4UIcgIrvAWh9BtVY1HGXpoiozk5fKAPsah5bp5x9B5yoZ2UFoEILWxeAAlAAItcSoKmL+t973eV++t7JbFZ7A78A9El7J7NZ7dm/1xtXFyIKaXe2+o7qUvSze1ManDp3BaCNLkU/uzelwalzVwDa6FL0s3tTGpw6d5XdUdPtEMOIAxNap/xQn2gP9Pv0Qn1ua9Dm1XdUpLIC0L73xBoD6CQsrLCpNQUdO8/Zc7WgWVf1VG5V8840WheAAlAAIuY5e18H0IRY1kjXDzXFmEZnsHVdHuyFKrpP+gQ8BaAAZADUKi+EISGdMK+YZvU7wTpZMnpQT9Xsbm6nOwCZ81a9nSwZPainanY3t9MdgMx5q95Olowe1FM1u5vb6b7Yi1REoMFOXIqry7nQiSxPQqXkAZwNQM7ZxwPUVgMGByimAulmvAMg1Meqbnop+bNntx4nBgWgAGQNCkAPBogNsdurhqNnWbjUxUKFgqHsOdApZ9lci2wCUAAaAOikAVYYCg4DkxLORB0LZKfV8TTl85f2ABSA+rOF/gAUgPqzhX7MAHKh3SKFwSBNzkP7TWhlHogCIuKl0wX0CUABaK8L6KMbqOqmAkUXGna3t+rHzkW9K2Aouqrvjvef2gDU9WPnBiDAyG5gAHoYQG1FMfCdl8zAh2qovqP6p/ShsJx8mMpjCECb76j+AASGeCpYtA+qj7mAau+k1q5f9V3RgNQzDy8ABaAAFIA+DCA0COWHCprSUs1Dl3OhqF83N3Y5c7c9q+ZuAAEI1xyAAtCzAVoN6vYmhLP1CFRVnxPz2Do0r6k6dLGP+rquADQx79EAoYfYgahR5/KYIFANrLepfqh/NC8mTyS/4nsACkB9fsX3ABSA+vy231lh04F1e6zRE/pZDagnFxZUQzXb1RqAAP2sBtTTLQBSLoEVuxKBmq/2lMAYmJC6bo/VpAA7DRB6JwFooK7bYzUFINB8JVoxyswOQIMAoSKdxRp1L3kCdmUu22fXGz3j1K3mKp4CkOnD6bPrjZ5x6lZzxwBCB7E/x8BUnylPjn4UoOlclX5tfZvygKAAFIACUADa/ThB6KVM1RFGaP0sdFOgKV5VzTvvbF0ACkBW3RGA0D1ABBV2B0O10HnK5bFZMg8AzYHVivYrNASgANT3KzQEoADU9ys06AChwtVg1D4snA58rhcUguo7OhfVyqwAtNnr+k55+XqAqoHODzWlXOj0BUz7XM1A9xRIT3nb3ck/v+mBAWg9A90LQAFoOQPd+1qAFNOr5mggE5fiXi6qf2LuCX+oholHEYDAfqynxwNUNVCaTobwKYFNeFf0ofOc3speAApApc8AFIDeDxC6HBGoYSUQNOBV75M+2XyZxYLR9UDPBqBfvU/6vD1A7KFuTxJRGFDqkBmMJwVOxq87Az2r5NqerQ6thnd7bL8A5M8IQAHo+wFSxDpm2H7oLBU6NcSpxXhR81K0tFqPNg9A8HokQE6g04E4ELBaTkDV9an2ph8rmuXr9QpAAQjrF4BA/QHoMEDs4N13VKwDkONFqVNAnH54zsOU9MPKh00FoBsDdPJykX5dHToD7c1q3tVN91HycrJW8g9AguZd3XSfACT2C0DY3kcAtNmUQlcCO7kcgFZ9lLlKHXuRUxCLWgMQ2keZq9QFoAAUgJDQWWHdhbLBuavyxPZgLq/LEu3N1im6gPoA1O2hnrrvtwSINdDtoZeigoQEp4A6cQFoHsoMdq/Tyua6zXpCbAAKQAEoAEkzlgCxYlbflbPVma6Pc5HTELgXP6FVqZPOsoEFoH49HiBHWGearWPDdBc7G+3HzGX1vePstmdlIAAFoFZ3ZSAABaBWd9UcFdEOWdR1ZqYhRXuzWp06N69qKT6rs1stTvMAFICuCWHAEChYdka3HBBRT9131rvqD4HlkIYAtDqDeuq+B6BCNGsuAN0YoJUwVvTuLCoWDcTRNfVQ2AfAXLKqudOl6AeyDEBdv+o7evb2AKE/ZyBqCtXAfEe1oovNSPGpPCR0hrMCUACSPG96ByBlBaCf30SjTjh6dtUDmc8EolweehHsI3N7s3uuhmU/KPXNCkAByP8joGpOBrr6hs7qejuwI307/Qzs7ONywO78tXVtV3IFoABkrQD0MIC6UJCfI8wNu5qH7im6HEg7b9OP61QeP/sBKADpcy9ETCcSNTANJDMP6efWOZeC6ke9TeUKaA1AAWivH9AagALQXj+glbsMdCAqljGI6DsBtAPkFOxO/tMP+FfvABSAPgig6gy6pywFJFZDd5b17upiH0y3xMcUgAIQ5iUAmRoC0BsAYs07oCmGp9cUVNOPy9FA9g5AzgpARrDiQOmSmTMOnKfymNLP9JwAqMsjADX1U3kEoMIAWheAbgzQhBg1MGSdAIjV39WhZ4FLOf4oBmEPQOi8rg49G4AC0LIOPXsngP4AHFabfFFuVXMAAAAASUVORK5CYII="></div>
+                    <p>
+                    扫一扫，分享海报
+                    </p>
+                </div>
+            </li>
+            <li class="tool-item tool-item-size tool-active is-collection ">
+                <a href="javascript:;" data-report-click="{&quot;mod&quot;:&quot;popu_824&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4130&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                    <img style="display:none" id="is-collection-img-collection" class="animation-dom active-animation" src="img-full-screen_files/tobarCollectionActive.png" alt="">
+                    <img class="isdefault" id="is-collection-img" style="display: block;" src="img-full-screen_files/tobarCollect.png" alt="">
+                    <img class="isactive" id="is-collection-imgactive" style="display: none;" src="img-full-screen_files/tobarCollectionActive.png" alt="">
+                    <span class="name" id="is-collection">收藏</span>
+                    <span class="count get-collection" id="get-collection">
+                        5
+                    </span>
+                </a>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-reward">
+                <a id="toolreward" data-report-click="{&quot;mod&quot;:&quot;popu_830&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4237&quot;,&quot;dest&quot;:&quot;&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                    <img class="isdefault" src="img-full-screen_files/tobarReward.png" alt="">
+                    <img class="isactive" src="img-full-screen_files/tobarRewardactive.png" style="display:none;" alt="">
+                    <span class="name">打赏</span>
+                </a>
+<div id="reward" class="reward-box">
+	<p class="rewad-title">打赏<span class="reward-close"><svg t="1567152543821" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10924" xlink="http://www.w3.org/1999/xlink" width="12" height="12"><defs><style type="text/css"></style></defs><path d="M512 438.378667L806.506667 143.893333a52.032 52.032 0 1 1 73.6 73.621334L585.621333 512l294.485334 294.485333a52.074667 52.074667 0 0 1-73.6 73.642667L512 585.621333 217.514667 880.128a52.053333 52.053333 0 1 1-73.621334-73.642667L438.378667 512 143.893333 217.514667a52.053333 52.053333 0 1 1 73.621334-73.621334L512 438.378667z" fill="" p-id="10925"></path></svg></span></p>
+	<dl>
+		<dd>
+		<a href="https://blog.csdn.net/xiaoya_syt" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt&quot;,&quot;ab&quot;:&quot;new&quot;}">
+			<img src="img-full-screen_files/3_xiaoya_syt.jpg" class="avatar_pic">
+		</a>
+		</dd>
+		<dt>
+			<p class="blog-name">小丫007</p>
+			<p class="blog-discript">你的鼓励将是我创作的最大动力</p>
+		</dt>
+	</dl>
+	<div class="change-bt-box">
+		<span class="reward-bt reward-bt-coin">C币</span>
+		<span class="reward-bt-space"></span>
+		<span class="reward-bt reward-bt-money reward-bt-active">余额</span>
+	</div>
+	<div class="money-box">
+			<span class="choose_money choosed" data-id="2">¥2</span>
+			<span class="choose_money " data-id="4">¥4</span>
+			<span class="choose_money " data-id="6">¥6</span>
+			<span class="choose_money " data-id="10">¥10</span>
+			<span class="choose_money " data-id="20">¥20</span>
+			<span class="choose_money " data-id="50">¥50</span>
+	</div>
+	<div class="sure-box">
+		<p class="is-have-money"><span class="tip">您的余额不足，请先充值哦～</span><a class="bt-go" data-report-click="{&quot;mod&quot;:&quot;1597646289_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4302&quot;}" target="_blank" href="https://i.csdn.net/#/wallet/balance/recharge" data-report-query="utm_source=RewardVip">去充值</a></p>
+	</div>
+</div>
+            </li>
+            <li class="tool-item tool-item-size tool-active tool-more">
+              <a class="article-report">
+                <img class="isdefault" src="img-full-screen_files/tobarReport.png" alt="">
+                <img class="isactive" src="img-full-screen_files/tobarReportactive.png" style="display:none;" alt="">
+                <span class="name">举报</span>
+              </a>
+            </li>
+            <li class="tool-item">
+                    <a class="tool-attend tool-bt-button tool-bt-attend" href="javascript:;">关注</a>
+                <a class="tool-item-follow active-animation" style="display:none;">关注</a>
+            </li>
+            <li class="tool-item">
+                    <p class="company active" id="health-companies" href="javascript:;">一键三连</p>
+                <span class="triplet-prompt" style="display: inline;">点赞Mark关注该博主, 随时了解TA的最新博文<img class="close-prompt" src="img-full-screen_files/closePrompt.png"></span>
+            </li>
+        </ul>
+        <div style="display:flex">
+         </div>
+         <div class="hot-word-tip-box">
+          <span class="hot-word-text">已标记关键词</span>
+          <span class="hot-word-count"></span> 
+          <span class="hot-word-bar"></span>
+          <span class="hot-word-clear">清除标记</span>
+        </div>
+    </div>  
+</div>
+<script type="text/javascript" crossorigin="" src="img-full-screen_files/qrcode-7c90a92189.js"></script>
+<script src="img-full-screen_files/a_002" type="text/javascript"></script>
+<script type="text/javascript" crossorigin="" src="img-full-screen_files/collection-box.js"></script>
+                <div id="dmp_ad_58" style="width:100%;overflow-x:hidden"><div id="kp_box_58" data-pid="58"><script async="" src="img-full-screen_files/adsbygoogle.js"></script>
+<ins class="adsbygoogle" style="display: block; height: 122px; width: 820px;" data-ad-format="fluid" data-ad-layout-key="-gi-21+3s-18+2p" data-ad-client="ca-pub-1076724771190722" data-ad-slot="7699693710" data-adsbygoogle-status="done"><ins id="aswift_0_expand" style="display: inline-table; border: medium none; height: 122px; margin: 0px; padding: 0px; position: relative; visibility: visible; width: 820px; background-color: transparent;" tabindex="0" title="Advertisement" aria-label="Advertisement"><ins id="aswift_0_anchor" style="display: block; border: medium none; height: 122px; margin: 0px; padding: 0px; position: relative; visibility: visible; width: 820px; background-color: transparent; overflow: hidden;"><iframe id="aswift_0" name="aswift_0" style="left: 0px; position: absolute; top: 0px; border: 0px none; width: 820px; height: 122px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" src="img-full-screen_files/ads.html" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" data-google-container-id="a!1" data-google-query-id="COib2ZGE2O4CFVU_lgodLvMNCA" data-load-complete="true" width="820" height="122" frameborder="0"></iframe></ins></ins></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=58&amp;a=3803&amp;c=0&amp;k=&amp;spm=1001.2101.3001.5002&amp;d=1&amp;t=3&amp;u=940bdd8b6d324a03b2b171ee1e2da992" style="display: block;width: 0px;height: 0px;" src="img-full-screen_files/1.png"></div></div>
+            <div class="second-recommend-box recommend-box">
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/u014763002/article/details/52636281">
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/u014763002/article/details/52636281" class="tit ellipsis-online ellipsis-online-1" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control\&quot;}&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/u014763002/article/details/52636281&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control">
+					CSS<em>背景图</em>片自适应、<em>全屏</em>、填充、拉伸
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/u014763002" target="_blank"><span class="blog-title">u014763002的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">09-23</span>
+					<span class="info-block read"><img class="read-img" src="img-full-screen_files/readCountWhite.png" alt="">
+					12万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/u014763002/article/details/52636281" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control\&quot;}&quot;,&quot;index&quot;:&quot;1&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/u014763002/article/details/52636281&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control">
+				<div class="desc ellipsis-online ellipsis-online-1"><em>方法</em>一、
+js控制：
+
+
+
+
+
+
+1
+
+2
+
+3
+
+
+
+
+div&nbsp;id="formbackground"&nbsp;style="position:absolute;&nbsp;width:100%;&nbsp;height:100%;&nbsp;z-index:-1"&gt;&nbsp;&nbsp;
+
+<em>img</em>&nbsp;src="pictures/background.jpg"&nbsp;height="100%"&nbsp;width="100%"/</div>
+			</a>
+		</div>
+	</div>
+</div>
+            </div>
+<a id="commentBox" name="commentBox"></a>
+<div class="comment-box">
+	<div class="comment-edit-box d-flex">
+		<a id="commentsedit"></a>
+		<div class="user-img">
+			<a href="javascript:void(0);">
+				<img class="show_loginbox" src="img-full-screen_files/anonymous-User-img.png">
+			</a>
+		</div>
+		<form id="commentform">
+			<img class="comment-sofa-flag" src="img-full-screen_files/commentFlag2x.png" style="display: inline;">
+      <textarea class="comment-content" name="comment_content" id="comment_content" placeholder="优质评论可以帮助作者获得更高权重" maxlength="1000"></textarea>
+			<div class="comment-emoticon"><img class="comment-emoticon-img" data-url="https://csdnimg.cn/release/blogv2/dist/pc/img/" src="img-full-screen_files/emoticon.png" alt="表情包"></div> 
+      <span class="comment-emoticon-tip">插入表情</span>
+      <div class="comment-emoticon-box">
+        <div class="comment-emoticon-img-box">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:001.png[/face]" src="img-full-screen_files/001.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:002.png[/face]" src="img-full-screen_files/002.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:003.png[/face]" src="img-full-screen_files/003.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:004.png[/face]" src="img-full-screen_files/004.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:005.png[/face]" src="img-full-screen_files/005.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:006.png[/face]" src="img-full-screen_files/006.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:007.png[/face]" src="img-full-screen_files/007.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:008.png[/face]" src="img-full-screen_files/008.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:009.png[/face]" src="img-full-screen_files/009.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:010.png[/face]" src="img-full-screen_files/010.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:011.png[/face]" src="img-full-screen_files/011.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:012.png[/face]" src="img-full-screen_files/012.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:013.png[/face]" src="img-full-screen_files/013.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:014.png[/face]" src="img-full-screen_files/014.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:015.png[/face]" src="img-full-screen_files/015.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:016.png[/face]" src="img-full-screen_files/016.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:017.png[/face]" src="img-full-screen_files/017.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:018.png[/face]" src="img-full-screen_files/018.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:019.png[/face]" src="img-full-screen_files/019.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:020.png[/face]" src="img-full-screen_files/020.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:021.png[/face]" src="img-full-screen_files/021.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:022.png[/face]" src="img-full-screen_files/022.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:023.png[/face]" src="img-full-screen_files/023.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:024.png[/face]" src="img-full-screen_files/024.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:025.png[/face]" src="img-full-screen_files/025.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:026.png[/face]" src="img-full-screen_files/026.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:027.png[/face]" src="img-full-screen_files/027.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:028.png[/face]" src="img-full-screen_files/028.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:029.png[/face]" src="img-full-screen_files/029.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:030.png[/face]" src="img-full-screen_files/030.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:031.png[/face]" src="img-full-screen_files/031.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:032.png[/face]" src="img-full-screen_files/032.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:033.png[/face]" src="img-full-screen_files/033.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:034.png[/face]" src="img-full-screen_files/034.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:035.png[/face]" src="img-full-screen_files/035.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:036.png[/face]" src="img-full-screen_files/036.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:037.png[/face]" src="img-full-screen_files/037.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:038.png[/face]" src="img-full-screen_files/038.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:039.png[/face]" src="img-full-screen_files/039.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:040.png[/face]" src="img-full-screen_files/040.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:041.png[/face]" src="img-full-screen_files/041.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:042.png[/face]" src="img-full-screen_files/042.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:043.png[/face]" src="img-full-screen_files/043.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:044.png[/face]" src="img-full-screen_files/044.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:045.png[/face]" src="img-full-screen_files/045.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:046.png[/face]" src="img-full-screen_files/046.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:047.png[/face]" src="img-full-screen_files/047.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:048.png[/face]" src="img-full-screen_files/048.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:049.png[/face]" src="img-full-screen_files/049.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:050.png[/face]" src="img-full-screen_files/050.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:051.png[/face]" src="img-full-screen_files/051.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:052.png[/face]" src="img-full-screen_files/052.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:053.png[/face]" src="img-full-screen_files/053.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:054.png[/face]" src="img-full-screen_files/054.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:055.png[/face]" src="img-full-screen_files/055.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:056.png[/face]" src="img-full-screen_files/056.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:057.png[/face]" src="img-full-screen_files/057.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:058.png[/face]" src="img-full-screen_files/058.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:059.png[/face]" src="img-full-screen_files/059.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:060.png[/face]" src="img-full-screen_files/060.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:061.png[/face]" src="img-full-screen_files/061.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:062.png[/face]" src="img-full-screen_files/062.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:063.png[/face]" src="img-full-screen_files/063.png">
+            <img class="emoticon-monkey-img" data-emoticon="[face]monkey2:064.png[/face]" src="img-full-screen_files/064.png">
+        </div>
+      </div>
+      <div class="opt-box">
+				<div id="ubbtools" class="add_code">
+					<a href="#insertcode" code="code" target="_self"><i class="icon iconfont icon-daima"></i></a>
+				</div>
+				<input type="hidden" id="comment_replyId" name="comment_replyId">
+				<input type="hidden" id="article_id" name="article_id" value="75045505">
+				<input type="hidden" id="comment_userId" name="comment_userId" value="">
+				<input type="hidden" id="commentId" name="commentId" value="">
+				<div class="dropdown" id="myDrap">
+					<a class="dropdown-face d-flex align-items-center" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+						<div class="txt-selected text-truncate">添加代码片</div>
+						<svg class="icon d-block" width="200px" height="100.00px" viewBox="0 0 2048 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M597.33333292 298.666667h853.333334L1023.99999992 725.333333 597.33333292 298.666667z"></path></svg>
+					</a>
+					<ul class="dropdown-menu" id="commentCode" aria-labelledby="drop4">
+						<li><a data-code="html">HTML/XML</a></li>
+						<li><a data-code="objc">objective-c</a></li>
+						<li><a data-code="ruby">Ruby</a></li>
+						<li><a data-code="php">PHP</a></li>
+						<li><a data-code="csharp">C</a></li>
+						<li><a data-code="cpp">C++</a></li>
+						<li><a data-code="javascript">JavaScript</a></li>
+						<li><a data-code="python">Python</a></li>
+						<li><a data-code="java">Java</a></li>
+						<li><a data-code="css">CSS</a></li>
+						<li><a data-code="sql">SQL</a></li>
+						<li><a data-code="plain">其它</a></li>
+					</ul>
+				</div>
+				<div class="right-box" id="rightBox" data-type="2">
+							<span id="tip_comment" class="tip">还能输入<em>1000</em>个字符</span>
+							<a data-report-click="{&quot;mod&quot;:&quot;1582594662_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4227&quot;,&quot;ab&quot;:&quot;new&quot;}"><input type="submit" class="btn btn-sm btn-comment" value="发表评论"></a>
+				</div>
+			</div>
+		</form>
+		<input type="button" class="bt-comment-show" value="评论">
+	</div>
+	<div class="comment-list-container">
+		<a id="comments"></a>
+		<div class="comment-list-box">
+		</div>
+		<div id="commentPage" class="pagination-box d-none"></div>
+		<div class="opt-box text-center">
+			<div class="btn btn-sm btn-link-blue" id="btnMoreComment"></div>
+		</div>
+	</div>
+</div>            <div class="recommend-box insert-baidu-box">
+                <div class="recommend-item-box clearfix" style="display:none"></div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/zunguitiancheng/article/details/8972499">
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/zunguitiancheng/article/details/8972499" class="tit ellipsis-online ellipsis-online-1" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control\&quot;}&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/zunguitiancheng/article/details/8972499&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control">
+					在css中如何让一个图片铺满<em>全屏</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/zunguitiancheng" target="_blank"><span class="blog-title">zunguitiancheng的专栏</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">05-25</span>
+					<span class="info-block read"><img class="read-img" src="img-full-screen_files/readCountWhite.png" alt="">
+					3万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/zunguitiancheng/article/details/8972499" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control\&quot;}&quot;,&quot;index&quot;:&quot;2&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/zunguitiancheng/article/details/8972499&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control">
+				<div class="desc ellipsis-online ellipsis-online-1">css 如何让图片<em>全屏</em>的问题 
+
+例如我有一张1024*768的图片，能否让它在页面上显示<em>全屏</em>，无论电脑分辨率是1024*768还是1440*900，我都想让这张图片<em>全屏</em>，如何实现？
+1、如果楼主只是将其当做一张图片显示，可以通过css控制，如<em>img</em>{width:100%;height:100%;}.
+否则需要将其作为网页背景的话可以试试如下<em>方法</em>：
+2、如果这张图片为<em>背景图</em>片由于<em>背景图</em>片</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/weixin_44758276/article/details/110039346">
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/weixin_44758276/article/details/110039346" class="tit ellipsis-online ellipsis-online-1" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control\&quot;}&quot;,&quot;index&quot;:&quot;3&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_44758276/article/details/110039346&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control">
+					如何让自己的Css样式里的图片铺满<em>全屏</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/weixin_44758276" target="_blank"><span class="blog-title">weixin_44758276的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">11-24</span>
+					<span class="info-block read"><img class="read-img" src="img-full-screen_files/readCountWhite.png" alt="">
+					64
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/weixin_44758276/article/details/110039346" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control\&quot;}&quot;,&quot;index&quot;:&quot;3&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/weixin_44758276/article/details/110039346&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-3.control">
+				<div class="desc ellipsis-online ellipsis-online-1">在最初设置的时候我发现 round平铺图像没有起到效果：
+
+后发现
+
+ &lt;style&gt;
+    .center-and-middle {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%);
+      width: calc(30vw);
+    }
+  &lt;/style&amp;g...</div>
+			</a>
+		</div>
+	</div>
+</div><div class="recommend-item-box baiduSearch clearfix">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/friendan/article/details/50970756" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-2\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/friendan/article/details/50970756&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;2&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-2&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1"><em>img</em>铺满div_friendan的专栏_<em>img</em>铺满div</div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">12-31</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/friendan/article/details/50970756" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-2\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/friendan/article/details/50970756&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;2&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-2&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1"><em>img</em>铺
+满div 参考文章:http://www.wqcms.com/html/c31/2012-02/2331.html &lt;html&gt; 
+&lt;head&gt; &lt;title&gt;test&lt;/title&gt; &lt;/head&gt; 
+&lt;styletype="text/css"&gt;...</div>                    </a>                  </div>                </div>              </div><div class="recommend-item-box baiduSearch clearfix">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/qq_38543537/article/details/81560698" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-3\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_38543537/article/details/81560698&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;3&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-3&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1"><em>img</em>图片在div里边高度不能自动<em>撑满</em>解决办法_小破孩的博客</div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">1-11</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/qq_38543537/article/details/81560698" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-3\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_38543537/article/details/81560698&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;3&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-3&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1"><em>img</em>图片在div里边高度不能自动<em>撑满</em>解决办法很简单,为啥没想到呢??? 只需要给<em>img</em>加一个样式 display:block;就可以了</div>                    </a>                  </div>                </div>              </div>
+		
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/holily_/article/details/91043540">
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/holily_/article/details/91043540" class="tit ellipsis-online ellipsis-online-1" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-4.control\&quot;}&quot;,&quot;index&quot;:&quot;4&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/holily_/article/details/91043540&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-4.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-4.control">
+					移动端h5单页面背景占满<em>全屏</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/holily_" target="_blank"><span class="blog-title">holily_的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">06-06</span>
+					<span class="info-block read"><img class="read-img" src="img-full-screen_files/readCountWhite.png" alt="">
+					7670
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/holily_/article/details/91043540" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-4.control\&quot;}&quot;,&quot;index&quot;:&quot;4&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/holily_/article/details/91043540&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-4.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-4.control">
+				<div class="desc ellipsis-online ellipsis-online-1">&lt;div class="ceshi"&gt;&lt;/div&gt;
+&lt;style lang="scss"&gt;
+.ceshi{
+  max-width: 375px;  //按一倍图适配
+  overflow: hidden;
+  height: 100%;
+  position: absolute;
+  left: 0px;
+  width: 100%;
+  top: 50%;
+...</div>
+			</a>
+		</div>
+	</div>
+</div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/wly_syp/article/details/84553322">
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/wly_syp/article/details/84553322" class="tit ellipsis-online ellipsis-online-1" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-5.control\&quot;}&quot;,&quot;index&quot;:&quot;5&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/wly_syp/article/details/84553322&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-5.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-5.control">
+					解决iphonex屏幕过长<em>背景图</em>片或者放在元素里面的图片不能铺满的问题
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/wly_syp" target="_blank"><span class="blog-title">wly_syp的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">11-26</span>
+					<span class="info-block read"><img class="read-img" src="img-full-screen_files/readCountWhite.png" alt="">
+					8409
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/wly_syp/article/details/84553322" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-5.control\&quot;}&quot;,&quot;index&quot;:&quot;5&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/wly_syp/article/details/84553322&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-5.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-5.control">
+				<div class="desc ellipsis-online ellipsis-online-1">目前有四种<em>方法</em>
+
+1.让设计单独设计一版iphonex的尺寸的图，用js代码判断设备，如果检测到是iphonex就换图
+
+&nbsp; &nbsp;//如果设备是iphonex则追加元素填补空余
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;function isIPhoneX(fn){
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;var u = navigator.userAgent;
+&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;var isIOS = !!u...</div>
+			</a>
+		</div>
+	</div>
+</div><div class="recommend-item-box baiduSearch clearfix">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/z278718149/article/details/23766009" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-6\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/z278718149/article/details/23766009&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;6&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-6&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1">html图片布满<em>全屏</em>_z278718149的专栏</div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">2-1</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/z278718149/article/details/23766009" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-6\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/z278718149/article/details/23766009&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;6&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-6&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1"><em>背景图</em>片铺满<em>全屏</em> 02-16  html<em>背景图</em>片铺满<em>全屏</em> CSS实现HTML<em>背景图</em>片拉伸铺满示例 09-25  HTML<em>背景图</em>片拉伸铺满,使用CSS实现图片的width和height均100%,具体如下,...</div>                    </a>                  </div>                </div>              </div><div class="recommend-item-box baiduSearch clearfix">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/ma_hao99/article/details/102602342" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-7\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/ma_hao99/article/details/102602342&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;7&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-7&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1">新闻列表的图片<em>img</em> 自适应大小铺满美观_ma_hao99的博客</div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">1-9</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/ma_hao99/article/details/102602342" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-7\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/ma_hao99/article/details/102602342&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;7&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-7&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1">.hui-news-list-r { width: 32%; float: right; height: 78px; line-height: 78px;}.hui-news-list-r <em>img</em> { width: 100%; height: 100%; object-...</div>                    </a>                  </div>                </div>              </div>
+<div class="recommend-item-box type_blog clearfix" data-url="https://blog.csdn.net/OLiver_web/article/details/54407087" data-report-view="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-6.control\&quot;}&quot;,&quot;index&quot;:&quot;6&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/OLiver_web/article/details/54407087&quot;}">
+	<div class="content-box">
+		<div class="content-blog display-flex">
+			<div class="title-box">
+				<a href="https://blog.csdn.net/OLiver_web/article/details/54407087" class="tit ellipsis-online ellipsis-online-1" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-6.control\&quot;}&quot;,&quot;index&quot;:&quot;6&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/OLiver_web/article/details/54407087&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-6.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-6.control">
+					微信小程序中图片占满整个屏幕实现<em>方法</em>
+				</a>
+			</div>
+			<div class="info-box display-flex">
+				<div class="info">
+					<a href="https://blog.csdn.net/OLiver_web" target="_blank"><span class="blog-title">Oliver_web的博客</span></a>
+				</div>
+				<div class="info display-flex">
+					<span class="info-block time">01-13</span>
+					<span class="info-block read"><img class="read-img" src="img-full-screen_files/readCountWhite.png" alt="">
+					4万+
+					</span>
+				</div>
+			</div>
+		</div>
+		<div class="desc-box">
+			<a href="https://blog.csdn.net/OLiver_web/article/details/54407087" target="_blank" data-report-click="{&quot;ab&quot;:&quot;new&quot;,&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-6.control\&quot;}&quot;,&quot;index&quot;:&quot;6&quot;,&quot;strategy&quot;:&quot;BlogCommendFromMachineLearnPai2&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/OLiver_web/article/details/54407087&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-6.control&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-6.control">
+				<div class="desc ellipsis-online ellipsis-online-1">将body和html设置为100%，这样我们就可以在他们的子元素中使用height:100%来使的我们的容器元素占满屏幕的高度啦。
+
+但是在微信小程序中，是没有dom对象的，根节点是page，使用page{height:100%}
+
+果然，是可行的。高度占满了整个小程序的窗口。</div>
+			</a>
+		</div>
+	</div>
+</div>
+            <div class="recommend-item-box baiduSearch clearfix" data-report-view="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-9\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_39161501/article/details/105861913&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;9&quot;}">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/qq_39161501/article/details/105861913" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-9\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_39161501/article/details/105861913&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;9&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-9&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1">html <em>img</em>在div中没有铺满 <em>img</em>放在div有空隙_我不晓得</div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">1-20</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/qq_39161501/article/details/105861913" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-9\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_39161501/article/details/105861913&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;9&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-9&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1"><em>img</em>铺
+满div friendan的专栏 2万+  
+参考文章:http://www.wqcms.com/html/c31/2012-02/2331.html test #divMain{ 
+border: red solid 1px; width:600px; hei...</div>                    </a>                  </div>                </div>              </div><div class="recommend-item-box baiduSearch clearfix" data-report-view="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-10\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_34790644/article/details/79569965&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;10&quot;}">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/qq_34790644/article/details/79569965" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-10\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_34790644/article/details/79569965&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;10&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-10&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1">css的<em>img</em>布满<em>全屏</em>_小武的博客_<em>img</em> <em>全屏</em></div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">2-1</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/qq_34790644/article/details/79569965" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-10\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/qq_34790644/article/details/79569965&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;10&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-10&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1">css的<em>img</em>布满<em>全屏</em> 1. background-image的布满<em>全屏</em> 'background-image':'url', 'width':'100%', 'max-width':'100%', 'max-height':'500px',...</div>                    </a>                  </div>                </div>              </div><div class="recommend-item-box baiduSearch clearfix" data-report-view="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-11\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/aiugp80046/article/details/101835981&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;11&quot;}">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/aiugp80046/article/details/101835981" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-11\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/aiugp80046/article/details/101835981&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;11&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-11&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1"><em>img</em>填满父元素_aiugp80046的博客</div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">2-1</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/aiugp80046/article/details/101835981" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-11\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/aiugp80046/article/details/101835981&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;11&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-11&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1">当给父元素设置relative属性,display为block,设置一个padding-top值,给子元素<em>img</em>设置absolute,top为0,left为0,width100%,height100%,<em>img</em>元素就会填满父元素,高度为...</div>                    </a>                  </div>                </div>              </div><div class="recommend-item-box baiduSearch clearfix" data-report-view="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-12\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/Jonly_W/article/details/106396427&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;12&quot;}">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/Jonly_W/article/details/106396427" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-12\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/Jonly_W/article/details/106396427&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;12&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-12&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1"><em>img</em>VIew 铺满整个空间_Jonly_W的博客</div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">11-27</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/Jonly_W/article/details/106396427" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-12\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/Jonly_W/article/details/106396427&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;12&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-12&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1"><em>img</em>VIew 铺满整个空间 android:scaleType="fitXY" 一键三连 点赞Mark关注该博主, 随时了解TA的最新博文 Android在ImageView控件中图片怎样铺满整个控件...</div>                    </a>                  </div>                </div>              </div><div class="recommend-item-box baiduSearch clearfix" data-report-view="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-13\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/a3898695/article/details/101576531&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;13&quot;}">	                <div class="content-box">		                <div class="content-blog display-flex">			                  <div class="title-box">				                  <a href="https://blog.csdn.net/a3898695/article/details/101576531" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-13\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/a3898695/article/details/101576531&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;13&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-13&amp;spm=1001.2101.3001.4242">					                <div class="tit ellipsis-online ellipsis-online-1"><em>img</em>在div中高度不能自动填满的解决办法_a3898695的博客</div>				                  </a>			                  </div>                    <div class="info-box display-flex">                      <div class="info display-flex">                        <span class="info-block">1-27</span>                      </div>                    </div>                  </div>                  <div class="desc-box">                    <a href="https://blog.csdn.net/a3898695/article/details/101576531" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_387&quot;,&quot;extra&quot;:&quot;{\&quot;utm_medium\&quot;:\&quot;distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-13\&quot;}&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4242&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/a3898695/article/details/101576531&quot;,&quot;strategy&quot;:&quot;baidujs_baidulandingword&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;index&quot;:&quot;13&quot;}" data-report-query="utm_medium=distribute.pc_relevant.none-task-blog-baidujs_baidulandingword-13&amp;spm=1001.2101.3001.4242">                      <div class="desc ellipsis-online ellipsis-online-1">不论<em>img</em>怎样设置高度,<em>img</em>在div中总有几像素总不能填满,如下图:解决办法<em>非</em>常简单:只要给<em>img</em>加个样式【display:block;】就ok了~转载于:https://www.cnblogs.com...</div>                    </a>                  </div>                </div>              </div></div>
+            <div class="template-box">
+                <span>©️2020 CSDN</span>
+                <span>皮肤主题: 技术工厂</span>
+                <span> 设计师:CSDN官方博客</span>
+                <span>
+                    <a href="https://blog.csdn.net/" class="back-home c-blue c-blue-hover c-blue-focus">返回首页</a>
+                </span>
+            </div>
+<div class="blog-footer-bottom" style="margin-top:10px;">
+        <div id="copyright-box" class="">
+          <div id="csdn-copyright-footer" class="column small">
+            <ul class="footer-column-t">
+            <li>
+              <a href="https://www.csdn.net/company/index.html#about" target="_blank">关于我们</a>
+            </li>
+            <li>
+              <a href="https://www.csdn.net/company/index.html#recruit" target="_blank">招贤纳士</a>
+            </li>
+            <li>
+              <a href="https://www.csdn.net/company/index.html#advertisement" target="_blank">广告服务</a>
+            </li>
+            <li>
+              <a href="https://plugin.csdn.net/" target="_blank">开发助手</a>
+            </li>
+            <li>
+              <img src="img-full-screen_files/tel.png" alt="">
+              <span>400-660-0108</span>
+            </li>
+            <li>
+              <img src="img-full-screen_files/email.png" alt="">
+              <a href="mailto:webmaster@csdn.net" target="_blank">kefu@csdn.net</a>
+            </li>
+            <li>
+              <img src="img-full-screen_files/cs.png" alt="">
+              <a href="https://csdn.s2.udesk.cn/im_client/?web_plugin_id=29181" target="_blank">在线客服</a>
+            </li>
+            <li>
+              工作时间&nbsp;8:30-22:00
+            </li>
+          </ul>
+            <ul class="footer-column-b">
+            <li><img src="img-full-screen_files/badge.png" alt=""><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010502030143" rel="noreferrer" target="_blank">公安备案号11010502030143</a></li>
+            <li><a href="http://beian.miit.gov.cn/publish/query/indexFirst.action" rel="noreferrer" target="_blank">京ICP备19004658号</a></li>
+            <li><a href="https://csdnimg.cn/release/live_fe/culture_license.png" rel="noreferrer" target="_blank">京网文〔2020〕1039-165号</a></li>
+            <li><a href="https://csdnimg.cn/cdn/content-toolbar/csdn-ICP.png" target="_blank">经营性网站备案信息</a></li>
+            <li><a href="http://www.bjjubao.org/" target="_blank">北京互联网违法和不良信息举报中心</a></li>
+            <li><a href="http://www.cyberpolice.cn/" target="_blank">网络110报警服务</a></li>
+            <li><a href="http://www.12377.cn/" target="_blank">中国互联网举报中心</a></li>
+            <li><a href="https://download.csdn.net/index.php/tutelage/" target="_blank">家长监护</a></li>
+            <li><a href="https://chrome.google.com/webstore/detail/csdn%E5%BC%80%E5%8F%91%E8%80%85%E5%8A%A9%E6%89%8B/kfkdboecolemdjodhmhmcibjocfopejo?hl=zh-CN" target="_blank">Chrome商店下载</a></li>
+            <li>©1999-2021北京创新乐知网络技术有限公司</li>
+            <li><a href="https://www.csdn.net/company/index.html#statement" target="_blank">版权与免责声明</a></li>
+            <li><a href="https://blog.csdn.net/blogdevteam/article/details/90369522" target="_blank">版权申诉</a></li>
+          </ul>
+          </div>
+        </div>
+      </div>
+<script src="img-full-screen_files/csdn-footer.js" data-isfootertrack="false" type="text/javascript"></script>
+<script type="text/javascript">
+    window.csdn.csdnFooter.options = {
+        el: '.blog-footer-bottom',
+        type: 2
+    }
+</script>        </main>
+<aside class="blog_container_aside">
+    <div id="asideProfile" class="aside-box">
+    <div class="profile-intro d-flex">
+        <div class="avatar-box d-flex justify-content-center flex-column">
+            <a href="https://blog.csdn.net/xiaoya_syt" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4121&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                <img src="img-full-screen_files/3_xiaoya_syt.jpg" class="avatar_pic">
+            </a>
+        </div>
+        <div class="user-info d-flex flex-column profile-intro-name-box">
+            <div class="profile-intro-name-boxTop">
+                <a href="https://blog.csdn.net/xiaoya_syt" class="" id="uid" title="小丫007" data-report-click="{&quot;mod&quot;:&quot;popu_379&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4122&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                    <span class="name " username="xiaoya_syt">小丫007</span>
+                </a>
+                <span>
+                </span>
+                <span class="flag expert-blog">
+                <span class="bubble">CSDN认证博客专家</span>
+                </span>
+                <span class="flag company-blog">
+                <span class="bubble">CSDN认证企业博客</span>
+                </span>
+            </div>
+            <div class="profile-intro-name-boxFooter">
+                <span class="personal-home-page personal-home-years">码龄5年</span>
+                    <span class="personal-home-page">
+                    <a class="personal-home-certification" href="https://i.csdn.net/#/uc/profile?utm_source=14998968" target="_blank" title="暂无认证">
+                    <img src="img-full-screen_files/nocErtification.png" alt="">
+                    暂无认证
+                    </a>
+                    </span>
+            </div>
+        </div>
+    </div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="17">
+            <a href="https://blog.csdn.net/xiaoya_syt" data-report-click="{&quot;mod&quot;:&quot;1598321000_001&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4310&quot;}" data-report-query="t=1">  
+                <dt><span class="count">17</span></dt>
+                <dd class="font">原创</dd>
+            </a>
+        </dl>
+        <dl class="text-center" data-report-click="{&quot;mod&quot;:&quot;1598321000_002&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4311&quot;}" title="226798">
+            <a href="https://blog.csdn.net/rank/writing_rank" target="_blank">
+                <dt><span class="count">22万+</span></dt>
+                <dd class="font">周排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" title="90027">
+            <a href="https://blog.csdn.net/rank/writing_rank_total" data-report-click="{&quot;mod&quot;:&quot;1598321000_003&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4312&quot;}" target="_blank">
+                <dt><span class="count">9万+</span></dt>
+                <dd class="font">总排名</dd>
+            </a>
+        </dl>
+        <dl class="text-center" style="min-width:58px" title="148882">  
+            <dt><span class="count">14万+</span></dt>
+            <dd>访问</dd>
+        </dl>
+        <dl class="text-center" title="4级,点击查看等级说明">
+            <dt><a href="https://blog.csdn.net/home/help.html#level" target="_blank">
+                <img class="level" src="img-full-screen_files/blog4.png">
+            </a>
+            </dt>
+            <dd>等级</dd>
+        </dl>
+    </div>
+    <div class="item-rank"></div>
+    <div class="data-info d-flex item-tiling">
+        <dl class="text-center" title="1202">
+            <dt><span class="count">1202</span></dt>
+            <dd>积分</dd>
+        </dl>
+         <dl class="text-center" id="fanBox" title="17">
+            <dt><span class="count" id="fan">17</span></dt>
+            <dd>粉丝</dd>
+        </dl>
+        <dl class="text-center" title="27">
+            <dt><span class="count">27</span></dt>
+            <dd>获赞</dd>
+        </dl>
+        <dl class="text-center" title="5">
+            <dt><span class="count">5</span></dt>
+            <dd>评论</dd>
+        </dl>
+        <dl class="text-center" title="33">
+            <dt><span class="count">33</span></dt>
+            <dd>收藏</dd>
+        </dl>
+    </div>
+    <div class="aside-box-footer">
+        <div class="badge-box d-flex">
+            <div class="badge d-flex">
+                <div class="icon-badge" title="勤写标兵Lv1">
+                    <div class="mouse-box">
+                        <img class="medal-img" data-report-click="{&quot;spm&quot;:&quot;3001.4296&quot;}" src="img-full-screen_files/qixiebiaobing1240.png" alt="勤写标兵Lv1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="profile-intro-name-boxOpration">
+        <div class="opt-letter-watch-box">
+        <a class="bt-button personal-letter" href="https://im.csdn.net/chat/xiaoya_syt" target="_blank" rel="noopener">私信</a>
+        </div>
+        <div class="opt-letter-watch-box"> 
+            <a class="personal-watch bt-button" id="btnAttent">关注</a>  
+        </div>
+    </div>
+</div>
+<div id="asideSearchArticle" class="aside-box">
+	<div class="aside-content search-comter">
+    <div class="aside-search aside-search-blog">         
+        <input type="text" class="input-serch-blog" name="" autocomplete="off" id="search-blog-words" placeholder="搜博主文章">
+        <a class="btn-search-blog">
+                    <img src="img-full-screen_files/csdn-sou.png">
+        </a>
+    </div>
+    </div>
+</div>
+
+
+<div id="asideHotArticle" class="aside-box">
+	<h3 class="aside-title">热门文章</h3>
+	<div class="aside-content">
+		<ul class="hotArticle-list">
+			<li>
+				<a href="https://blog.csdn.net/xiaoya_syt/article/details/52746598" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/52746598&quot;,&quot;ab&quot;:&quot;new&quot;}">
+				js控制文本框禁止输入特殊字符
+					<img src="img-full-screen_files/readCountWhite.png" alt="">
+					<span class="read">27743</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/xiaoya_syt/article/details/75045505" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/75045505&quot;,&quot;ab&quot;:&quot;new&quot;}">
+				img撑满全屏的方法（img非背景图）
+					<img src="img-full-screen_files/readCountWhite.png" alt="">
+					<span class="read">25754</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/xiaoya_syt/article/details/54631559" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/54631559&quot;,&quot;ab&quot;:&quot;new&quot;}">
+				js DIV延时几秒后消失或显示代码
+					<img src="img-full-screen_files/readCountWhite.png" alt="">
+					<span class="read">21098</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/xiaoya_syt/article/details/52370715" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/52370715&quot;,&quot;ab&quot;:&quot;new&quot;}">
+				css3中的box-shadow(阴影)使用说明和兼容性问题
+					<img src="img-full-screen_files/readCountWhite.png" alt="">
+					<span class="read">13916</span>
+                </a>
+			</li>
+			<li>
+				<a href="https://blog.csdn.net/xiaoya_syt/article/details/60577553" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_541&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4139&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/60577553&quot;,&quot;ab&quot;:&quot;new&quot;}">
+				使用JS控制伪元素的几种方法
+					<img src="img-full-screen_files/readCountWhite.png" alt="">
+					<span class="read">13543</span>
+                </a>
+			</li>
+		</ul>
+	</div>
+</div>
+<div id="asideCategory" class="aside-box ">
+    <h3 class="aside-title">分类专栏</h3>
+    <div class="aside-content">
+        <ul>
+            <li class="">
+                <a class="clearfix" target="_blank" href="https://blog.csdn.net/xiaoya_syt/category_9369195.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/category_9369195.html&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                    <img src="img-full-screen_files/20201014180756780.png" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        <span class="text">javscript</span>
+                    </span>
+                    <span class="count float-right">1篇</span>
+                </a>
+            </li>
+            <li class="">
+                <a class="clearfix" target="_blank" href="https://blog.csdn.net/xiaoya_syt/category_6519367.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/category_6519367.html&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                    <img src="img-full-screen_files/20201014180756930.png" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        <span class="text">改变宽高字体大小透明度</span>
+                    </span>
+                </a>
+            </li>
+            <li class="">
+                <a class="clearfix" target="_blank" href="https://blog.csdn.net/xiaoya_syt/category_6768970.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/category_6768970.html&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                    <img src="img-full-screen_files/20201014180756926.png" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                    <span class="title oneline">
+                        <span class="text">css</span>
+                    </span>
+                    <span class="count float-right">2篇</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideNewComments" class="aside-box">
+    <h3 class="aside-title">最新评论</h3>
+    <div class="aside-content">
+        <ul class="newcomment-list">
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/xiaoya_syt/article/details/73991658#comments_10089583" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/73991658#comments_10089583&quot;,&quot;ab&quot;:&quot;new&quot;}">JavaScript-数字和字符串比较大小</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/xiaoya_syt" class="user-name" target="_blank">小丫007</a>
+                    <span class="reply"> 回复 </span>
+                    <span class="code-comments">风或许自媒体: 
+是吗？</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/xiaoya_syt/article/details/52746598#comments_9388070" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/52746598#comments_9388070&quot;,&quot;ab&quot;:&quot;new&quot;}">js控制文本框禁止输入特殊字符</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/SevenGirl2017" class="user-name" target="_blank">`Seven: </a>
+                    <span class="code-comments">帮助很大，感谢分享</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/xiaoya_syt/article/details/73991658#comments_8134012" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/73991658#comments_8134012&quot;,&quot;ab&quot;:&quot;new&quot;}">JavaScript-数字和字符串比较大小</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/qq_36611456" class="user-name" target="_blank">qq_36611456: </a>
+                    <span class="code-comments">真的是不错呢</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/xiaoya_syt/article/details/52370715#comments_7971552" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/52370715#comments_7971552&quot;,&quot;ab&quot;:&quot;new&quot;}">css3中的box-shadow(阴影)使用说明和兼容性问题</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/xu2034029667" class="user-name" target="_blank">漫游者码农: </a>
+                    <span class="code-comments">用TestIe软件，发现ie6还是不行，但是ie5也可以，其它也可以</span>
+                </p>
+            </li>
+            <li>
+                <a class="title text-truncate" target="_blank" href="https://blog.csdn.net/xiaoya_syt/article/details/73991658#comments_7805551" data-report-click="{&quot;mod&quot;:&quot;popu_542&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4231&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/73991658#comments_7805551&quot;,&quot;ab&quot;:&quot;new&quot;}">JavaScript-数字和字符串比较大小</a>
+                <p class="comment ellipsis">
+                    <a href="https://blog.csdn.net/LY_code" class="user-name" target="_blank">风或许自媒体: </a>
+                    <span class="code-comments">总结的很棒，但是在你9行笔误吧，应该是返回true喔~~</span>
+                </p>
+            </li>
+        </ul>
+    </div>
+</div>
+<div id="asideArchive" class="aside-box" style="display:block!important; width:300px;">
+    <h3 class="aside-title">最新文章</h3>
+    <div class="aside-content">
+        <ul class="inf_list clearfix">
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/xiaoya_syt/article/details/101073729" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4136&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/101073729&quot;,&quot;ab&quot;:&quot;new&quot;}">js 自定义验证规则</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/xiaoya_syt/article/details/86605566" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4136&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/86605566&quot;,&quot;ab&quot;:&quot;new&quot;}">javascript中一个字符占几个字节</a>
+            </li>
+            <li class="clearfix">
+            <a href="https://blog.csdn.net/xiaoya_syt/article/details/77879194" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_382&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4136&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/article/details/77879194&quot;,&quot;ab&quot;:&quot;new&quot;}">javascript refresh page 几种页面刷新的方法</a>
+            </li>
+        </ul>
+        <div class="archive-bar"></div>
+        <div class="archive-box">
+                <div class="archive-list-item"><a href="https://blog.csdn.net/xiaoya_syt/article/month/2019/09" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;&quot;}"><span class="year">2019年</span><span class="num">2篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/xiaoya_syt/article/month/2017/09" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;&quot;}"><span class="year">2017年</span><span class="num">10篇</span></a></div>
+                <div class="archive-list-item"><a href="https://blog.csdn.net/xiaoya_syt/article/month/2016/12" target="_blank" data-report-click="{&quot;mod&quot;:&quot;popu_538&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4138&quot;,&quot;ab&quot;:&quot;new&quot;,&quot;dest&quot;:&quot;&quot;}"><span class="year">2016年</span><span class="num">12篇</span></a></div>
+        </div>
+    </div>
+</div>
+	<div id="footerRightAds" class="isShowFooterAds">
+		<div class="aside-box">
+			<div id="kp_box_57" data-pid="57"><script async="" src="img-full-screen_files/adsbygoogle.js"></script>
+<!-- PC-博客详情页-左下视窗（300*600） -->
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-1076724771190722" data-ad-slot="1173711872" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=57&amp;a=2488&amp;c=0&amp;k=&amp;spm=1001.2101.3001.5001&amp;d=1&amp;t=3&amp;u=311004324ec6423e953bc64efae9784c" style="display: block;width: 0px;height: 0px;"></div>
+		</div>
+	</div>
+    <!-- 详情页显示目录 -->
+<!--文章目录-->
+
+</aside>
+<script>
+	$("a.flexible-btn").click(function(){
+		$(this).parents('div.aside-box').removeClass('flexible-box');
+		$(this).parents("p.text-center").remove();
+	})
+</script>
+<script type="text/javascript" src="img-full-screen_files/user-tooltip.js"></script>
+<script type="text/javascript" src="img-full-screen_files/user-medal.js"></script>    </div>
+<div class="recommend-right  align-items-stretch clearfix" id="rightAside" data-type="recommend">
+    <aside class="recommend-right_aside">
+        <div id="recommend-right">
+                        
+                <div id="recommendAdBox">
+                    <div id="kp_box_479" data-pid="479"><script async="" src="img-full-screen_files/adsbygoogle.js"></script>
+<!-- PC-博客内页右侧第一顺位 -->
+<ins class="adsbygoogle" style="display:inline-block;width:300px;height:600px" data-ad-client="ca-pub-1076724771190722" data-ad-slot="1827473444" data-adsbygoogle-status="done"><ins id="aswift_1_expand" style="display:inline-table;border:none;height:600px;margin:0;padding:0;position:relative;visibility:visible;width:300px;background-color:transparent;" tabindex="0" title="Advertisement" aria-label="Advertisement"><ins id="aswift_1_anchor" style="display:block;border:none;height:600px;margin:0;padding:0;position:relative;visibility:visible;width:300px;background-color:transparent;"><iframe id="aswift_1" name="aswift_1" style="left:0;position:absolute;top:0;border:0;width:300px;height:600px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" src="img-full-screen_files/ads.html" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" data-google-container-id="a!2" data-google-query-id="CNni5ZGE2O4CFeQ10wodXfYITQ" data-load-complete="true" width="300" height="600" frameborder="0"></iframe></ins></ins></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script><img class="pre-img-lasy" data-src="https://kunyu.csdn.net/1.png?p=479&amp;a=3266&amp;c=0&amp;k=&amp;spm=1001.2101.3001.4834&amp;d=1&amp;t=3&amp;u=a28def4b409a48b8b84288db7e2311e7" style="display: block;width: 0px;height: 0px;"></div>
+                </div>
+            <div class="aside-box kind_person d-flex flex-column">
+                    <h3 class="aside-title">分类专栏</h3>
+                    <div class="align-items-stretch kindof_item" id="kind_person_column">
+                        <div class="aside-content">
+                            <ul>
+                                <li class="">
+                                    <a class="clearfix" target="_blank" href="https://blog.csdn.net/xiaoya_syt/category_9369195.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/category_9369195.html&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                                        <img src="img-full-screen_files/20201014180756780.png" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="title oneline">
+                                            <span class="text">javscript</span>
+                                        </span>
+                                        <span class="count float-right">1篇</span>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a class="clearfix" target="_blank" href="https://blog.csdn.net/xiaoya_syt/category_6519367.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/category_6519367.html&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                                        <img src="img-full-screen_files/20201014180756930.png" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="title oneline">
+                                            <span class="text">改变宽高字体大小透明度</span>
+                                        </span>
+                                    </a>
+                                </li>
+                                <li class="">
+                                    <a class="clearfix" target="_blank" href="https://blog.csdn.net/xiaoya_syt/category_6768970.html" data-report-click="{&quot;mod&quot;:&quot;popu_537&quot;,&quot;spm&quot;:&quot;1001.2101.3001.4137&quot;,&quot;strategy&quot;:&quot;pc付费专栏左侧入口&quot;,&quot;dest&quot;:&quot;https://blog.csdn.net/xiaoya_syt/category_6768970.html&quot;,&quot;ab&quot;:&quot;new&quot;}">
+                                        <img src="img-full-screen_files/20201014180756926.png" alt="" onerror="this.src='https://img-blog.csdnimg.cn/20201014180756922.png?x-oss-process=image/resize,m_fixed,h_64,w_64'">
+                                        <span class="title oneline">
+                                            <span class="text">css</span>
+                                        </span>
+                                        <span class="count float-right">2篇</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </aside>
+</div>
+
+</div>
+<div class="mask-dark"></div>
+<script type="text/javascript">
+    var timert = setInterval(function(){
+      sideToolbar = $(".csdn-side-toolbar");
+      if (sideToolbar.length > 0) {
+        sideToolbar.css('cssText','bottom:64px !important;')
+        clearInterval(timert);
+      }
+    }, 200);
+</script>
+<script>
+    var articleId = 75045505;
+    var commentscount = 0;
+    var curentUrl = "https://blog.csdn.net/xiaoya_syt/article/details/75045505";
+    var myUrl = "https://my.csdn.net/";
+    var highlight = ["img","撑满","全屏","方法","img","非","背景图"];//高亮数组
+    var isRecommendModule = true;
+    var isBaiduPre = false;
+    var baiduCount = 2;
+    var share_card_url = "https://blog.csdn.net/xiaoya_syt/article/shareArticleCardPage?article_id=75045505"
+	var articleType = 1;
+    var baiduKey = "img 铺满";
+    var needInsertBaidu = true;
+    var recommendRegularDomainArr = ["blog.csdn.net/.+/article/details/","download.csdn.net/download/","edu.csdn.net/course/detail/","ask.csdn.net/questions/","bbs.csdn.net/topics/","www.csdn.net/gather_.+/"]
+    var codeStyle = "atom-one-light";
+    var baiduSearchType = "baidulandingword";
+    var canRead = true;
+    var blogMoveHomeArticle = false;
+    var showPcWindowAd = false;
+    var showSearchText = "secondText";
+    var linkPage = true;
+    var articleSource = 1;
+    var articleReport = '{"pid": "blog", "spm":"1001.2101"}';
+</script>
+<script src="img-full-screen_files/sandalstrap.js"></script>
+<div class="skin-boxshadow"></div>
+<div style="display:none;">
+	<img src="" onerror='setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){window.location.href="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74"}},3000);'>
+</div>
+
+    
+	<link rel="stylesheet" href="img-full-screen_files/chart.css">
+	<script type="text/javascript" src="img-full-screen_files/chart.js"></script>
+    <script type="text/javascript" src="img-full-screen_files/widget2chart.js"></script>
+<script src="img-full-screen_files/pc_wap_highlight-db1e81323a.js" type="text/javascript"></script>
+<script src="img-full-screen_files/pc_wap_common-906586e915.js" type="text/javascript"></script>
+<link rel="stylesheet" href="img-full-screen_files/atom-one-light.css">
+<script>
+ // 全局声明
+ if (window.csdn === undefined) {
+      window.csdn = {};
+    }
+    window.csdn.sideToolbar = {
+        options: {
+            report:{
+                isShow: true,
+            },
+            qr: {
+                isShow: false,
+            },
+            guide: {
+                isShow: true
+            }
+        }
+    }
+    $(function(){
+        $(document).on('click',"a.option-box[data-type='report']",function() {
+            window.csdn.userLogin.loadAjax(function(res){
+                showReport(false,articleTitles);
+            })
+        });
+    })
+</script>
+    <script src="img-full-screen_files/baidu-search.js" type="text/javascript"></script>
+<script src="img-full-screen_files/qrcode.js"></script>
+<script src="img-full-screen_files/common-b286f966c8.js" type="text/javascript"></script>
+<script src="img-full-screen_files/detail-7588366af7.js" type="text/javascript"></script>
+<script src="img-full-screen_files/user-ordercart.js" type="text/javascript"></script>
+<script src="img-full-screen_files/column-78261cfea6.js" type="text/javascript"></script>
+<script src="img-full-screen_files/side-toolbar.js" type="text/javascript"></script>
+<script src="img-full-screen_files/copyright.js" type="text/javascript"></script>
+<script>
+    $(".MathJax").remove();
+    if ($('div.markdown_views pre.prettyprint code.hljs').length > 0) {
+        $('div.markdown_views')[0].className = 'markdown_views';
+    }
+</script>
+<script type="text/javascript" src="img-full-screen_files/MathJax.js"></script>
+<script type="text/x-mathjax-config;executed=true">
+    MathJax.Hub.Config({
+            "HTML-CSS": {
+                    linebreaks: { automatic: true, width: "94%container" },
+                    imageFont: null
+            },
+            tex2jax: {
+                preview: "none"
+            },
+            mml2jax: {
+                preview: 'none'
+            }
+    });
+</script>
+<script type="text/javascript" crossorigin="" src="img-full-screen_files/user-login.js"></script>
+<script type="text/javascript" crossorigin="" src="img-full-screen_files/login-box.js"></script>
+<div id="pointDivs"><div class="point-outer point-pre"><div class="point-inner"></div></div><div class="point-outer point-pre"><div class="point-inner"></div></div><div class="point-outer point-pre"><div class="point-inner"></div></div><div class="point-outer point-pre"><div class="point-inner"></div></div><div class="point-outer point-pre"><div class="point-inner"></div></div></div><div id="st_mask" onclick="closeMask()" style="width: 100%; height: 100%; background: rgba(0, 0, 0, 0.4) none repeat scroll 0% 0%; position: fixed; left: 0px; top: 0px; display: none; z-index: 1;"></div><div id="st_confirmBox" style="width: 100%; position: fixed; left: 0px; top: 34%; text-align: center; display: none; z-index: 2;"><div id="st_confirm" style="width: 80%; margin: 0px auto; background: rgb(255, 255, 255) none repeat scroll 0% 0%; border-radius: 3px; overflow: hidden; padding-top: 20px; text-align: center;"><span id="st_confirm_text" style="background: rgb(255, 255, 255) none repeat scroll 0% 0%; overflow: hidden; padding: 15px 8px 30px; text-align: center; display: block;"></span><span class="st_confirm_btn cancel" style="background: rgb(255, 255, 255) none repeat scroll 0% 0%; color: rgb(141, 141, 141); padding: 8px; text-align: center; display: block; width: 50%; margin: 0px auto; float: left; box-sizing: border-box; border-top: 1px solid rgb(207, 207, 207); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span><span class="st_confirm_btn success" style="background: rgb(27, 121, 248) none repeat scroll 0% 0%; color: rgb(255, 255, 255); padding: 8px; text-align: center; display: block; width: 50%; margin: 0px auto; float: left; box-sizing: border-box; border-top: 1px solid rgb(27, 121, 248); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span><div style="clear: both; display: block;"></div></div></div><div id="st_alertBox" style="width: 100%; position: fixed; left: 0px; top: 34%; text-align: center; display: none; z-index: 2;"><div id="st_alert" style="width: 80%; margin: 0px auto; background: rgb(255, 255, 255) none repeat scroll 0% 0%; border-radius: 2px; overflow: hidden; padding-top: 20px; text-align: center;"><span id="st_alert_text" style="background: rgb(255, 255, 255) none repeat scroll 0% 0%; overflow: hidden; padding: 15px 8px 30px; text-align: center; display: block;"></span><span id="st_alert_btn" onclick="closeMask()" style="background: rgb(27, 121, 248) none repeat scroll 0% 0%; color: rgb(255, 255, 255); padding: 8px; text-align: center; display: block; width: 72%; margin: 0px auto 20px; border-radius: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span></div></div><div id="st_toastBox" style="width: 100%; position: fixed; left: 0px; bottom: 10%; text-align: center; display: none;"><span id="st_toastContent" style="color: rgb(255, 255, 255); background: rgba(0, 0, 0, 0.8) none repeat scroll 0% 0%; padding: 8px 24px; border-radius: 4px; max-width: 80%; display: inline-block; font-size: 16px;"></span></div> <div class="report-box">  <div class="pos-boxer">      <div class="pos-content">          <div class="box-title">              <p>举报</p>              <svg class="icon btn-close" aria-hidden="true">                    <use xlink:href="#csdnc-times"></use>              </svg>          </div>          <div class="box-header">              <div class="box-top"><span>选择你想要举报的内容（必选）</span></div>              <div class="box-botoom">                  <ul>                      <li data="1" type="nei">内容涉黄</li>                      <li data="2" type="nei">政治相关</li>                      <li data="3" type="nei">内容抄袭</li>                      <li data="4" type="nei">涉嫌广告</li>                      <li data="5" type="nei">内容侵权</li>                      <li data="6" type="nei">侮辱谩骂</li>                      <li data="8" type="nei">样式问题</li>                      <li data="7" type="nei">其他</li>                  </ul>              </div>          </div>          <div>          <div class="box-content">          </div>          <div class="box-content">          </div>                    <div class="box-content" style="display:none;">                  <div class="box-content-top">                          <span>原文链接（必填）</span>                      </div>                      <div class="box-content-bottom" style="padding-bottom: 16px;">                        <div class="box-input" style="height: 32px;line-height: 32px;">                        <input class="content-input" type="text" id="originalurl" name="originalurl" placeholder="请输入被侵权原文链接">                        </div>                      </div>          </div>          <div class="box-content">          </div>          <div class="box-content" style="display:none;">                  <div class="box-content-top">                          <span>请选择具体原因（必选）</span>                      </div>                  <div class="box-content-bottom">                          <ul>                              <li sub_type="1">包含不实信息</li>                              <li sub_type="2">涉及个人隐私</li>                          </ul>                      </div>          </div>          <div class="box-content" style="display:none;">                  <div class="box-content-top">                          <span>请选择具体原因（必选）</span>                      </div>                  <div class="box-content-bottom">                          <ul>                              <li sub_type="1">侮辱谩骂</li>                              <li sub_type="2">诽谤</li>                          </ul>                  </div>          </div>          <div class="box-content" style="display:none;">                <div class="box-content-top">                        <span>请选择具体原因（必选）</span>                    </div>                <div class="box-content-bottom">                        <ul>                            <li sub_type="1">搬家样式</li>                            <li sub_type="2">博文样式</li>                        </ul>                </div>          </div>          <div class="box-content" style="display:none;">          </div>          </div>            <div id="cllcont" style="display:none;">            <div class="box-content-top">              <span class="box-content-span">补充说明（选填）</span>            </div>                <div class="box-content-bottom">                  <div class="box-input">                    <textarea class="ipt ipt-textarea" style="padding:0;" name="description" placeholder="请详细描述您的举报内容"></textarea>                  </div>                </div>            </div>            </div>      <div class="pos-footer">          <p class="btn-close">取消</p>          <p class="box-active">确定</p>      </div>  </div></div><svg aria-hidden="true" style="position: absolute; width: 0px; height: 0px; overflow: hidden;"><symbol id="sousuo" viewBox="0 0 1024 1024"><path d="M719.6779726 653.55865555l0.71080936 0.70145709 191.77828505 191.77828506c18.25658185 18.25658185 18.25658185 47.86273439 0 66.12399318-18.26593493 18.26125798-47.87208744 18.26125798-66.13334544 0l-191.77828505-191.77828506c-0.2338193-0.2338193-0.4676378-0.4676378-0.69678097-0.71081014-58.13206223 44.25257003-130.69075187 70.51978897-209.38952657 70.51978894C253.06424184 790.19776156 98.14049639 635.27869225 98.14049639 444.17380511S253.06424184 98.14049639 444.16912898 98.14049639c191.10488633 0 346.02863258 154.92374545 346.02863259 346.02863259 0 78.6987747-26.27189505 151.25746514-70.51978897 209.38952657z m-275.50884362 43.11621045c139.45428506 0 252.50573702-113.05145197 252.50573702-252.50573702s-113.05145197-252.50573702-252.50573702-252.50573783-252.50573702 113.05145197-252.50573783 252.50573783 113.05145197 252.50573702 252.50573783 252.50573702z"></path></symbol><symbol id="gonggong_csdnlogo_" viewBox="0 0 4096 1024"><path d="M1234.16069807 690.46341551c62.96962316 23.02318413 194.30703694 45.91141406 300.51598128 45.91141406 114.44114969 0 178.13952547-31.68724287 183.2407937-80.86454822 4.642424-44.8587714-42.21366937-50.93170978-171.44579784-81.53931916-178.57137886-43.77913792-292.49970264-111.55313011-281.32549604-219.86735976 12.9825927-125.75031047 181.27046257-220.78504823 439.49180199-220.78504822 125.88526465 0 247.93783044 8.87998544 311.17736197 29.60894839l-21.7006331 158.57116851c-41.05306337-14.27815288-198.1937175-34.11641822-304.48363435-34.11641822-107.7744129 0-163.56447339 33.90049151-167.42416309 71.06687432-4.85835069 47.04502922 51.14763648 49.23128703 191.14910897 86.50563321 189.58364043 48.09767188 272.47250144 115.81768239 261.6221849 220.81203906-12.71268432 123.51007099-164.13128096 228.53141851-466.48263918 228.53141851-125.85827383 0-234.33444849-22.96920244-294.09216204-45.93840492l19.730302-157.86940672zM3010.8325562 172.75216735c688.40130256-129.79893606 747.80813523 103.42888812 726.53935551 309.80082928l-40.08139323 381.78539207h-218.51781789l36.57258439-348.20879061c7.90831529-76.68096846 57.13960232-226.66905073-180.54170997-221.05495659-82.26807176 1.99732195-123.05122675 13.2794919-123.05122677 13.27949188s-7.15257186 92.65954408-15.81663059 161.13529804l-41.43093509 394.84895728h-214.3072473l42.53755943-389.15389062 28.09746151-302.43233073z m-869.48282929-18.05687008c49.12332368-5.34418577 124.58970448-10.76934404 228.45044598-10.76934405 173.38913812 0 313.57954648 30.17575597 400.38207891 93.63121421 77.94953781 59.16391512 129.82592689 154.95439631 115.4668015 293.74128117-13.25250106 129.15115596-80.405704 219.57046055-178.16651631 275.4954752-89.44763445 52.74009587-202.16137055 75.27744492-371.66382812 75.27744493-99.94707012 0-195.27870708-5.39816743-267.77609576-16.14052064L2141.37671774 154.69529727z m143.26736381 569.85754561c16.70732823 3.23890047 38.67786969 6.45081009 81.99816339 6.45081009 173.44311979 0 295.7386031-85.23706385 308.01943403-205.07638097 17.84094339-173.2271931-90.63523129-233.79463176-273.39018992-232.74198912-23.67096422 0-56.57279475 0-73.98188473 3.1849188l-42.6725136 428.15565036z" fill="#262626"></path><path d="M1109.8678928 870.30336371c-41.10704503 14.25116203-126.26313639 23.96786342-245.23874671 23.96786342-342.13585224 0-526.8071603-160.59548129-504.97157302-372.90540663C385.78470347 268.40769434 659.36382925 126.08500985 958.9081404 126.08500985c116.00661824 0 184.32042718 9.33882968 248.31570215 24.99351522l-20.5400271 170.42014604c-42.56455024-14.33213455-142.32268451-27.50366309-223.07926938-27.50366311-176.25016686 0-325.94134993 52.49717834-343.10752238 218.57179958-15.30380469 148.50358623 89.7715245 219.48948804 288.04621451 219.48948804 69.0155707 0 170.77102691-9.8786464 217.81605614-24.15679928l-16.49140154 162.40386737z" fill="#CA0C16"></path></symbol><symbol id="gonggong_csdnlogodanse_" viewBox="0 0 4096 1024"><path d="M1229.41995733 690.46341551c62.96962316 23.02318413 194.30703694 45.91141406 300.51598128 45.91141406 114.44114969 0 178.13952547-31.68724287 183.2407937-80.86454822 4.642424-44.8587714-42.21366937-50.93170978-171.44579784-81.53931916-178.57137886-43.77913792-292.49970264-111.55313011-281.32549604-219.86735976 12.9825927-125.75031047 181.27046257-220.78504823 439.49180199-220.78504822 125.88526465 0 247.93783044 8.87998544 311.17736197 29.60894839l-21.7006331 158.57116851c-41.05306337-14.27815288-198.1937175-34.11641822-304.48363435-34.11641822-107.7744129 0-163.56447339 33.90049151-167.42416309 71.06687432-4.85835069 47.04502922 51.14763648 49.23128703 191.14910897 86.50563321 189.58364043 48.09767188 272.47250144 115.81768239 261.6221849 220.81203906-12.71268432 123.51007099-164.13128096 228.53141851-466.48263918 228.53141851-125.85827383 0-234.33444849-22.96920244-294.09216204-45.93840492l19.730302-157.86940672zM3006.09181546 172.75216735c688.40130256-129.79893606 747.80813523 103.42888812 726.53935551 309.80082928l-40.08139323 381.78539207h-218.51781789l36.57258439-348.20879061c7.90831529-76.68096846 57.13960232-226.66905073-180.54170997-221.05495659-82.26807176 1.99732195-123.05122675 13.2794919-123.05122677 13.27949188s-7.15257186 92.65954408-15.81663059 161.13529804l-41.43093509 394.84895728h-214.3072473l42.53755943-389.15389062 28.09746151-302.43233073z m-869.48282929-18.05687008c49.12332368-5.34418577 124.58970448-10.76934404 228.45044598-10.76934405 173.38913812 0 313.57954648 30.17575597 400.38207891 93.63121421 77.94953781 59.16391512 129.82592689 154.95439631 115.4668015 293.74128117-13.25250106 129.15115596-80.405704 219.57046055-178.16651631 275.4954752-89.44763445 52.74009587-202.16137055 75.27744492-371.66382812 75.27744493-99.94707012 0-195.27870708-5.39816743-267.77609576-16.14052064L2136.635977 154.69529727z m143.26736381 569.85754561c16.70732823 3.23890047 38.67786969 6.45081009 81.99816339 6.45081009 173.44311979 0 295.7386031-85.23706385 308.01943403-205.07638097 17.84094339-173.2271931-90.63523129-233.79463176-273.39018992-232.74198912-23.67096422 0-56.57279475 0-73.98188473 3.1849188l-42.6725136 428.15565036z m-1174.74919792 145.75052083c-41.10704503 14.25116203-126.26313639 23.96786342-245.23874671 23.96786342-342.13585224 0-526.8071603-160.59548129-504.97157303-372.90540663C381.04396273 268.40769434 654.62308851 126.08500985 954.16739966 126.08500985c116.00661824 0 184.32042718 9.33882968 248.31570215 24.99351522l-20.5400271 170.42014604c-42.56455024-14.33213455-142.32268451-27.50366309-223.07926938-27.50366311-176.25016686 0-325.94134993 52.49717834-343.10752238 218.57179958-15.30380469 148.50358623 89.7715245 219.48948804 288.04621451 219.48948804 69.0155707 0 170.77102691-9.8786464 217.81605614-24.15679928l-16.49140154 162.40386737z"></path></symbol><symbol id="xieboke1" viewBox="0 0 1024 1024"><path d="M204.70021457 751.89799169h657.99199211a33.6932867 33.6932867 0 0 1 0 67.33536736H163.68452703a33.53966977 33.53966977 0 0 1-18.74125054-5.68382181c-18.63883902-9.4218307-18.17798882-29.44322156-15.20806401-39.17228615C199.0675982 570.27171976 309.41567149 409.58853908 435.38145354 290.12586836A243.22661203 243.22661203 0 0 1 536.97336934 234.20935065c138.10150976-33.79569759 228.3257813-29.95527721 318.60125827-28.52152054-17.15387692 20.48224105-36.20236071 41.6301547-57.29906892 62.93168529-3.1747472 3.22595323-164.67721739 19.91897936-187.97576692 47.05794871-23.29854894 27.13896932 129.60138005 7.37360691 125.19769798 11.11161576-21.6599699 18.33160576-44.90731339 36.4071831-69.94685287 53.8682939-4.50609297 3.1747472-149.52035944-0.35843931-174.61110436 27.85584737-25.19315641 28.16308124 101.89914903 18.12678338 96.0617103 21.40394206-67.43777825 37.63611797-125.96578207 64.62147036-212.70807253 93.8086635-57.65750823 19.4069231-121.8181284 133.13456658-146.5504346 179.06599187a435.75967738 435.75967738 0 0 0-23.04252112 49.10617311z" fill="#CA0C16"></path></symbol><symbol id="gitchat" viewBox="0 0 1024 1024"><path d="M892.08971773 729.08552746h-108.597062v-162.89559374H403.40293801v-108.59706198h488.68677972v271.49265572z m-651.58237345 54.298531V783.49265572h488.68678045v108.59706201H131.91028227V131.91028227h760.17943546v217.19412473h-108.597062V240.50734428H240.50734428v542.87671418z m542.98531145 0h108.597062v108.59706199h-108.597062v-108.59706199z" fill="#FF9100"></path></symbol><symbol id="toolbar-memberhead" viewBox="0 0 1303 1024"><path d="M1061.51168438 433.79527648A78.51879902 78.51879902 0 1 1 1129.35192643 472.74060007h-1.80593246l-48.05350474 403.97922198c-4.55409058 38.16013652-39.41643684 67.133573-80.79584389 67.13357302H319.35199503c-41.30088817 0-76.00619753-28.81639958-80.717325-66.97653526L189.01078861 472.74060007H187.12633728a78.51879902 78.51879902 0 1 1 67.76172401-38.86680556l193.31328323 119.81968805 158.13686148-336.06046024A78.5973179 78.5973179 0 0 1 658.23913228 80.14660493a78.51879902 78.51879902 0 0 1 51.58685077 137.721974l158.13686147 335.82490362 193.54883986-119.89820607z" fill="#FDD840"></path><path d="M1050.8331274 394.22180104a78.51879902 78.51879902 0 1 1 78.51879903 78.51879903h-1.80593246l-48.05350474 403.97922198c-4.55409058 38.16013652-39.41643684 67.133573-80.79584389 67.13357302H659.02432018C658.47468805 793.25433807 658.23913228 505.32590231 658.23913228 80.14660493a78.51879902 78.51879902 0 0 1 51.58685077 137.721974l158.13686147 335.82490362 193.54883986-119.89820607A78.51879902 78.51879902 0 0 1 1050.8331274 394.22180104z" fill="#FFBE00"></path></symbol><symbol id="toolbar-m-memberhead" viewBox="0 0 1303 1024"><path d="M1062.74839935 433.79527648A78.51879902 78.51879902 0 1 1 1130.58864141 472.74060007h-1.80593246l-48.05350474 403.97922198c-4.55409058 38.16013652-39.41643685 67.133573-80.79584389 67.13357302H320.58871c-41.30088817 0-76.00619753-28.81639958-80.71732499-66.97653526L190.24750358 472.74060007H188.36305226a78.51879902 78.51879902 0 1 1 67.761724-38.86680556l193.31328324 119.81968805 158.13686147-336.06046024A78.5973179 78.5973179 0 0 1 659.47584726 80.14660493a78.51879902 78.51879902 0 0 1 51.58685076 137.721974l158.13686148 335.82490362 193.54883985-119.89820607z" fill="#D6D6D6"></path><path d="M1052.06984238 394.22180104a78.51879902 78.51879902 0 1 1 78.51879903 78.51879903h-1.80593246l-48.05350474 403.97922198c-4.55409058 38.16013652-39.41643685 67.133573-80.79584389 67.13357302H660.26103515C659.71140302 793.25433807 659.47584726 505.32590231 659.47584726 80.14660493a78.51879902 78.51879902 0 0 1 51.58685076 137.721974l158.13686148 335.82490362 193.54883985-119.89820607A78.51879902 78.51879902 0 0 1 1052.06984238 394.22180104z" fill="#C1C1C1"></path></symbol><symbol id="csdnc-upload" viewBox="0 0 1024 1024"><path d="M216.37466416 723.16095396v84.46438188h591.25067168v-84.46438188c0-23.32483876 18.90735218-42.23219094 42.23219093-42.23219021s42.23219094 18.90735218 42.23219096 42.23219021v84.46438188c0 46.64967827-37.81470362 84.46438188-84.46438189 84.46438189H216.37466416c-46.64967827 0-84.46438188-37.81470362-84.46438189-84.4643819v-84.46438187c0-23.32483876 18.90735218-42.23219094 42.23219096-42.23219021s42.23219094 18.90735218 42.23219094 42.23219021zM469.76780906 275.55040991L246.55378774 499.53305726a42.30820888 42.30820888 0 0 1-59.99082735 0c-16.56346508-16.62259056-16.56346508-43.57095155 0-60.19354139L480.51167818 144.38144832A42.21952103 42.21952103 0 0 1 512 131.93984464a42.20262858 42.20262858 0 0 1 31.48409853 12.44160369l293.95294108 294.95806754c16.56346508 16.62259056 16.56346508 43.57095155 0 60.19354139a42.30820888 42.30820888 0 0 1-59.99082735 0L554.23219094 275.55040991V680.92876375c0 23.32483876-18.90735218 42.23219094-42.23219094 42.23219021s-42.23219094-18.90735218-42.23219094-42.23219021V275.55040991z"></path></symbol></svg><div>
+  <div class="csdn-side-toolbar " style="bottom: 64px !important; left: 1562.5px;">
+    
+    <a class="option-box" data-type="guide">
+      <img src="img-full-screen_files/guide.png" alt="" srcset="">
+      <span class="show-txt">新手<br>引导</span>
+    </a>
+    
+    
+    
+    
+    <a class="option-box" data-type="cs">
+      <img src="img-full-screen_files/kefu.png" alt="" srcset="">
+      <span class="show-txt">客服</span>
+    </a>
+    
+    
+    
+    <a class="option-box" data-type="report">
+      <span class="show-txt" style="display:flex;opacity:100;">举报</span>
+    </a>
+    
+    
+    <a class="option-box go-top-hide" data-type="gotop">
+      <img src="img-full-screen_files/fanhuidingbucopy.png" alt="" srcset="">
+      <span class="show-txt">返回<br>顶部</span>
+    </a>
+    
+  </div>
+  </div><ins class="adsbygoogle adsbygoogle-noablate" style="display: none !important;" data-adsbygoogle-status="done"><ins id="aswift_2_expand" style="display:inline-table;border:none;height:0px;margin:0;padding:0;position:relative;visibility:visible;width:0px;background-color:transparent;" tabindex="0" title="Advertisement" aria-label="Advertisement"><ins id="aswift_2_anchor" style="display:block;border:none;height:0px;margin:0;padding:0;position:relative;visibility:visible;width:0px;background-color:transparent;"><iframe id="aswift_2" name="aswift_2" style="left:0;position:absolute;top:0;border:0;width:undefinedpx;height:undefinedpx;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" src="img-full-screen_files/ads_003.html" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" data-google-container-id="a!2" data-load-complete="true" frameborder="0"></iframe></ins></ins></ins><iframe class="bdSug_sd" style="display: none; position: absolute; border-width: 0px;"></iframe><div id="bdSug_1612709790425" class="bdSug_wpr" style="display: none;"></div><iframe id="google_osd_static_frame_6227513862320" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe><div class="login-mark" style="display: none;"></div><div id="passportbox" class="login-box" style="display: none;"><iframe name="passport_iframe" src="https://passport.csdn.net/account/login?from=https://blog.csdn.net/xiaoya_syt/article/details/75045505" scrolling="no" width="410" height="427" frameborder="0"></iframe></div></body><!-- 富文本柱状图  --><iframe id="google_esf" name="google_esf" src="img-full-screen_files/zrt_lookup.html" style="display: none;" data-ad-client="ca-pub-1076724771190722"></iframe></html>
