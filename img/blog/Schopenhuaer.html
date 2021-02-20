@@ -1,0 +1,2534 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><script src="Schopenhuaer_files/hm.js"></script><script>(function() {
+		window.addEventListener('message', function(event) {
+			if (
+				event.data &&
+				event.data.id &&
+				typeof event.data.id.startsWith === 'function' &&
+				event.data.id.startsWith('adobeExperienceCloudDebuggerContentMessagingIdentifier-')
+			) {
+				event.stopImmediatePropagation();
+			}
+		},
+		{capture: true});
+	})();</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-1', data: data });
+			}
+			const DATA_LAYER_LOCAL_STORAGE_KEY = 'com.adobe.experiencePlatformDebugger.dataLayer.key';
+const dataLayerKey = window.localStorage.getItem(DATA_LAYER_LOCAL_STORAGE_KEY);
+
+if (dataLayerKey) {
+	// sindresorhus/on-change
+	// MIT - License
+	// https://github.com/sindresorhus/on-change
+	const PATH_SEPARATOR = '.';
+	const TARGET = Symbol('target');
+	const UNSUBSCRIBE = Symbol('unsubscribe');
+
+	const isPrimitive = value =>
+		value === null || (typeof value !== 'object' && typeof value !== 'function');
+
+	const isBuiltinWithoutMutableMethods = value =>
+		value instanceof RegExp || value instanceof Number;
+
+	const isBuiltinWithMutableMethods = value => value instanceof Date;
+
+	const concatPath = (path, property) => {
+		if (property && property.toString) {
+			if (path) {
+				path += PATH_SEPARATOR;
+			}
+
+			path += property.toString();
+		}
+
+		return path;
+	};
+
+	const walkPath = (path, callback) => {
+		let index;
+
+		while (path) {
+			index = path.indexOf(PATH_SEPARATOR);
+
+			if (index === -1) {
+				index = path.length;
+			}
+
+			callback(path.slice(0, index));
+
+			path = path.slice(index + 1);
+		}
+	};
+
+	const shallowClone = value => {
+		if (Array.isArray(value)) {
+			return value.slice();
+		}
+
+		return Object.assign({}, value);
+	};
+
+	const onChange = (object, onChange, options = {}) => {
+		const proxyTarget = Symbol('ProxyTarget');
+		let inApply = false;
+		let changed = false;
+		let applyPath;
+		let applyPrevious;
+		let isUnsubscribed = false;
+		const equals = options.equals || Object.is;
+		let propCache = new WeakMap();
+		let pathCache = new WeakMap();
+		let proxyCache = new WeakMap();
+
+		const handleChange = (path, property, previous, value) => {
+			if (isUnsubscribed) {
+				return;
+			}
+
+			if (!inApply) {
+				onChange(concatPath(path, property), value, previous);
+				return;
+			}
+
+			if (
+				inApply &&
+				applyPrevious &&
+				previous !== undefined &&
+				value !== undefined &&
+				property !== 'length'
+			) {
+				let item = applyPrevious;
+
+				if (path !== applyPath) {
+					path = path.replace(applyPath, '').slice(1);
+
+					walkPath(path, key => {
+						item[key] = shallowClone(item[key]);
+						item = item[key];
+					});
+				}
+
+				item[property] = previous;
+			}
+
+			changed = true;
+		};
+
+		const getOwnPropertyDescriptor = (target, property) => {
+			let props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				return props;
+			}
+
+			props = new Map();
+			propCache.set(target, props);
+
+			let prop = props.get(property);
+			if (!prop) {
+				prop = Reflect.getOwnPropertyDescriptor(target, property);
+				props.set(property, prop);
+			}
+
+			return prop;
+		};
+
+		const invalidateCachedDescriptor = (target, property) => {
+			const props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				props.delete(property);
+			}
+		};
+
+		const buildProxy = (value, path) => {
+			if (isUnsubscribed) {
+				return value;
+			}
+
+			pathCache.set(value, path);
+
+			let proxy = proxyCache.get(value);
+
+			if (proxy === undefined) {
+				proxy = new Proxy(value, handler);
+				proxyCache.set(value, proxy);
+			}
+
+			return proxy;
+		};
+
+		const unsubscribe = target => {
+			isUnsubscribed = true;
+			propCache = null;
+			pathCache = null;
+			proxyCache = null;
+
+			return target;
+		};
+
+		const ignoreChange = property => {
+			return isUnsubscribed || (options.ignoreSymbols === true && typeof property === 'symbol');
+		};
+
+		const handler = {
+			get(target, property, receiver) {
+				if (property === proxyTarget || property === TARGET) {
+					return target;
+				}
+
+				if (property === UNSUBSCRIBE && pathCache.get(target) === '') {
+					return unsubscribe(target);
+				}
+
+				const value = Reflect.get(target, property, receiver);
+				if (
+					isPrimitive(value) ||
+					isBuiltinWithoutMutableMethods(value) ||
+					property === 'constructor' ||
+					options.isShallow === true
+				) {
+					return value;
+				}
+
+				// Preserve invariants
+				const descriptor = getOwnPropertyDescriptor(target, property);
+				if (descriptor && !descriptor.configurable) {
+					if (descriptor.set && !descriptor.get) {
+						return undefined;
+					}
+
+					if (descriptor.writable === false) {
+						return value;
+					}
+				}
+
+				return buildProxy(value, concatPath(pathCache.get(target), property));
+			},
+
+			set(target, property, value, receiver) {
+				if (value && value[proxyTarget] !== undefined) {
+					value = value[proxyTarget];
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property, receiver);
+				const result = Reflect.set(target[proxyTarget] || target, property, value);
+
+				if (!ignore && !equals(previous, value)) {
+					handleChange(pathCache.get(target), property, previous, value);
+				}
+
+				return result;
+			},
+
+			defineProperty(target, property, descriptor) {
+				const result = Reflect.defineProperty(target, property, descriptor);
+
+				if (!ignoreChange(property)) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, undefined, descriptor.value);
+				}
+
+				return result;
+			},
+
+			deleteProperty(target, property) {
+				if (!Reflect.has(target, property)) {
+					return true;
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property);
+				const result = Reflect.deleteProperty(target, property);
+
+				if (!ignore) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, previous);
+				}
+
+				return result;
+			},
+
+			apply(target, thisArg, argumentsList) {
+				const compare = isBuiltinWithMutableMethods(thisArg);
+
+				if (compare) {
+					thisArg = thisArg[proxyTarget];
+				}
+
+				if (!inApply) {
+					inApply = true;
+
+					if (compare) {
+						applyPrevious = thisArg.valueOf();
+					}
+
+					if (Array.isArray(thisArg) || toString.call(thisArg) === '[object Object]') {
+						applyPrevious = shallowClone(thisArg[proxyTarget]);
+					}
+
+					applyPath = pathCache.get(target);
+					applyPath = applyPath.slice(0, Math.max(applyPath.lastIndexOf(PATH_SEPARATOR), 0));
+
+					const result = Reflect.apply(target, thisArg, argumentsList);
+
+					inApply = false;
+
+					if (changed || (compare && !equals(applyPrevious, thisArg.valueOf()))) {
+						handleChange(applyPath, '', applyPrevious, thisArg[proxyTarget] || thisArg);
+						applyPrevious = null;
+						changed = false;
+					}
+
+					return result;
+				}
+
+				return Reflect.apply(target, thisArg, argumentsList);
+			}
+		};
+
+		const proxy = buildProxy(object, '');
+		onChange = onChange.bind(proxy);
+
+		return proxy;
+	};
+
+	onChange.target = proxy => proxy[TARGET] || proxy;
+	onChange.unsubscribe = proxy => proxy[UNSUBSCRIBE] || proxy;
+
+	let proxy;
+	let previousDataLayer;
+
+	function _serialize(dataLayer) {
+		try {
+			return JSON.stringify({ ...dataLayer }, null, 2);
+		} catch (e) {
+			return JSON.stringify(dataLayer, null, 2);
+		}
+	}
+
+	function _notify(dataLayer) {
+		contentScriptEventTrigger({
+			data: {
+				dataLayer
+			},
+			timestamp: Date.now(),
+			timeSincePageLoad: window.performance.now()
+		});
+	}
+
+	function onDataLayerUpdate() {
+		const dataLayer = _serialize(this);
+
+		if (previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	function onDataLayerSet(newDataLayer) {
+		const dataLayer = _serialize(newDataLayer);
+		if (!previousDataLayer || previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	Object.defineProperty(window, dataLayerKey, {
+		get() {
+			return proxy;
+		},
+		set(newDataLayer) {
+			onDataLayerSet(newDataLayer);
+			proxy = onChange(newDataLayer, onDataLayerUpdate);
+		},
+		enumerable: true,
+		configurable: true
+	});
+
+	const oldObjectDefine = Object.defineProperty.bind(Object);
+	Object.defineProperty = function(obj, prop, descriptor) {
+		if (prop === dataLayerKey) {
+			console.debug(
+				'Data layer being overwritten by Object.defineProperty(). Falling back to polling...'
+			);
+
+			function pollForChanges() {
+				const dataLayer = _serialize(window[dataLayerKey]);
+				if (previousDataLayer !== dataLayer) {
+					previousDataLayer = dataLayer;
+					_notify(dataLayer);
+				}
+				window.requestAnimationFrame(pollForChanges);
+			}
+
+			window.requestAnimationFrame(pollForChanges);
+		}
+		return oldObjectDefine(obj, prop, descriptor);
+	};
+}
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-2', data: data });
+			}
+			/**
+ * Hooks into both DTM's and Launch's logging mechanisms in order to capture all log messages and
+ * send them to the UI to display to the user
+ */
+function notifyContentScript(log) {
+	contentScriptEventTrigger({
+		data: log,
+		timestamp: Date.now(),
+		timeSincePageLoad: window.performance.now()
+	});
+}
+
+window._satellite = window._satellite || {};
+window._satellite.override = window._satellite.override || {};
+
+// Hook into _satellite in order to capture DTM logs
+if (window.Object && window.Object.defineProperty) {
+	window.Object.defineProperty(window._satellite.override, 'adobe.aepDebugger.dtmInitHook', {
+		enumerable: true,
+		get: function() {
+			onSatelliteInit();
+			return '';
+		},
+		set: function() {}
+	});
+}
+
+function onSatelliteInit() {
+	// This function will run when DTM is loaded on the page. We use it to hook into DTM logs
+	let _satellite = window._satellite;
+	if (_satellite.Logger) {
+		_satellite.Logger.keepLimit = 9999;
+	}
+
+	// override notify
+	// Reason: we want to intercept messages that go through here
+	// without worrying about limits or messing anything up internally
+	let originalNotify = _satellite.notify;
+	_satellite.notify = function(message, level) {
+		const logLevel = ['log', 'log', 'log', 'info', 'warn', 'error'];
+
+		// call original
+		originalNotify(message, level);
+
+		const log = {
+			solution: 'dtm',
+			solutions: ['dtm'],
+			level: logLevel[level] || 'log',
+			message: ''
+		};
+
+		// make sure that we have a message
+		if (message && typeof message === 'string') {
+			// only add it
+			log.message = message;
+
+			// check to see what solution it came from
+			if (message.indexOf('Adobe Analytics:') !== -1) {
+				log.solutions.push('analytics');
+			} else if (message.indexOf('Test & Target:') !== -1) {
+				log.solutions.push('target');
+			} else if (message.indexOf('Visitor ID:') !== -1) {
+				log.solutions.push('visitorService');
+			} else if (message.indexOf('AdLens:') !== -1) {
+				log.solutions.push('mediaOptimizer');
+			}
+		}
+		notifyContentScript(log);
+	};
+}
+
+function _overrideConsoleLogFunction(prefix, solution, level) {
+	const originalFunction = console[level];
+	console[level] = function() {
+		const argsAsArray = Array.prototype.slice.call(arguments);
+		originalFunction.apply(console, argsAsArray);
+		const mappedArgs = argsAsArray.map(arg => {
+			let result = '';
+			if (arg && typeof arg.toString === 'function') {
+				result = arg.toString();
+			}
+			if (!result || result === '[object Object]') {
+				try {
+					result = JSON.stringify(arg);
+				} catch (e) {
+					return '';
+				}
+			}
+			return result;
+		});
+
+		const message = mappedArgs.join(' ');
+
+		if (typeof message === 'string') {
+			if (message.indexOf(prefix) === 0) {
+				const log = {
+					solution: solution,
+					solutions: [solution],
+					level: level,
+					message: message,
+					searchIndex: message,
+					params: mappedArgs
+				};
+
+				// check to see what solution it came from
+				if (message.indexOf('[Adobe Analytics]') !== -1) {
+					log.solutions.push('analytics');
+				} else if (message.indexOf('[Adobe Target]') !== -1) {
+					log.solutions.push('target');
+				} else if (message.indexOf('[Experience Cloud ID Service]') !== -1) {
+					log.solutions.push('visitorService');
+				} else if (message.indexOf('[Adobe Media Optimizer]') !== -1) {
+					log.solutions.push('mediaOptimizer');
+				}
+				notifyContentScript(log);
+			}
+		}
+	};
+}
+
+/**
+ * Overrides the various console.* methods in order to intercept messages that
+ * are sent to the console by launch. A message was sent be launch if it starts
+ * with the rocket emoji 🚀. Note that this is a somewhat brittle solution
+ * since if the emoji ever changes this integration will break. However this
+ * is the only solution that works for now.
+ *
+ * Any messages that are not prefixed with the rocket emoji are ignored and passed
+ * through to the original console function
+ */
+function _overrideConsoleForLaunch() {
+	const prefix = '\uD83D\uDE80';
+	['error', 'info', 'log', 'warn'].forEach(
+		_overrideConsoleLogFunction.bind(null, prefix, 'launch')
+	);
+}
+
+/**
+ * Intercepts console messages made by alloy (prefixed with [alloy]) and notifies content script about each one.
+ * Note that this is a brittle solution and should not be used long term.
+ *
+ * Ideally there will be some debugging hooks built into alloy itself that we can connect to
+ */
+function _overrideConsoleForAlloy() {
+	window.__alloyNS = [];
+	const originalPush = window.__alloyNS.push;
+	window.__alloyNS.push = function(namespace) {
+		['error', 'info', 'log', 'warn'].forEach(
+			_overrideConsoleLogFunction.bind(null, `[${namespace}]`, 'alloy')
+		);
+
+		originalPush.apply(window.__alloyNS, Array.prototype.slice.call(arguments));
+	};
+}
+
+_overrideConsoleForLaunch();
+_overrideConsoleForAlloy();
+
+// Once the page has finished loading, remove _satellite if both DTM and Launch were not found
+window.addEventListener('load', function() {
+	if (!_hasDtm() && !_hasLaunch()) {
+		delete window._satellite;
+	}
+});
+
+/**
+ * @returns {boolean} whether launch is present on the page
+ */
+function _hasLaunch() {
+	return !!(window._satellite && window._satellite._container);
+}
+
+/**
+ * @returns {boolean} whether DTM is present on the page
+ */
+function _hasDtm() {
+	return !!(window._satellite && window._satellite.configurationSettings);
+}
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-3', data: data });
+			}
+			window.___target_traces = window.___target_traces || [];
+var originalPush = window.___target_traces.push;
+
+window.___target_traces.push = function(trace) {
+	contentScriptEventTrigger({ trace });
+	originalPush.call(this, trace);
+};
+
+		})();
+	</script><head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8, minimum-scale=0.8, maximum-scale=3.0, user-scalable=yes">
+    <meta http-equiv="content-language" content="zh-CN">
+    <meta name="alexaVerifyID" content="HGPluAcOEtxdnfBS1mVdMVCM1ro">
+    <meta name="Keywords" content="叔本华,尼采,弗洛伊德,康德,西方哲学">
+    <meta name="Description" content="失败从来都吓不退叔本华。他学着把自己被学术界拒不接受这件事情，当作是荣誉的象征与鞭策自己继续迎难而上的鼓励。">
+    <title>叔本华诞辰｜在自己身上克服这个时代的哲学家_翻书党_澎湃新闻-The Paper</title>
+    <link rel="shortcut icon" href="https://file.thepaper.cn/www/v3/img/thepaper.ico" mce_href="//file.thepaper.cn/www/v3/img/thepaper.ico" type="image/x-icon">
+    <link rel="icon" href="https://file.thepaper.cn/www/v3/img/thepaper.ico" mce_href="//file.thepaper.cn/www/v3/img/thepaper.ico" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="Schopenhuaer_files/css.css">
+    <link rel="stylesheet" type="text/css" href="Schopenhuaer_files/style.css">
+    <link rel="stylesheet" type="text/css" href="Schopenhuaer_files/news.css">
+    <link rel="stylesheet" type="text/css" href="Schopenhuaer_files/interact.css">
+    <link rel="stylesheet" href="Schopenhuaer_files/aliplayer-min.css">
+    <script type="text/javascript" src="Schopenhuaer_files/jquery-1.js"></script>
+    <script type="text/javascript" src="Schopenhuaer_files/jquery_002.js"></script>
+    <script type="text/javascript" src="Schopenhuaer_files/jquery.js"></script>
+    <script type="text/javascript" src="Schopenhuaer_files/main-3.js"></script>
+    <script type="text/javascript" src="Schopenhuaer_files/login.js"></script>
+    <script type="text/javascript" src="Schopenhuaer_files/autosize.js"></script>
+    <script type="text/javascript" src="Schopenhuaer_files/audioplayer.js"></script>
+    <script type="text/javascript" charset="utf-8" src="Schopenhuaer_files/aliplayer-min.js"></script>
+    <style type="text/css">
+    .news_tit2{height:auto}
+    .news_infor_extra{line-height: 20px;font-size: 14px;color: #B4B4B5;position: relative;}
+    .news_infor_extra>div{font-size: 14px;line-height: 20px;margin-bottom:14px;}
+    .news_infor_extra .infor_item{font-size: 14px;margin-right:22px;float: left;}
+    .news_infor_extra>div.news_feedback {
+        position: absolute;
+        width: 64px;
+        height: 30px;
+        background: rgba(255,255,255,1);
+        box-shadow: 0px 2px 8px 0px rgba(0,0,0,0.1);
+        border-radius: 2px;
+        text-align: center;
+        line-height: 30px;
+        right: 0;
+        bottom: 0px;
+        margin-bottom: 0;
+    }
+    .news_feedback a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        font-size: 12px;
+        color: rgba(180,180,181,1);
+    }
+    .prism-coverimg{cursor:pointer}
+	.hide_word{display:none;}
+    </style>
+    <script>
+        var _hmt = _hmt || [];
+        (function () {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?94a1e06bbce219d29285cee2e37d1d26";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+    <script type="text/javascript">  
+    function browserRedirect() {  
+        var sUserAgent = navigator.userAgent.toLowerCase();
+        var Android = sUserAgent.match(/android/i) == "android";
+        var Linux =  sUserAgent.match(/linux/i) == "linux";
+        var Mobi = sUserAgent.match(/mobi/i) == "mobi";
+        var Pad = sUserAgent.match(/pad/i) == "pad";
+        var IOS = sUserAgent.match(/ios/i) == "ios";
+        var iPad = sUserAgent.match(/ipad/i) == "ipad";
+        var iPhone = sUserAgent.match(/iphone/i) == "iphone";
+        var Windows_Phone = sUserAgent.match(/windows iphone/i) == "windows iphone";
+        var Symbian = sUserAgent.match(/symbian/i) == "symbian";
+        var ishttps = 'https:' == document.location.protocol ? 'https://': 'http://'; 
+        //var ishttps = '//'; 
+        
+        if ((Android || Linux) && Mobi && !Pad || (IOS && !iPad) || iPhone || Windows_Phone || Symbian){
+            var curHref = window.location.href;
+            if (curHref.indexOf(ishttps+"thepaper.cn") == 0 ){
+                window.location.href=curHref.replace(ishttps+"thepaper.cn",ishttps+"m.thepaper.cn");
+            }
+            if (curHref.indexOf(ishttps+"www.thepaper.cn") == 0 ){
+                window.location.href=curHref.replace(ishttps+"www.thepaper.cn",ishttps+"m.thepaper.cn");
+            }
+        } 
+    }  
+    browserRedirect();
+</script></head>
+<body>
+<style>
+    .close_jumb {
+        position: absolute;
+        right: 10px;
+        top: 5px;
+        background: #333;
+        color: #fff;
+        width: 15px;
+        text-align: center;
+        display: none;
+    }
+
+    #video_head_ad, #video_head_ad .video_head_ad, #pic_head_ad {
+        position: relative;
+    }
+
+    #video_head_ad .corner_lable, #pic_head_ad .corner_lable {
+        position: absolute;
+        bottom: 0px;
+        right: 0;
+    }
+
+    .head_ad .pic_head_ad {
+        height: auto;
+    }
+
+    .close_jumb:hover {
+        cursor: pointer;
+    }
+    .slider{
+      max-width: 868px;
+    }
+</style>
+<!-- new head AD logic -->
+<!-- picture case -->
+
+
+<!-- video case -->
+
+
+<!-- old head AD logic -->
+<div class="head_ad" id="head_ad" style="">
+    <script type="text/javascript" src="Schopenhuaer_files/s_002.txt"></script>
+    </div>
+<div class="head hdbk" style="width: 100%;">
+    <div id="head" style="width: 100%; height: 100px;" class="">
+        <div class="head_rt" id="loginManage" style="right: 0px;">
+	<span class="verticalAlign"></span>
+            <div class="head_info clearfix">
+                <a href="https://www.thepaper.cn/contribute.jsp">报料</a>
+                    <a href="javascript:registerwdsshow();">注册</a>
+                    <a href="javascript:lgwdsshow();" style="border:0;">登录</a>
+                <div class="hdif_s clearfix search_father">
+                    <form action="searchResult.jsp" id="searchResult" method="post">
+                        <input type="button" class="hds_bt" id="search_key">
+                        <input autofocus="autofocus" autocomplete="off" type="text" name="inpsearch" class="hds_inp" id="hds_inp" maxlength="20">
+                    </form>
+                    <div class="hdifani" id="hdshowsearch"></div>
+                </div>
+
+                <div class="download">下载APP
+                    <div class="rtapp_down">
+                        <img style="" src="Schopenhuaer_files/app_down.png" alt="客户端下载" usemap="#topdownload" border="0">
+                        <map name="topdownload" id="topdownload">
+                            <area shape="rect" coords="3,3,147,148" href="https://at.umeng.com/T5juOb" ref="nofollow">
+                            <area shape="rect" coords="2,160,72,182" href="https://itunes.apple.com/cn/app/id878962716?mt=8" target="_blank" ref="nofollow">
+                            <area shape="rect" coords="87,161,146,182" href="https://itunes.apple.com/cn/app/id986646876?mt=8" target="_blank" ref="nofollow">
+                            <area shape="rect" coords="3,186,80,208" href="https://m.thepaper.cn/download?id=2" ref="nofollow">
+                        </map>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="head_bd">
+            <span class="verticalAlign"></span>
+            <div class="head_logo"><span class="verticalAlign"></span><a href="https://www.thepaper.cn/" title="澎湃新闻" style="height: 60px;"><img src="Schopenhuaer_files/logo116.png"></a></div>
+            <div class="head_banner">
+                <div class="bn_bt index">
+                    <a href="https://www.thepaper.cn/" class="bn_a">精选</a>
+                        </div>
+                <div class="bn_bt">
+                            <a href="https://www.thepaper.cn/channel_26916" class="bn_a">视频</a>
+                            <div style="display: none; width: 528px; opacity: 1;" class="slider" id="slider_26916">
+                                    <div class="lilt_pt">
+                                        <img src="Schopenhuaer_files/prompt_top.png" width="16" height="12">
+                                    </div>
+                                    <ul class="clearfix">
+                                    	<li>
+                                                <a href="https://www.thepaper.cn/list_26912">上直播</a>
+                                                <div style="display: none;" class="li_prompt">
+                                                    <div class="lilt_pl">拉近你与现场距离</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26913">七环视频</a>
+                                                <div style="display: none;" class="li_prompt">
+                                                    <div class="lilt_pl">为了更美好的生活</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26965">温度计</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">深度记录社会冷暖</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26908">一级视场</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">及时现场，洞察财经事件</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_27260">World湃</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">看见新闻全球化</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26907">湃客科技</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">聚焦前沿，展现新兴企业</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_33168">纪录湃</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">纪录澎湃中国</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26911">围观</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">以影像介入社会生活</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26918">@所有人</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">所有人在看</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26906">大都会</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">看上海 最都会</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26909">追光灯</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">让你看到文艺生活</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26910">运动装</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">直观运动，可以装不要伪装</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26914">健寻记</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">追寻活到一百岁的秘诀</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_82188">AI播报</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">互联网新闻+：AI播报</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_89035">眼界</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">每日一条视频，与新闻同步</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_92278">关键帧</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">核心15秒，最关键的瞬间</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                </div>
+                            </div>
+                    <div class="bn_bt">
+                            <a href="https://www.thepaper.cn/channel_102407" class="bn_a">战疫</a>
+                            <div style="display: none; left: -0.5px; width: 33px; opacity: 1;" class="slider" id="slider_102407">
+                                    <div class="lilt_pt" style="left: 20.5px;">
+                                        <img src="Schopenhuaer_files/prompt_top.png" width="16" height="12">
+                                    </div>
+                                    <ul class="clearfix">
+                                    	<li>
+                                                <a href="https://www.thepaper.cn/list_90069">战疫</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">防控新型冠状病毒肺炎。</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                </div>
+                            </div>
+                    <div class="bn_bt">
+                            <a href="https://www.thepaper.cn/channel_25950" class="bn_a">时事</a>
+                            <div style="display: none; width: 825px; opacity: 1;" class="slider" id="slider_25950">
+                                    <div class="lilt_pt">
+                                        <img src="Schopenhuaer_files/prompt_top.png" width="16" height="12">
+                                    </div>
+                                    <ul class="clearfix">
+                                    	<li>
+                                                <a href="https://www.thepaper.cn/list_25462">中国政库</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">洞悉中国动向的时政解读</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25488">中南海</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">权威细致的领导人报道</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_97924">初心之路</a>
+                                                <div style="display: none;" class="li_prompt">
+                                                    <div class="lilt_pl">探寻红色原力，展望中国未来</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25489">舆论场</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">倾听复杂世界的弦外之音</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25490">打虎记</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">中国反腐报道第一平台</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25423">人事风向</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">快速专业的人事信息集合地</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25426">法治中国</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">司改风向，法治观察</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25424">一号专案</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">司法个案，法治调查</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25463">港台来信</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">感觉不一样的港台报道</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25491">长三角政商</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">解读区域政情与财富故事</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25428">直击现场</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">第一现场，文图视频直播</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_68750">公益湃</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">记录公益发展，共建责任生态。</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_27604">暖闻</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">人间真善美，社会正能量。</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25464">澎湃质量报告</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">打假除劣，破套防坑——专注消费者权益保护</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25425">绿政公署</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">环境与公共健康调查</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25429">澎湃国际</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">All News In</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25481">外交学人</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">New World Order</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25430">澎湃防务</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">Cyclopedia for military</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25678">唐人街</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">海外利益，华人故事</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25427">澎湃人物</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">提供最有态度的人物报道</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25422">浦江头条</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">上海每天最重要的事件</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25487">教育家</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">最先进的教育理念在此碰撞</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25634">全景现场</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">360度感识全景现场</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25635">美数课</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">数字是骨骼，设计是灵魂</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25600">快看</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">快看，图片会说话</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                </div>
+                            </div>
+                    <div class="bn_bt">
+                            <a href="https://www.thepaper.cn/channel_25951" class="bn_a">财经</a>
+                            <div style="display: none; width: 330px; opacity: 0;" class="slider" id="slider_25951">
+                                    <div class="lilt_pt">
+                                        <img src="Schopenhuaer_files/prompt_top.png" width="16" height="12">
+                                    </div>
+                                    <ul class="clearfix">
+                                    	<li>
+                                                <a href="https://www.thepaper.cn/list_25434">10%公司</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">派发上市公司变革红利</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25436">能见度</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">能源行业最具穿透力的思想</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25433">地产界</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">地产界所有你想知道的事儿</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25438">财经上下游</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">跨界找寻市场常识</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25435">金改实验室</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">金融创新灵感集散地</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25437">牛市点线面</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">简单专业时尚的财富平台</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_27234">科技湃</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">让我们走近科学</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25485">澎湃商学院</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">品牌课外书，生活经济学</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25432">自贸区连线</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">自贸区第一信息和服务平台</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_37978">进博会在线</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">走进中国国际进口博览会</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                </div>
+                            </div>
+                    <div class="bn_bt">
+                            <a href="https://www.thepaper.cn/channel_36079" class="bn_a pph_nav">澎湃号</a>
+                                <div style="display: none; left: -33.5px; width: 99px; opacity: 0;" class="slider" id="slider_pph">
+                                    <div class="lilt_pt" style="left: 53.5px;">
+                                        <img src="Schopenhuaer_files/prompt_top.png" width="16" height="12">
+                                    </div>
+                                    <ul class="clearfix">
+                                        <li><a href="https://www.thepaper.cn/channel_36079">湃客</a></li>
+                                        <li><a href="https://www.thepaper.cn/channel_27392">政务</a></li>
+                                        <li><a href="https://www.thepaper.cn/channel_77286">媒体</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                    <div class="bn_bt">
+                            <a href="https://www.thepaper.cn/channel_25952" class="bn_a" id="select">思想</a>
+                            <div style="display: none; width: 627px; opacity: 0;" class="slider" id="slider_25952">
+                                    <div class="lilt_pt">
+                                        <img src="Schopenhuaer_files/prompt_top.png" width="16" height="12">
+                                    </div>
+                                    <ul class="clearfix">
+                                    	<li>
+                                                <a href="https://www.thepaper.cn/list_25444">社论</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">澎湃的立场</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_27224">澎湃评论</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">在这里知道更多</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26525">思想湃</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">明亮的对话，澎湃的思想</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26878">上海书评</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">全球百位华文写作名家撰稿</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25483">思想市场</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">有竞争的思想讲底蕴的政治</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25457">私家历史</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">发现历史之美</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25574">翻书党</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">微时代的首选书单</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25455">艺术评论</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">独立态度解析中外艺术热点</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26937">古代艺术</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">巡礼人类的艺术遗产</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25450">文化课</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">关注人文景观投身人类文明</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25482">逝者</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">记录逝者为世界留下的财富</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25445">澎湃研究所</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">为中国城市问题提供澎湃方案。</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25456">市政厅</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">中国城市问题专家</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26915">城市漫步</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">人塑造地方，地方也塑造人</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25446">智库报告</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">展示全球最具价值的智库研究成果</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25536">专栏</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">名家专家，上天入地</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26506">异次元</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">打破次元壁</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_97313">海平面</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">远，不止于平面</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_103076">一问三知</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">万象新知，尽在问答之间。</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                </div>
+                            </div>
+                    <div class="bn_bt">
+                            <a href="https://www.thepaper.cn/channel_25953" class="bn_a">生活</a>
+                            <div style="display: none; width: 462px; opacity: 0;" class="slider" id="slider_25953">
+                                    <div class="lilt_pt">
+                                        <img src="Schopenhuaer_files/prompt_top.png" width="16" height="12">
+                                    </div>
+                                    <ul class="clearfix">
+                                    	<li>
+                                                <a href="https://www.thepaper.cn/list_25448">有戏</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">陪你过一种审美的生活</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26609">文艺范</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">一线文艺生活</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25942">身体</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">探索身体的奥秘</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26015">私·奔</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">跑步是一种态度</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25599">运动家</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">看体育如何改变世界</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25842">私家地理</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">旅途的旨趣、技艺以及乡愁</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_80623">非常品</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">用态度引领时尚</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26862">楼市</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">不一样的楼市观察</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25769">生活方式</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">更好生活，我们有一些意见</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_25990">澎湃联播</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">半个段子兽半个评论猿</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26173">视界</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">视界观，观世界</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26202">亲子学堂</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">理解孩子，认知自己</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26404">赢家</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">直击中国体育产业生存现状</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        <li>
+                                                <a href="https://www.thepaper.cn/list_26490">汽车圈</a>
+                                                <div style="display:none;" class="li_prompt">
+                                                    <div class="lilt_pl">专注汽车产经报道</div>
+                                                    <div class="lilt_pr"></div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                </div>
+                            </div>
+                    <div class="bn_bt">
+                    <a href="https://www.thepaper.cn/ask_index.jsp" class="bn_a">问吧</a>
+                        </div>
+                <div class="bn_bt">
+                    <a href="https://www.thepaper.cn/channel_-1" class="bn_a">订阅</a>
+                        <div id="slider_order" class="slider" style="display: none; left: -32px; width: 440px; opacity: 0;">
+                        <div class="lilt_pt" style="left: 53px;">
+                            <img src="Schopenhuaer_files/prompt_top.png" width="16" height="12">
+                        </div>
+                        <div class="lilt_intro">
+                                	把你最喜欢的栏目添加到这里来哦
+                                <a href="javascript:lgwdsshow();">马上登录</a>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    var targetProtocol = "https:";
+    if (window.location.protocol != targetProtocol && window.location.href.indexOf("thepaper.cn") >= 0) {
+        window.location.href = targetProtocol + window.location.href.substring(window.location.protocol.length);
+    }
+    var href = window.location.href;
+
+    if (href == "http://www.thepaper.cn" || href == "http://www.thepaper.cn/" || href == "https://www.thepaper.cn" || href == "https://www.thepaper.cn/") {
+        var bn_bt = $(".index .bn_a");
+        bn_bt.addClass("on").attr("id", "select");
+    } else if (href.toLowerCase().indexOf("gov") >= 0) {
+        var bn_bt = $(".gov_bn .bn_a");
+        bn_bt.addClass("on").attr("id", "select");
+    }
+    setMsgMark(); //login异步之后调用位置修改
+    var HTTP_PREFIX = "http://";
+    var headAd = $("#head_ad");
+    var picHeadAd = $("#pic_head_ad");
+    var videoHeadAd = $("#video_head_ad");
+    var vdLink = $("#video_head_ad a");
+    var video = $("#head_ad_video");
+    var picLink = $(".head_ad .pic_head_ad a");
+    var picImg = $(".pic_head_ad a img");
+    var cornLab = $(".corner_lable");
+    var vTag = "news";
+    var adVal = "37&WD-CLIENT-TYPE=05&arid=6068443&caid=25574";
+    var adAfterType = "";
+    var status = "false";
+    var creative = "";
+    var videoURL = "";
+    var creativeB = "";
+    var VideoURLB = "";
+    var videoStr = '<video id="head_ad_video" src="" poster="" autoplay="autoplay" loop="loop" width="1200"></video>';
+    var nowAdType = "";
+    var adFlagStr = "";
+    var timer;
+    // 顶部广告自适应
+    var creativeHeightStr;
+
+    function handleXmlRes(advXml) {
+        // back compatibility
+        if (advXml == "") {
+            oldHeadAdProcess();
+            return;
+        } else {
+            headAd.remove();
+        }
+        // parse ad XML
+        var xmlDoc = $.parseXML(advXml);
+        var xml = $(xmlDoc);
+        var clickMonitor = "";
+        var clickImpression = "";
+        if (typeof (xml.find("adtype")[0]) != "undefined") {
+            var adtype = xml.find("adtype")[0].textContent.trim();
+            var newAdtypeStr = new String(adtype);
+        }
+        if (typeof (xml.find("creative")[0]) != "undefined") {
+            creative = xml.find("creative")[0].textContent.trim();
+        }
+        if (typeof (xml.find("adflag")[0]) != "undefined") {
+            var adflag = xml.find("adflag")[0].textContent.trim();
+            var newAdflagStr = new String(adflag);
+        }
+        if (typeof (xml.find("click")[0]) != "undefined") {
+            var click = xml.find("click")[0].textContent.trim();
+        }
+        if (typeof (xml.find("Impression")[0]) != "undefined") {
+            var impression = xml.find("Impression")[0].textContent;
+        }
+        if (typeof (xml.find("clickMonitor")[0]) != "undefined") {
+            clickMonitor = xml.find("clickMonitor")[0].textContent;
+        }
+        if (typeof (xml.find("clickImpression")[0]) != "undefined") {
+            clickImpression = xml.find("clickImpression")[0].textContent;
+        }
+        if (typeof (xml.find("VideoURL")[0]) != "undefined") {
+            videoURL = xml.find("VideoURL")[0].textContent.trim();
+        }
+        if (newAdtypeStr.indexOf('[') > -1) {
+            var adTypeStr = newAdtypeStr.substr(1, 1);
+        } else {
+            var adTypeStr = newAdtypeStr.substr(0, 1);
+        }
+        if (newAdflagStr.indexOf('[') > -1) {
+            adFlagStr = newAdflagStr.substr(1, 1);
+        } else {
+            adFlagStr = newAdflagStr.substr(0, 1);
+        }
+        if (click.replace(HTTP_PREFIX, "") == "" || click.replace(HTTP_PREFIX, "") == "####") {
+            click = "javascript:;";
+            picLink.removeAttr("target");
+            picLink.addClass("defCur");
+        }
+        if (typeof (xml.find("Cexpansion")[0]) != "undefined") {
+            var cexpansion = xml.find("Cexpansion")[0].textContent.trim();
+        }
+        // xml返回了creativeHeight
+        if (typeof (xml.find("creativeHeight")[0]) != "undefined") {
+            var creativeHeight = xml.find("creativeHeight")[0].textContent.trim();
+            creativeHeightStr = new String(creativeHeight);
+        }
+
+        // configure top video ad
+        vdLink.attr("href", click);
+        if (video != null && videoURL != "") {
+            video.attr("src", httpToSlash(videoURL));
+            video.get(0).play();
+        }
+        // configure top pic ad
+        picLink.attr("href", click);
+        picImg.attr("src", httpToSlash(creative));
+        // ad flag logic
+        if (adFlagStr == 0) {
+            cornLab.remove();
+        }
+        var clickAction = function () {
+            if (clickMonitor != "") {
+                clickMonitor = httpToSlash(clickMonitor);
+                $.ajax({
+                    url: clickMonitor,
+                    cache: false,
+                    crossDomain: true,
+                    success: function (data) {
+                        clickFuntion(data);
+                    }
+                });
+            }
+        };
+
+        function clickFuntion(src) {
+            src = httpToSlash(src);
+            $(".copyright").append('<img src="' + src + '" width="1" height="1"/>');
+        }
+
+        // ad type logic
+        if (cexpansion != 3) {
+            if (cexpansion == 0 || cexpansion == 2) {
+                videoHeadAd.remove();
+                picHeadAd.show();
+                picHeadAd.append(cornLab[0]);
+                picHeadAd.click(clickAction);
+            } else if (cexpansion == 1) {
+                picHeadAd.remove();
+                videoHeadAd.show();
+                videoHeadAd.click(clickAction);
+                if (adFlagStr == 1) {
+                    videoHeadAd.append(cornLab[0]);
+                }
+            }
+        }
+
+        // invoke impression interface once user click video
+        if (impression.trim() != "") {
+            impression = httpToSlash(impression);
+            clickFuntion(impression);
+        }
+        //图片拓展图片时
+        if (typeof (xml.find("Cexpansion")[0]) != "undefined") {   //是否需要展开
+            if (cexpansion == 3) {
+                if (adTypeStr == 1) {
+                    picHeadAd.remove();
+                    videoHeadAd.show();
+                    videoHeadAd.click(clickAction);
+                    if (adFlagStr == 1) {
+                        videoHeadAd.append(cornLab[0]);
+                    }
+                    if (creativeHeightStr) {
+                        video.height(creativeHeightStr)
+                    }
+                }
+                if (adTypeStr == 0) {
+                    videoHeadAd.remove();
+                    picHeadAd.show();
+                    picHeadAd.click(clickAction);
+                    if (adFlagStr == 1) {
+                        picHeadAd.append(cornLab[0]);
+                    }
+                    if (creativeHeightStr) {
+                        picHeadAd.children().children().eq(0).children("img").height(creativeHeightStr)
+                    }
+                }
+            }
+            if (cexpansion == 2) {
+                creativeB = xml.find("creativeB")[0].textContent.trim();
+                nowAdType = "pic";
+                var cexpansion = xml.find("Cexpansion")[0].textContent.trim();//展开时
+                status = "true";
+                if (picHeadAd.css("display") != "none") {
+                    picHeadAd.children().children().eq(0).children("img").attr("src", creativeB);
+                    picHeadAd.children().children().eq(0).children("img").animate({"height": "700px"}, 500, function () {
+                        picHeadAd.children().find(".close_jumb").show();
+                        nowAdType = "pic";
+                    })
+                    timer = setTimeout(function () {
+                        picHeadAd.children().children().eq(0).children("img").attr("src", creative);
+                        picHeadAd.children().children().eq(0).children("img").animate({"height": "120px"}, 500, function () {
+                            videoHeadAd.children().find(".close_jumb").hide();
+                            picHeadAd.children().find(".close_jumb").hide();
+                            nowAdType = "pic";
+                        })
+                        clearTimeout(timer);
+                    }, 5000)
+                }
+            }
+
+            //图片拓展视频时
+            if (cexpansion == 0) {
+                VideoURLB = xml.find("VideoURLB")[0].textContent.trim();
+                nowAdType = "pic";
+                var cexpansion = xml.find("Cexpansion")[0].textContent.trim();
+                status = "true";
+                if (picHeadAd.css("display") != "none") {
+                    var imgParentEle = picHeadAd.children().children().eq(0);
+                    imgParentEle.children("img").remove();
+                    imgParentEle.append(videoStr);
+                    $('#head_ad_video').attr('src', VideoURLB);
+                    picHeadAd.animate({"height": "700px"}, 500, function () {
+                        $('#head_ad_video')[0].play();
+                        picHeadAd.children().find(".close_jumb").show();
+                        nowAdType = "video";
+                    })
+                    timer = setTimeout(function () {
+                        imgParentEle.children("video").remove();
+                        imgParentEle.append('<img src=""/>');
+                        imgParentEle.children("img").attr("src", creative);
+                        imgParentEle.parent().parent().animate({"height": "120px"}, 500, function () {
+                            videoHeadAd.children().find(".close_jumb").hide();
+                            picHeadAd.children().find(".close_jumb").hide();
+                            nowAdType = "pic";
+                        })
+                        clearTimeout(timer);
+                    }, 5000)
+                }
+            }
+            //视频拓展视频时
+            if (cexpansion == 1) {
+                VideoURLB = xml.find("VideoURLB")[0].textContent.trim();
+                var cexpansion = xml.find("Cexpansion")[0].textContent.trim();
+                status = "true";
+                if (videoHeadAd.children().children("a").children("video")[0].src != "none") {
+                    video.attr("src", VideoURLB);
+                    video.animate({"height": "700px"}, 500, function () {
+                        videoHeadAd.children().find(".close_jumb").show();
+                        video[0].play();
+                    })
+                    timer = setTimeout(function () {
+                        video.attr("src", videoURL);
+                        video.animate({"height": "120px"}, 500, function () {
+                            videoHeadAd.children().find(".close_jumb").hide();
+                            video[0].play();
+                            clearTimeout(timer);
+                        })
+                    }, 5000)
+                }
+            }
+        }
+    }
+
+    //收起广告
+    function closeJumb(id) {
+        clearTimeout(timer);
+        if ($(id).css("height") == "700px") {
+            status = "false";
+            if (id == "#head_ad_video") {
+                var actSpan = $(id).parent().parent();
+            } else {
+                var actSpan = $(id).children();
+            }
+            if (typeof actSpan != "undefined") {
+                actSpan.find(".close_jumb").hide();
+            }
+            if ($(id).children().attr("class") == "pic_head_ad") {
+                if (nowAdType == "pic") {
+                    $(id).children().children("a").children("img").animate({"height": "120px"}, 500, function () {
+                        $(id).children().children("a").children("img").attr("src", creative);
+                        nowAdType = "pic";
+                    });
+
+                }
+                if (nowAdType == "video") {
+                    $(id).children().children("a").children("video").remove();
+                    $(id).animate({"height": "120px"}, 500, function () {
+                        $(id).children().children("a").append("<img src='" + creative + "'>");
+                        if ($(id).children().children("a").find("img").length > 1) {
+                            var selEle = $(id).children().children("a").find("img")
+                            var length = selEle.length;
+                            selEle.eq(length - 1).remove()
+                        }
+                        nowAdType = "video";
+                    });
+                }
+
+            } else if (actSpan.attr("class") == "video_head_ad") {
+                if (typeof actSpan != "undefined") {
+                    actSpan.find(".close_jumb").hide();
+                    actSpan.find(".open_jumb").show();
+                }
+                $(id).attr("src", videoURL);
+                $(id).animate({"height": "120px"}, 500, function () {
+                    $(id)[0].play();
+                });
+            }
+
+
+        }
+    }
+
+    //将 http://或者https:// 转为//
+    function httpToSlash(url) {
+        if (typeof (url) != "undefined") {
+            if (url.indexOf("https:") === 0) {
+                url = url.replace("https:", "");
+            } else if (url.indexOf("http:") === 0) {
+                url = url.replace("http:", "");
+            }
+        }
+        return url;
+    }
+
+    function oldHeadAdProcess() {
+        picHeadAd.remove();
+        videoHeadAd.remove();
+        headAd.show();
+        return;
+    }
+
+    function vNewsProcess() {
+        if (vTag == "vNews") {
+            $("#pic_head_ad").remove();
+            $("#pic_head").remove();
+            $("body").prepend($(".head"));
+            $("body").prepend($(".head_ad"));
+            $("#topJsp").remove();
+        }
+    }
+
+    $(document).ready(function () {
+        if (status == "true") {
+            var actSpan = $("#video_head_ad") || $("#pic_head_ad");
+            actSpan.find(".close_jumb").show();
+        }
+
+        $("#search_key").on("click", function () {
+            $("#searchResult").submit();
+        });
+        $("#searchResult").submit(function(e) {
+        	bsForm("searchResult");
+        	return true;
+        });
+
+        // ad video process
+        if (adVal != null && adVal != '') {
+            $.ajax({
+                url: "//adpai.thepaper.cn/s?",
+                data: "c=" + adVal + "&op=1",
+                cache: false,
+                crossDomain: true,
+                success: function (xml) {
+                    handleXmlRes(xml);
+                },
+                error: function () {
+                    oldHeadAdProcess();
+                    console.log("Head Ad request error!");
+                    return;
+                }
+            });
+        }
+        vNewsProcess();
+
+    });
+</script><div class="bdwd main clearfix">
+    <div class="main_lt">
+        <div class="newscontent">
+        	<div class="news_path">
+                    <a href="https://www.thepaper.cn/">首页</a>
+                    &gt; <a href="https://www.thepaper.cn/list_25574">翻书党</a>
+                </div>
+            <h1 class="news_title">叔本华诞辰｜在自己身上克服这个时代的哲学家</h1>
+                <div class="news_about">
+                    <p>吴靖</p>
+                    <p>
+                        2020-02-22 12:12<span> 来源：澎湃新闻</span>
+                    </p>
+                    <div class="font_size">
+                        <span>字号</span>
+                        <ul class="size_level" style="display: none;">
+                            <li id="super">超大</li>
+                            <li id="large">大</li>
+                            <li class="on" id="standard">标准</li>
+                            <li id="small">小</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="news_txt" data-size="standard">亚瑟·叔本华一直都是全世界
+拥有读者最多的哲学家之一，这（在反讽意义上）部分源于他身上被贴的各式各样的吸睛标签，诸如“头号悲观主义者”、“厌女症患者”、“富二代毒舌男”、
+“鸡汤文杀手”等等，这些浮夸的标签只是商家用以吸引读者眼球的伎俩，目光犀利的叔本华对这幅悲哀的人世图景早就有所预见：“一个人就像商品一样被贴上标
+签并受到商品式的对待”。对于叔本华这样一位卓越的思想家，我们更应该知道的是他生前长期默默无闻（长达三四十年被学术界和一般读者所忽视）而依然坚守哲
+学信条的孤持，他持续探索古老的东方思想（尤其是印度教和佛教思想）的巨大热情，他在自然科学和人文艺术领域所拥有的广泛而深厚的学识和鉴赏力（在他的全
+部著作中都展露无遗），他对众多哲学家所忽略的主题和现象（包括色彩、天才、同性恋、幽默、疯狂、音乐的形而上学、动物的道德状况、神秘主义、超自然现象
+以及哭泣等）的孜孜以求的探究，他对后世的哲学、文学、音乐、绘画、心理分析乃至自然科学所产生的极其广泛而深远的影响，正是因为以上这些（而不是那些无
+聊的标签），叔本华才是值得阅读、尊敬和仰望的，正如他临终前的遗言：“希望爱好我哲学的人，能不偏不倚地，独立自主地理解我的哲学。”尼采曾说：“在自
+己身上克服这个时代”，他的人生导师叔本华以其巨大的勇气、坚忍和智慧，先于他完美地实践了这一人生信念，叔本华哲学的不朽魅力正是来源于此。<br><div class="contheight"></div>1788
+年2月22日，叔本华出生于但泽的一个商人家庭。他的青少年时代就像一个来回摇荡的钟摆，挣扎于“学者”和“商人”这两个迥异的人生目标之间。若干年后，
+叔本华写下了那个举世皆知的著名比喻：人生就如一副钟摆，在痛苦和无聊之间来回摆动。无论是经商颇为成功的父亲海因里希·弗洛瑞斯，还是雅好文学的母亲约
+翰娜，都希望叔本华继承家族的事业，成为一名成功的国际化商人，而不是走上前途渺茫的学者道路。为此，15岁的叔本华和父亲之间做了一次“交易之旅”：他
+选择了参与家庭大旅行的决定，而不是作为学者继续深造，并承诺旅行归来就为经商生涯做准备。其实，这趟旅行延续了父亲让儿子“阅读世界之书”的策略，而这
+一“阅读”是让年轻的叔本华为国际化商人生活做好准备而设计的。有趣的是，这次旅行并没有让叔本华走上经商之路，却为他日后写作那本“世界之书”——《作
+为意志和表象的世界》提供了不竭的灵感和广阔的素材，对他在心智方面发展成为一名哲学家，起到了至关重要的决定性作用。这次长达两年的欧洲漫游之旅，包括
+经常性的定期看戏和听音乐会，参观博物馆和艺术画廊，探寻庭园和自然景区，以及观赏欧洲那些最伟大城市的雄伟建筑等内容，也让叔本华享受到了第一流的美学
+教育，这些早年的审美经历将在他后来几乎所有的著作中找到不同程度的回响。<br><div class="contheight"></div><div style="text-align:center;"><img src="Schopenhuaer_files/70.jpg" alt="" width="600" height="766"></div><span style="color: rgb(128, 128, 128);">青年叔本华</span><br><div class="contheight"></div>不
+过，叔本华真正的人生转折点却是他父亲之死（通常认为是自杀）。这不仅让叔本华得以追随内心的渴望——成为一名学者，也让他日后继承了一笔丰厚的家族遗产
+（这对于一名学者而言至关重要），同时也开启了他关于自杀和死亡的严肃思考。然而，叔本华并没有将哲学作为大学学习的主要学科，他在哥廷根大学注册入学的
+学科是医学，因为约翰娜尽管同意他放弃将来经商的规划，却要求他必须为谋生而学习。这一看似对叔本华“不利”的要求，却再一次为他的哲学之路提供了重要的
+铺垫。在哥廷根大学（以自然科学著称）的两年中，叔本华修读了大量的自然科学课程和讲座，包括德国比较解剖学先驱、现代人类学创始人布鲁门巴赫的四门讲
+座：自然历史、矿物学、比较解剖学、生理学，内科医生和化学及药学教授斯托梅耶尔（镉的发现者）开设的化学讲座，数学家和物理学家迈尔开设的物理学课程以
+及天体物理学和气象学讲座，解剖学家及外科医生朗恩贝克的系列讲座以及施拉格尔所讲授的植物学课程等。对自然科学知识的熟稔，同样贯穿于叔本华日后的各种
+著作中，包括后来他与歌德关于色彩理论的探讨，以及他那篇著名的《论自然中的意志》（1836年）。无论是他所上过的正规自然科学课程，还是他所继续阅读
+的自然科学读物，都使得叔本华比与他同时代哲学家在自然科学方面更具修养，而终其一生，叔本华都坚持哲学家必须知晓自然科学最佳研究成果的观点。<br><div class="contheight"></div>幸
+运的是，叔本华还在哥廷根大学遇到了生命中的第一位贵人，他就是讲授形而上学、心理学和逻辑学课程的舒尔策教授。正是舒氏开设的这些课程和讲座，唤醒叔本
+华去学习哲学，并建议他专注于柏拉图和康德学说的自学，熟悉叔本华哲学的人清楚这条建议的重大价值——叔本华自称其哲学有三大源头，其中两个就是柏拉图和
+康德。就在这一年，23岁的叔本华在一次与朋友的聊天中说出了那句著名的话：“人生真是糟糕透顶的事情，我已经决定花费这一生去琢磨和探究这一糟糕透顶的
+人生。”随着从医学到哲学这一忠诚的转变，叔本华一段在思想上狂飙突进的岁月由此开启。在柏林大学的课堂上，叔本华并没有对“哲学世界的太阳”——费希特
+的光芒感到炫目，恰恰相反，他对费希特的思想嗤之以鼻，以至于他的课堂笔记中尽是对费氏的挖苦与讽刺，正如他后来对黑格尔、谢林等人的谩骂和嘲讽（他甚至
+将自己的小狗取名为“世界精神”），这种叔本华式的自负将伴随他的一生，除了哲学思想上的对立，我们毋宁将之视为他度过艰难人生的一种（略带孩子气的）发
+泄方式。<br><div class="contheight"></div>从25岁到30岁的六年中，天才勃发的叔本华连续写出了博士论文《论充足
+理由律的四重根》（1813年）和他的代表作《作为意志和表象的世界》（1814-1818年），尤其是后者，足以奠定他一生的成就。这部杰作共分为四
+篇：认识论、自然的形而上学、艺术的形而上学、伦理的形而上学，全书以一个振聋发聩的声明“世界是我的表象”开篇，并以作为表象的世界和作为意志的世界相
+互交替的方式行进，这一如交响乐般富于曲式变化的杰作始终保持一种生气勃勃的姿态，从认识论行进到形而上学与美学，并最终抵达了伦理学的终点。残酷的是，
+这部融合了东方和西方哲学思想的伟大作品，竟然长达三四十年被整个德国学界置若罔闻。该书出版一年半后，只售出一百多本，其余大部分当作废纸卖掉了。面对
+这一境况，叔本华自信地说道：“如果不是我配不上这个时代，那就是这个时代配不上我。”这句掷地有声的话道出了古往今来多少天才和杰作曾遭逢的可笑境遇，
+只因他们远远地领先和超越了那个时代，以至于鲜有人能理解和欣赏。显然，叔本华深谙此理，后来在该书第二版的序言中，他这样写道：“不是为了同时代的人
+们、不是为了同祖国的人们，而是为了人类，我才献出今日终于完成的这本书。我在这样的信心中交出它，相信它不会对于人类没有价值，即令这种价值，如同任何
+一种美好的事物常有的命运一样，要迟迟才被发觉。”是的，只要是天才和杰作，终有逆袭之日。<br><div class="contheight"></div>在
+叔本华的哲学中，只有意志是自在之物，这一康德哲学中伟大的未知之物，以及那被费希特、谢林和黑格尔所抛弃的东西。对此，叔本华推断道：“现象就叫作表
+象，再不是别的什么。所有的表象，无论是哪类，一切客体，都是现象，唯有意志是自在之物。……它显现于每一盲目地起作用的自然力之中，也显现于人类经过考
+虑的行动之中。”这一断言呼应了他在德累斯顿的笔记中指定为单一思想的东西（这一思想贯穿了叔本华的整个生涯）：“我的整个哲学用一个表达式加以概括：世
+界是意志的自我认识。”由此，将人的身体作为意志和表象的双重体验，成为叔本华形而上学的关键。在该书第二版中，叔本华指出世界乃是“人的宏观体现”，那
+种宏伟的人。因此，有人将叔本华戏称为“身体哲学家”（丝毫不带任何贬义）。那篇惊世骇俗的《性爱的形而上学》就收录于《作为意志和表象的世界》第二版
+中，这篇随笔既无先哲可以依傍，也无前人可以驳斥。早在西格蒙德·弗洛伊德之前，叔本华就极富洞察力地强调性在人类事务中的无处不在和无所不为。<br><div class="contheight"></div><div style="text-align:center;"><img src="Schopenhuaer_files/88.jpg" alt="" width="600" height="813"></div><span style="color: rgb(128, 128, 128);">叔本华：《作为意志和表象的世界》</span><br><div class="contheight"></div>回
+顾叔本华哲学时，忽略他思想中的东方因素肯定是个错误。除了康德和柏拉图之外，东方思想正是第三大源头。更具体的说，古印度经典《奥义书》中的种种洞见，
+对叔本华而言至关重要。早在28岁之前，他便已将此三者等量齐观：“我承认，我不相信在《奥义书》、柏拉图和康德将他们的光辉同时照耀在某个人的心上之
+前，我的理论就能够产生。”（叔本华《手稿遗稿》）两年之后，他将会在《作为意志和表象的世界》引言中，清楚说明理解他哲学所需要的基础。他写道，某个享
+有因阅读吠陀（Veda）文集——对它的理解已经因为《奥义书》而成为可能——所带来帮助的人，则会对聆听他要讲的东西作了最好的准备。后来，他写信给一
+位友人说《奥义书》是“智慧和哲理的原始思想库”。在其认识论和伦理学的语境中，叔本华将印度婆罗门教的“摩耶”（maya，“摩耶之幕”即真实世界的帷
+幕）等同于感官世界，我们的所有意欲与渴望全都以它为基础，它们也仅仅是生命的表达，正如生命仅仅是幻象的表达一样。在此，它与康德的现象世界、柏拉图的
+生成与消亡之物的世界具有相同的状况，有德的善人以及圣者会是那些看穿这个幻象世界的人，正如中国智者苏东坡在《念奴娇·赤壁怀古》结尾处的浩叹：人生如
+梦，一樽还酹江月。<br><div class="contheight"></div>在1818年完成其代表作（年仅30岁）之后的漫长人生中，叔
+本华尝试了种种努力来激起世人对其哲学的兴趣，包括他在柏林大学两次（1820年、1826-1827年）与如日中天的黑格尔的斗法以及惨败，参加挪威皇
+家科学院和丹麦皇家科学院的有奖征文比赛（前一篇《论人类意志中的自由》（1839年）荣膺桂冠，后一篇《论道德的基础》（1840年）未获奖），先后提
+议翻译大卫·休谟的《自然宗教史》与《自然宗教对话录》（1824年）、乔尔达诺·布鲁诺的《论原因、本原与太一》（1824年）、劳伦斯·斯特恩的小说
+《项狄传》（1825年）、康德的《未来形而上学导论》（1829年）、卡尔德隆的《智慧书：做人要义与修身之道》（1829年）以及《歌德作品集》
+（1833年）均遭拒绝，应聘吉森大学（1820年）、耶拿大学（1823年）、维尔茨堡大学（1827年）、海德堡大学（1828年）均被拒之门外，自
+费出版《论自然中的意志》（1836年）、《伦理学的两个基本问题》（1841年）、《作为意志和表象的世界》（第二版，1844年）却乏人问津……长达
+二三十年的种种努力都收效甚微。对于心性高傲的叔本华而言，这是一段相当漫长而艰难的人生岁月，其间唯一令他欣慰的事情或许就是，1831年他所痛恨的老
+对手黑格尔在柏林死于霍乱。<br><div class="contheight"></div>失败从来都吓不退叔本华。他学着把自己被学术界拒不接
+受这件事情，当作是荣誉的象征与鞭策自己继续迎难而上的鼓励，他写作是为那些他认为置身于流行时尚短暂潮流之外的人。1843年，这位55岁的哲学家在致
+出版商布洛克豪斯的信中，以一贯的自信口吻写道：“属于我的时刻最终并且必定会到来，它来得越晚就越是灿烂夺目。”之后的六年中，叔本华埋首于自己的封笔
+之作——《附录和补遗》的写作中，这部近千页的两卷本皇皇巨著构成了他哲学杂项的完成，亦即，他对那些无法被收录进他哲学体系中题材所进行的思考，包括
+《附录》部分的《哲学史的残篇》、《论大学里的哲学》以及日后影响广泛的《人生的智慧》，《补遗》部分的《论自杀》、《论文学批评》、《论学者与治学》、
+《论语言与文字》、《论阅读》、《论教育》、《论女人》等诸多名篇。他向布洛克豪斯坚称这部作品是“写给世人的哲学”，这将保证作品能畅销。<br><div class="contheight"></div><div style="text-align:center;"><img src="Schopenhuaer_files/104.jpg" alt="" width="600" height="916"></div><span style="color: rgb(128, 128, 128);">叔本华：《附录和补遗》</span><br><div class="contheight"></div>命
+运反转的时刻姗姗来迟，叔本华的预言终于奇迹般地应验了（他之前的所有预言全部落空）——他的“最后一个孩子”让他在整个欧洲声名鹊起。丹麦哲学家索伦·
+克尔凯郭尔在1854年的私人日记中描述了这股前所未有的“叔本华热”：“毫无疑问，德国的情况的确如此，——这显而易见，因为所有文人的流言蜚语、新闻
+记者与无名作家都已经开始为S（叔本华）而手忙脚乱——他如今正要被拖上前来，进入公众的视线，公开收到赞扬。”同一年，一个叫维斯克的狂热崇拜者为供奉
+叔本华的肖像，专门为其建造了一座教堂，其中还放置了叔本华的全部作品，就仿佛它们是神圣的典籍一般。一时间，叔本华那扰攘的名声，使他成了法兰克福一道
+吸引游客的景观——人们庆祝他的生日，为他寄送礼物，他在英吉利饭店进餐的场景成了人们观察的对象，就连卷毛狗也在这座城市变得流行起来。1856年，莱
+比锡大学为了最好地“解释与评论叔本华哲学的原理”，甚至专门举办了一场征文比赛。面对晚年这一“成名的喜剧”，叔本华借彼特拉克的诗表达自己的心情：
+“谁要是走了一整天，傍晚走到了，就该知足了。”<br><div class="contheight"></div>1860年9月21日，叔本华在
+美茵河畔的法兰克福因肺炎辞世。因其洞见迭出、令人信服的冷峻世界观，富于表现力和吸引力的语言风格，以及对于本能冲动和非理性力量的强调，他在身后铸就
+了一段极为丰富、深远而引人注目的影响史。英国哲学家伯特兰·罗素在《西方哲学史》一书中这样评价叔本华：“他的感召力向来总是少在专门哲学家方面，而是
+在那些寻求一种自己信得过的哲学的艺术家和文人方面。”事实上，这句话只说对了一半。尽管对于职业哲学家，叔本华没有提供多少可资进一步发展的概念、判断
+和推理程式（他最反对这种从概念到概念的学院哲学），但是其启示性的影响则是不容低估的。回顾20世纪的哲学史，非理性主义哲学——包括生命哲学、存在主
+义、弗洛伊德主义、法兰克福学派等等——风起云涌、席卷八方，深刻影响了几乎所有的人文和艺术领域，而非理性主义哲学的创始人正是叔本华。因此，前苏联哲
+学史家贝霍夫斯基在传记《叔本华》中断定：“20世纪所有的唯心主义哲学如同一个合唱队，其中第一领唱人就是法兰克福的隐士。”<br><div class="contheight"></div>叔
+本华去世五年后，一位叫弗里德里希·尼采的年轻人在一家旧书店看书时，偶然翻到了《作为意志和表象的世界》，当即被书中精彩的思想和语言深深吸引，以至于
+他马上认定“叔本华就是我长时间以来一直在寻找的那种教育家和哲学家”。怀着对叔本华的深深敬意，尼采在而立之年写下了《作为教育家的叔本华》一书，该书
+以叔本华作为思想主线，对何为真正的教育和文化等重要命题进行阐述。后来，尼采虽然抛弃了叔本华的悲观主义论调，但叔氏哲学直接催生了尼采影响深远的“权
+力意志论”，两人一同拉开了20世纪非理性主义哲学时代的序幕。另外，叔本华也是路德维希·维特根斯坦——20世纪最伟大的哲学家之一——少数阅读和欣赏
+的哲学家之一，维氏在年轻的时候就研读了叔本华的哲学，对其“作为表象的世界”的理论印象深刻，并认为叔本华的理论从根本上是正确的。要理解维特根斯坦的
+一些论题，熟悉叔本华哲学几乎是必不可少的，因为维特根斯坦很多时候是直接思考、发挥叔本华的论题，甚至所用的比喻、词语也完全是叔本华的。<br><div class="contheight"></div><div style="text-align:center;"><img src="Schopenhuaer_files/122.jpg" alt="" width="600" height="856"></div><span style="color: rgb(128, 128, 128);">尼采：《作为教育家的叔本华》</span><br><div class="contheight"></div>在
+音乐领域，叔本华的美学思想几乎笼罩了整个19世纪下半叶的西方音乐创作。换言之，晚期浪漫主义音乐在不同程度上都带有叔本华美学思想的烙印，作曲家们无
+论是创作歌剧、交响曲、交响诗或艺术歌曲，心中似乎都回荡着《作为意志和表象的世界》中那些令人着迷的思想片段。在理查德·瓦格纳（叔本华的狂热爱好者）
+划时代的乐剧（Music Drama）《特里斯坦和伊索尔德》中，以著名的“特里斯坦和弦”（Tristan 
+Chord）开篇的前奏曲交织着半音上升的渴望、半音下行的悲叹，以及两个线条结合起来的和弦，这分明表达了不断渴望、不断欲求的核心意念，这一和弦的构
+成及进行正是无法满足之“爱欲”的音响化。在理查·施特劳斯（保持每天阅读叔本华的习惯）的交响诗杰作《唐璜》中，他将叔本华的生命意志、瓦格纳的半音化
+和声与李斯特独创的形式完美融合，在通篇音乐鲜明、细腻的风格中以纯器乐的形式（叔本华将纯粹的器乐尊为终极艺术）肆意流淌，主人公唐璜的渴望和厌恶正是
+叔本华式意欲及其否定的直接写照。在古斯塔夫·马勒（对叔本华和尼采作品兴趣浓厚）的《第三交响曲》中，第二至第五乐章的标题分别为“草地上的鲜花告诉我
+什么”、“森林里的动物告诉我什么”、“人类告诉我什么”、“天使告诉我什么”，这与叔本华关于意志的逐级序列，或已经被意志客观化了的“存在的等级”
+（无机自然界、植物界、动物界、人类世界）的思想相呼应。<br><div class="contheight"></div><div style="text-align:center;"><img src="Schopenhuaer_files/587.jpg" alt="" width="600" height="525"></div><span style="color: rgb(128, 128, 128);">瓦格纳：《特里斯坦与伊索尔德》</span><br><div class="contheight"></div>毫
+不夸张的说，对19世纪下半叶以来的文学所产生的巨大影响，几乎没有一个人能超过叔本华。在围绕这一主题的众多论述中，著名批评家哈罗德·布鲁姆在《小说
+家与小说》一书的这段文字最为精要：“叔本华的杰作《作为表象和意志的世界》与整个19世纪及20世纪早期许多首要小说家的关系及对他们的影响，等同于弗
+洛伊德著作对20世纪晚期至关重要的小说大师的关系及对他们的影响。左拉、莫泊桑、屠格涅夫、托尔斯泰和与托曼斯·哈代同为19世纪的叔本华继承人，这个
+传统经由普鲁斯特、康拉德和托马斯·曼，在博尔赫斯及最卓越的在世叙事作家贝克特的部分作品中达到顶峰。由于叔本华是影响弗洛伊德的主要前辈之一（尽管弗
+洛伊德本人否认这一点），我们不妨认为弗洛伊德对于作家们的影响，部分源于叔本华已有影响的顺延。”对西方经典了如指掌的布鲁姆的确独具只眼，在所有这些
+第一流的文学家和小说家中，叔本华式的哲学意象、论调、观点乃至语言以各种形式的延伸、发展、转调和变奏展现出精彩纷呈的不同面貌，或是标题性的反讽（左
+拉式的），或是气质性的潜流（莫泊桑式的），或是联觉性的回忆（普鲁斯特式的），或是音乐性的展开（托马斯·曼式的），或是幻象性的投射（康拉德式的），
+或是整体性的沉沦（托尔斯泰式的）……但万变不离其宗，所有的影响几乎都可以在叔本华的代表作《作为表象和意志的世界》中找到原型，叔本华的文学影响史堪
+称理解哲学与文学关系的范例。<br><div class="contheight"></div>当然，我们必须承认叔本华对现代心理学的巨大影响，
+精神分析学的主要内容——诸如无意识、本我、性驱力、压抑理论等——几乎就是将叔本华的形而上学转换成心理学，弗洛伊德也承认首先做出这些发现的是叔本
+华，他说：“我一直以为压抑的理论是原初的，直到兰克给我看了《作为意欲和表象的世界》的一段……在不少精神分析的案例里，精神分析所做的繁琐工作只是证
+实了哲学家们直观获得的深刻见解。压抑理论是精神分析学的柱石。”因此，托马斯·曼干脆地说，叔本华作为意欲的心理学家，就是现代心理学之父。我们同样不
+能忽视叔本华对王国维的巨大影响，20世纪初一个默默无闻的中国青年，竟捧着叔本华那部代表作的英文版整整啃了两年。都说用文言文写的《红楼梦评论》和
+《人间词话》堪称“国粹”，然有识者却屡屡从青年王国维的墨迹中读出了叔本华，这两本著作揭开了20世纪中国文艺美学的辉煌序幕。我们还应该看到叔本华对
+科学家们的影响，达尔文坦承叔本华的“自然界只为种族着想，而不关心个体的利益”给了他很大的启发，爱因斯坦在名篇《我的世界观》中激赏叔本华的名言“人
+能做他想做的，但不能要他想要的”，薛定谔从小深受叔本华哲学的影响，而他所作出的伟大贡献的方式也完全是叔本华式的。<br><div class="contheight"></div><div style="text-align:center;"><img src="Schopenhuaer_files/630.jpg" alt="" width="600" height="399"></div><span style="color: rgb(128, 128, 128);">油画《叔本华和他的弟子们》</span><br><div class="contheight"></div>通
+观叔本华的生前身后，我们可以称他为一位“唯真理是务”的哲人、坚定的无神论者、坚忍孤持的斗士、康德式的隐者、印度教和佛教的信徒、卓越的现代心理学先
+驱、音乐美学的开拓者、语言艺术的大师、自然科学爱好者、人类艺术的鉴赏家……正是在这些意义上，叔本华及其哲学的巨大影响一直延续至今，因为他在自己身
+上克服了那个时代，并以卓特的思想解答了“永困人心的存在之谜”，从而将自己的名字永久地刻在了哲人之石上。<div class="hide_word">(本文来自澎湃新闻，更多原创资讯请下载“澎湃新闻”APP)</div></div>
+                <div class="go_to_topic">
+                        </div>
+
+                    <div class="bottom_word_relation">
+                        </div>
+                <div class="news_infor_extra">
+                    <div class="clearfix">
+                        <div class="infor_item">责任编辑：臧继贤</div><div class="infor_item">校对：余承君</div></div>
+                    <div>澎湃新闻报料：4009-20-4009 &nbsp; 澎湃新闻，未经授权不得转载</div>
+                    <div class="news_feedback"><a href="mailto:news@thepaper.cn" title="news@thepaper.cn">我要反馈</a></div>
+                </div>
+            <div class="news_keyword">关键词 &gt;&gt; 叔本华,尼采,弗洛伊德,康德,西方哲学</div>
+            <input id="hidden_contid" type="hidden" value="6068443">
+            <div class="news_love">
+                <div class="nbgbox">
+                    <a href="javascript:;" onclick="voteCont(this)" contid="6068443" praisetimes="347" class="zan"><span></span>346</a>
+                        </div>
+                <div class="nbgbox"><a href="javascript:favoriteCont2(false);" id="shoucang" class="shoucang">收藏</a></div>
+                    <div class="nbgbox">
+                            <a href="javascript:trackCont(false);" id="genzong" class="genzong">跟踪: 德国哲学</a>
+                        </div>
+                    </div>
+           <div class="news_imgad" style="background-color:#FFFFFF"><div style="width:100%;height:auto;border:none;padding:0px;margin:0px;overflow:hidden;position:relative;" class="czad_panel"><a trueurl="http://www.thepaper.cn/list_25481" attrurl="//adpai.thepaper.cn/c?ap=51&amp;ad=164&amp;PAPER-CLIENT-TYPE=05&amp;u=http://www.thepaper.cn/list_25481" href="javascript:void(0);" onclick="ad_clickMonitor(this)"><img src="Schopenhuaer_files/1514270824135004314.jpg" style="width:100%;height:auto;border:none;" width="670" height="100"></a></div></div>
+            <div class="news_txtad" id="adWord">
+                <script type="text/javascript" src="Schopenhuaer_files/s.txt"></script>
+            </div>
+            <div class="news_tit2">
+                <h2>相关推荐</h2>
+            </div>
+            <div class="ctread_bd">
+            <div class="ctread_li">
+                            <div class="ctread_img">
+                                <a href="https://www.thepaper.cn/newsDetail_forward_11365859" target="_blank">
+                                    <img src="Schopenhuaer_files/492.jpg" alt="叙诡笔记｜当牛“托梦”的时候，它会托付些什么？">
+                                    <span class="p_time"></span>
+                                        </a>
+                            </div>
+                            <div class="ctread_name"><a href="https://www.thepaper.cn/newsDetail_forward_11365859" target="_blank">叙诡笔记｜当牛“托梦”的时候，它会托付些什么？</a></div>
+                        </div>
+                    <div class="ctread_li">
+                            <div class="ctread_img">
+                                <a href="https://www.thepaper.cn/newsDetail_forward_11382577" target="_blank">
+                                    <img src="Schopenhuaer_files/468.jpg" alt="乾隆三十年，一支锡伯部落的远征">
+                                    <span class="p_time"></span>
+                                        </a>
+                            </div>
+                            <div class="ctread_name"><a href="https://www.thepaper.cn/newsDetail_forward_11382577" target="_blank">乾隆三十年，一支锡伯部落的远征</a></div>
+                        </div>
+                    <div class="ctread_li" style="margin-right:0px;">
+                            <div class="ctread_img">
+                                <a href="https://www.thepaper.cn/newsDetail_forward_11370394" target="_blank"><img src="Schopenhuaer_files/64.jpg" alt="朱海就：学习经济学有什么用？">
+                                    <span class="p_time"></span>
+                                        </a>
+                            </div>
+                            <div class="ctread_name"><a href="https://www.thepaper.cn/newsDetail_forward_11370394" target="_blank">朱海就：学习经济学有什么用？</a></div>
+                        </div>
+                    </div>
+            <div class="news_tit3">
+                <h2 id="comm_span">评论<span>(6)</span></h2>
+            </div>
+            <div id="aq_commt"><div id="commtid">
+    <div class="aq_write clearfix">
+        <div class="aqwleft">
+            <div class="ansleft_hdimg"><img src="Schopenhuaer_files/defHeadNew.png">
+                <div class="hdimg_bg"><img src="Schopenhuaer_files/headerimg_bg50.png"></div>
+            </div>
+        </div>
+        <div class="aqwright">
+            <textarea id="commText" class="input_aqw" onchange="this.value=this.value.substring(0, 800)" onkeydown="this.value=this.value.substring(0, 800)" onkeyup="this.value=this.value.substring(0, 800)"></textarea>
+            <div id="icommt_commt" class="aqw_tip"><img src="Schopenhuaer_files/iask_tip.png" alt=""><span>我要跟帖</span></div>
+            <div class="wordTip">
+                已输入<span id="wordTipSpan">0</span>字
+            </div>
+            <button onclick="pubComment(6068443,1,false)" class="aqw_pub">发表</button>
+        </div>
+
+    </div>
+
+    <div id="mainContent">
+        <div class="comment_title" style="margin-top:20px;">新评论</div>
+                <div class="comment_que" id="commentNew27275745">
+
+                    <div class="aq_write clearfix">
+                            <div class="aqwleft">
+                                <div class="ansleft_hdimg">
+                                    <a href="https://www.thepaper.cn/ask_user_home.jsp?userId=4086423&amp;commentId=27275745&amp;contId=6068443&amp;name=Karma^Varana%E3%80%81">
+                                        <img src="Schopenhuaer_files/952.png">
+                                        <div class="hdimg_bg">
+                                            <img src="Schopenhuaer_files/headerimg_bg50.png">
+                                        </div>
+                                        </a>
+                                </div>
+                            </div>
+                            <div class="aqwright">
+                                <h3>
+                                    <a href="https://www.thepaper.cn/ask_user_home.jsp?userId=4086423&amp;commentId=27275745&amp;contId=6068443&amp;name=Karma^Varana%E3%80%81" ref="nofollow">Karma^Varana、</a>
+                                    <span>2020-03-05</span>
+                                    </h3>
+
+                                    <div class="ansright_cont">
+                                        <a href="javascript:replyFloor(27275745,27275745,'commentNew');">
+                                                没有经济压力的确对搞研究的人很重要，例如达芬奇。</a>
+                                    </div>
+
+                                    <div class="ansright_time">
+                                        <a href="javascript:priseCommtFloor(27275745,27275745,0,'commentNew','commentHot');" id="27275745" data-praisetimes="0" class="ansright_zan 27275745">0</a>
+                                        <span>|</span>
+                                        <a href="javascript:replyFloor(27275745,27275745,'commentNew');">回复</a>
+                                    </div>
+
+                                    <div class="ansright_aqans" id="comm_textarea27275745" style="display:none">
+                                        <div class="point_top"></div>
+                                        <textarea type="text" id="commText27275745" class="input_aqw input_aqans" onmousedown="clearReplyFloor(27275745, 27275745,'commentNew')" onblur="displayReplyFloor(27275745, 27275745,'commentNew')"></textarea>
+                                        <div id="icommt_commt27275745" class="aqw_tip" style="top:7px;left:16px;" onmouseover="disappearReplyFloor(27275745, 27275745,'commentNew')">
+                                            <img src="Schopenhuaer_files/iask_tip.png" alt="">
+                                            <span>说你什么好呢</span>
+                                        </div>
+                                        <button onclick="replyCommentFloor(6068443,1,false,27275745,27275745,'commentNew')" class="aqw_pub">发表</button>
+                                    </div>
+                                </div>
+                                <div class="aqwright_bdbt"></div>
+                            </div>
+                        </div>
+                        </div>
+
+                    <div id="startId1" startid="0" pageindex="1" style="display:none;"></div>
+                    <div id="addButton" class="add_more" style="display:block;"> <a id="next_comment" href="https://www.thepaper.cn/load_newDetail_moreCommt.jsp"></a></div>
+                </div>
+
+                </div>
+            <div id="one" class="jGrowl bottom-right"></div>
+        </div>
+		<div id="6068443" class="newsct_share_detail">
+		   <div>
+		   		<a class="weixin_share" onclick="weixinShare(6068443)" ref="nofollow"></a>
+		   </div>
+		   <a class="ctshare_sina_detail" href="javascript:showToSina('6068443','%E5%8F%94%E6%9C%AC%E5%8D%8E%E8%AF%9E%E8%BE%B0%EF%BD%9C%E5%9C%A8%E8%87%AA%E5%B7%B1%E8%BA%AB%E4%B8%8A%E5%85%8B%E6%9C%8D%E8%BF%99%E4%B8%AA%E6%97%B6%E4%BB%A3%E7%9A%84%E5%93%B2%E5%AD%A6%E5%AE%B6','//image1.thepaper.cn/image/51/975/43.jpg','https://www.thepaper.cn/');" ref="nofollow"></a>
+		</div>
+        <div id="toTop" class="back-top" style="display: none;"></div>
+    </div>
+    <div class="main_rt">
+        <div class="rt_ad" id="rt_ad"><div class="ifrht"><div style="width:100%;height:auto;border:none;padding:0px;margin:0px;overflow:hidden;position:relative;" class="czad_panel"><a trueurl="http://www.thepaper.cn/list_26525" attrurl="//adpai.thepaper.cn/c?ap=45&amp;ad=113&amp;PAPER-CLIENT-TYPE=05&amp;u=http://www.thepaper.cn/list_26525" href="javascript:void(0);" onclick="ad_clickMonitor(this)"><img src="Schopenhuaer_files/1513846742001059658.jpg" style="width:100%;height:auto;border:none;" width="196" height="160"></a></div></div></div>
+	    <h3 class="rthotnews_tt">热新闻</h3>
+	<div class="hotnews_time" id="hotnews">
+		<a class="on" href="javascript:;">一天</a>
+		<a href="javascript:;">三天</a>
+		<a href="javascript:;">一周</a>
+	</div>
+	<ul class="list_hot" id="listhot0">
+        <li style="border-top:0;">
+                    <span class="num_hot1"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11388939">4名官兵边境冲突中牺牲，母校发布英雄读大学时的画面致敬</a>
+                </li>
+                <li>
+                    <span class="num_hot2"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11389450">最高检依法对文旅部原党组副书记、副部长李金早决定逮捕</a>
+                </li>
+                <li>
+                    <span class="num_hot3"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11390562">网民“辣笔小球”诋毁贬损戍边英雄官兵，被南京警方刑事拘留</a>
+                </li>
+                <li>
+                    <span class="num_hot4"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11389564">杯上广告词“捡篓子”被网友指责侮辱女性，茶颜悦色公开致歉</a>
+                </li>
+                <li>
+                    <span class="num_hot5"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11386660">七国集团领导人发表声明，承诺合力应对新冠疫情</a>
+                </li>
+                <li>
+                    <span class="num_hot6"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11388828">人民热评：东北放开生育？切莫断章取义！</a>
+                </li>
+                <li>
+                    <span class="num_hot7"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11382957">迪拜公主失联近三年后现身称遭囚禁，联合国或将展开调查</a>
+                </li>
+                <li>
+                    <span class="num_hot8"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11390967">做了四年“小马云”后范小勤回家了：对“钱”的数额没有概念</a>
+                </li>
+                <li>
+                    <span class="num_hot9"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11386507">时间游戏？复旦教授团队打车八百趟：平台叫车延误普遍存在</a>
+                </li>
+                <li>
+                    <span class="num_hot10"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11391403">麻省理工教授陈刚遭捕，斯坦福大学：学者不该因学术交流受罚</a>
+                </li>
+                <li class="list_more"></li>
+    </ul>
+    <ul class="list_hot" id="listhot1" style="display:none;">
+        <li style="border-top:0;">
+                    <span class="num_hot1"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11388939">4名官兵边境冲突中牺牲，母校发布英雄读大学时的画面致敬</a>
+                </li>
+                <li>
+                    <span class="num_hot2"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11361824">黑龙江北安警方：“2.16”特大杀人案嫌疑人魏某某尸体被发...</a>
+                </li>
+                <li>
+                    <span class="num_hot3"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11368711">国家卫健委答复“东北地区率先全面放开生育限制”：可以探索</a>
+                </li>
+                <li>
+                    <span class="num_hot4"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11378340">边境冲突中誓死捍卫国土，5名官兵被授予荣誉称号、记一等功</a>
+                </li>
+                <li>
+                    <span class="num_hot5"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11378070">张敬华任江苏省委副书记，不再担任南京市委书记</a>
+                </li>
+                <li>
+                    <span class="num_hot6"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11383026">这段视频，还原了喀喇昆仑那场英勇战斗……</a>
+                </li>
+                <li>
+                    <span class="num_hot7"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11365452">中国工程院回应茅台总工入围院士候选名单：还不是有效候选人</a>
+                </li>
+                <li>
+                    <span class="num_hot8"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11360016">起诉书：贵州一发改委主任被控受贿，茅台收了226瓶</a>
+                </li>
+                <li>
+                    <span class="num_hot9"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11383459">致敬英雄！加勒万河谷冲突现场视频曝光</a>
+                </li>
+                <li>
+                    <span class="num_hot10"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11381329">外交部回应中印边境报道：公布事实真相，还原是非曲直</a>
+                </li>
+                <li class="list_more"></li>
+    </ul>
+    <ul class="list_hot" id="listhot2" style="display:none;">
+        <li style="border-top:0;">
+                    <span class="num_hot1"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11388939">4名官兵边境冲突中牺牲，母校发布英雄读大学时的画面致敬</a>
+                </li>
+                <li>
+                    <span class="num_hot2"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11361824">黑龙江北安警方：“2.16”特大杀人案嫌疑人魏某某尸体被发...</a>
+                </li>
+                <li>
+                    <span class="num_hot3"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11349954">《你好，李焕英》超18亿，贾玲成中国影史票房最高女导演</a>
+                </li>
+                <li>
+                    <span class="num_hot4"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11368711">国家卫健委答复“东北地区率先全面放开生育限制”：可以探索</a>
+                </li>
+                <li>
+                    <span class="num_hot5"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11352022">西安咸阳机场扩建发现3500余座古墓，秒变考古现场</a>
+                </li>
+                <li>
+                    <span class="num_hot6"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11378340">边境冲突中誓死捍卫国土，5名官兵被授予荣誉称号、记一等功</a>
+                </li>
+                <li>
+                    <span class="num_hot7"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11357220">黑龙江北安警方10万元缉凶：68岁嫌犯在逃，被指枪杀7人</a>
+                </li>
+                <li>
+                    <span class="num_hot8"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11339839">刘德华到底来没来现场？360度旋转咋拍的？央视春晚揭秘了</a>
+                </li>
+                <li>
+                    <span class="num_hot9"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11339196">聚焦农村男青年结婚难：新“三大件”重如山，有的要花上百万</a>
+                </li>
+                <li>
+                    <span class="num_hot10"></span>
+                    <a target="_blank" href="https://www.thepaper.cn/newsDetail_forward_11343738">春节档影片总票房已超50亿元，《唐探3》超27亿暂列第一</a>
+                </li>
+                <li class="list_more"></li>
+    </ul>
+<div style="margin-bottom:20px;cursor:pointer;">
+    <a href="https://www.thepaper.cn/work_us.jsp" target="_blank"><img src="Schopenhuaer_files/ppzp20200609.jpg"></a>
+</div>
+<div class="rtapp_down">
+    <p>澎湃新闻APP下载</p>
+    <img style="display:block;margin:10px auto;text-align:center;" src="Schopenhuaer_files/app_down.png" alt="客户端下载" usemap="#Map" border="0">
+    <map name="Map" id="Map">
+        <area shape="rect" coords="3,3,147,148" href="https://at.umeng.com/ua0n4j" ref="nofollow">
+        <area shape="rect" coords="2,160,72,182" href="https://itunes.apple.com/cn/app/id878962716?mt=8" target="_blank" ref="nofollow">
+        <area shape="rect" coords="87,161,146,182" href="https://itunes.apple.com/cn/app/id986646876?mt=8" target="_blank" ref="nofollow">
+        <area shape="rect" coords="3,186,80,208" href="https://m.thepaper.cn/download?id=2" ref="nofollow">
+    </map>
+</div>
+
+<h3 class="rthotnews_tt">热话题</h3>
+<div class="hotnews_time" id="hottopic">
+	<a class="on" href="javascript:;">一天</a>
+	<a href="javascript:;">三天</a>
+	<a href="javascript:;">一周</a>
+</div>
+
+<ul class="topic_hot" id="topichot0">
+    <li style="border-top:0;">
+            <span class="num_hot1"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018828" target="_blank">我们是中央气象台工程师，2020年汛期会有多厉害，问吧！</a></p>
+        </li>
+       <li>
+            <span class="num_hot2"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018240" target="_blank">孩子随母姓尴尬了谁？女子争取冠姓权是小题大做吗？</a></p>
+        </li>
+       <li>
+            <span class="num_hot3"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018217" target="_blank">银保监会称瑞幸财务造假性质恶劣，对此你怎么看？</a></p>
+        </li>
+       <li>
+            <span class="num_hot4"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10019297" target="_blank">如何看待就业歧视非全日制学历现象？学历鄙视链真的存在吗？</a></p>
+        </li>
+       <li>
+            <span class="num_hot5"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018245" target="_blank">建议狗是伴侣动物拟禁食，你怎么看？</a></p>
+        </li>
+       </ul>
+<ul class="topic_hot" id="topichot1" style="display:none;">
+    <li style="border-top:0;">
+            <span class="num_hot1"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018828" target="_blank">我们是中央气象台工程师，2020年汛期会有多厉害，问吧！</a></p>
+        </li>
+       <li>
+            <span class="num_hot2"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018240" target="_blank">孩子随母姓尴尬了谁？女子争取冠姓权是小题大做吗？</a></p>
+        </li>
+       <li>
+            <span class="num_hot3"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018217" target="_blank">银保监会称瑞幸财务造假性质恶劣，对此你怎么看？</a></p>
+        </li>
+       <li>
+            <span class="num_hot4"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10019297" target="_blank">如何看待就业歧视非全日制学历现象？学历鄙视链真的存在吗？</a></p>
+        </li>
+       <li>
+            <span class="num_hot5"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018245" target="_blank">建议狗是伴侣动物拟禁食，你怎么看？</a></p>
+        </li>
+       </ul>
+<ul class="topic_hot" id="topichot2" style="display:none;">
+    <li style="border-top:0;">
+            <span class="num_hot1"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018828" target="_blank">我们是中央气象台工程师，2020年汛期会有多厉害，问吧！</a></p>
+        </li>
+       <li>
+            <span class="num_hot2"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018240" target="_blank">孩子随母姓尴尬了谁？女子争取冠姓权是小题大做吗？</a></p>
+        </li>
+       <li>
+            <span class="num_hot3"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018217" target="_blank">银保监会称瑞幸财务造假性质恶劣，对此你怎么看？</a></p>
+        </li>
+       <li>
+            <span class="num_hot4"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10019297" target="_blank">如何看待就业歧视非全日制学历现象？学历鄙视链真的存在吗？</a></p>
+        </li>
+       <li>
+            <span class="num_hot5"></span>
+            <p style="float:right;width:180px;"><a href="https://www.thepaper.cn/asktopic_detail_10018245" target="_blank">建议狗是伴侣动物拟禁食，你怎么看？</a></p>
+        </li>
+       </ul>
+<div class="rt_ad2" id="rt_ad2" style="margin-top:50px"><div class="ifrht"></div></div>
+	    <div class="con_us"><a href="https://www.thepaper.cn/contact_us.jsp">联系我们</a></div></div>
+</div>
+
+<style>
+.main_ltad:hover img{-webkit-transform: scale(1.1);transform: scale(1.1)}
+.main_ltad img{transition: all 1.0s;-webkit-transition: all 1.0s}
+</style>
+<div class="about" style="width: 100%;">
+    <a href="https://www.thepaper.cn/about_paper.jsp" ref="nofollow">关于澎湃</a>
+    <a href="https://www.thepaper.cn/work_us.jsp" ref="nofollow">在澎湃工作</a>
+    <a href="https://www.thepaper.cn/contact_us.jsp" ref="nofollow">联系我们</a>
+    <a href="https://www.thepaper.cn/paper_ad.jsp" ref="nofollow">广告及合作</a>
+    <a href="https://www.thepaper.cn/copyright_statement.jsp" ref="nofollow">版权声明</a>
+    <a href="https://www.thepaper.cn/privacy_policy.jsp" ref="nofollow">隐私政策</a>
+    <a href="https://www.thepaper.cn/friendly_links.jsp" ref="nofollow">友情链接</a>
+    <a href="https://www.thepaper.cn/reportAccept.jsp" ref="nofollow">澎湃新闻举报受理和处置办法</a>
+    <a href="https://www.thepaper.cn/declaration.jsp" ref="nofollow">严正声明</a>
+    <a target="cyxyv" href="https://v.yunaq.com/certificate?domain=www.thepaper.cn&amp;from=label&amp;code=90030" ref="nofollow"> <img style="width: 84px;margin-bottom: 4px;" src="Schopenhuaer_files/label_sm_90030.png"></a>
+</div>
+<div class="copyright" style="width: 100%;">Copyright © 2014~2021 The Paper All rights reserved.上海东方报业有限公司 | 沪ICP证：沪B2-20170116 | <a href="http://www.beian.miit.gov.cn/" target="_blank" ref="nofollow">沪ICP备14003370号</a> | 互联网新闻信息服务许可证：31120170006
+</div>
+<div style="width: 100%; margin: 0px auto; padding: 0px;" class="copyright">
+	<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=31010602000299" [^]="" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;" ref="nofollow">
+		<img src="Schopenhuaer_files/ghs.png" style="float:left;">
+		<p style="float:left;height:20px;line-height:20px;margin: 0px 0px 0px 5px; color:#FFFFFF;">沪公网安备 31010602000299号
+		</p>
+	</a>
+</div>
+<div id="bg_overlay" style="display:none;"></div>
+<!-- add main_ltad css including pseudo -->
+<script type="text/javascript">
+	if ($(".main_ltad").length != 0) {
+		var userAgent   = navigator.userAgent;
+	  	// judge browser type
+	  	if (userAgent.indexOf("MSIE") > -1) {
+	  		document.styleSheets[1].addRule(".main_ltad:hover img", "-webkit-transform: scale(1.1);transform: scale(1.1)", 0);
+			document.styleSheets[1].addRule(".main_ltad img", "transition: all 1.0s;-webkit-transition: all 1.0s", 1);	  
+	  	}
+	}
+</script>
+<!-- set nofollows  -->
+<script type="text/javascript">
+	// top ad
+	$(".head_ad a").attr("ref", "nofollow");
+	// middle ad
+	$(".main_ltad a").attr("ref", "nofollow");
+	// bottom ad in detail page, iframe's content is read-only
+	$(".news_imgad iframe");
+	// bottom plista ads in detail page
+	$(".plista_widget_belowArticle_item").each(function() {
+		$(this).attr("ref", "nofollow");
+	});
+	// right top, bottom ads in detail page, iframe's content is read-only
+	$(".rt_ad iframe");
+	$(".rt_ad2 iframe");
+	// right external links
+	$("a[href='http://www.12377.cn/']").each(function() {
+		$(this).attr("ref", "nofollow");
+	});
+	// N.B. a blank
+	$("a[href='http://www.thepaper.cn/work_us.jsp ']").each(function() {
+		$(this).attr("ref", "nofollow");
+	});
+	// bottom external links
+	$(".copyright a").attr("ref", "nofollow");
+	// all share links
+	$(".newsct_share_detail a," +
+	  ".newsct_share_vliving a," + 
+	  ".tjnews_share a," + 
+	  ".newszt_share a," + 
+	  ".ask_user_share a").each(function() {
+		$(this).attr("ref", "nofollow");
+	});
+	setInterval(function() {
+		$(".news_share a," + 
+		  ".newslv_share a," +
+		  ".ask_user_share a").each(function() {
+		  $(this).attr("ref", "nofollow");
+		 });	
+	}, 5000);
+	// right area download links
+	$("map area").each(function() {
+		$(this).attr("ref", "nofollow");
+	});
+	// bottom area links
+	$(".about a").each(function() {
+		$(this).attr("ref", "nofollow");
+	});
+	$(".ansright_cont a").each(function() {
+		$(this).attr("ref", "nofollow");
+	});
+	setInterval(function() {
+		$(".aq_write h3 a").each(function() {
+			$(this).attr("ref", "nofollow");
+		});
+		$(".ask_qusans h3 a").each(function() {
+			$(this).attr("ref", "nofollow");
+		});	
+	}, 5000);
+</script>
+<!-- cnzz statistic code -->
+<div id="cnzz_www" style="display: none">
+	<script type="text/javascript">
+		var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+		document.write(unescape("%3Cspan id='cnzz_stat_icon_1261102524'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s95.cnzz.com/z_stat.php%3Fid%3D1261102524' type='text/javascript'%3E%3C/script%3E"));
+	</script><span id="cnzz_stat_icon_1261102524"><a href="https://www.cnzz.com/stat/website.php?web_id=1261102524" target="_blank" title="站长统计">站长统计</a></span><script src="Schopenhuaer_files/z_stat.php" type="text/javascript"></script><script src="Schopenhuaer_files/core.php" charset="utf-8" type="text/javascript"></script>
+</div><script type="text/javascript" src="Schopenhuaer_files/rd.js"></script>
+<script type="text/javascript">
+    var hotComm = "";
+    var newsFontSize = wwwstore.getItem("fontSize");
+    if (newsFontSize != null && newsFontSize != "") {
+        $(".news_txt").addClass(newsFontSize).attr("data-size", newsFontSize);
+        $("#" + newsFontSize).addClass("on").siblings().removeClass("on");
+    }
+    $(document).ready(function () {
+        audiosInit();
+        newsTabelInit();
+        if ($("#adWord").children().length > 0) {
+            var adWordTXT = $("#adWord a");
+            for (var i = 0; i < adWordTXT.length; i++) {
+                if (adWordTXT.eq(i).text().length > 0) {
+                    var adWordTXTStyle = adWordTXT.eq(i).parent().attr("style");
+                    adWordTXT.eq(i).attr("style", adWordTXTStyle);
+                }
+            }
+        }
+        function onloadRecommend() {
+            $.ajax({
+                url: "async_recommend.jsp",
+                data: "contid=6068443",
+                success: function (html) {
+                    $(".ctread_bd").append(html);
+                }
+            });
+        }
+
+        onloadRecommend();
+        function onloadAq() {
+            $.ajax({
+                url: "newDetail_commt.jsp",
+                data: "contid=6068443",
+                cache: false,
+                success: function (html) {
+                    if (document.getElementById("commtid") != null) {
+                        document.getElementById("aq_commt").removeChild(document.getElementById("commtid"));
+                    }
+                    $("#aq_commt").append(html);
+                    // scroll to hot comment area
+                    var topShift = 100;
+                    if (hotComm != "") {
+                        window.scrollTo(0, $(".comment_title").offset().top - topShift);
+                    }
+                }
+            });
+        }
+
+        window.onload = function () {
+            $('#player_wrapper .player_err_tip').css('display', 'table-cell');
+            onloadAq()
+        }
+
+        $("#comm_span").click(function () {
+            $("#comm_span").removeClass("cur");
+            if (document.getElementById("commtid") != null) {
+                return;
+            }
+            $.ajax({
+                url: "newDetail_commt.jsp",
+                cache: false,
+                data: "contid=6068443",
+                success: function (html) {
+                    if (document.getElementById("news_aski") != null) {
+                        document.getElementById("aq_commt").removeChild(document.getElementById("news_aski"));
+                        $(window).unbind('.infscr');
+                    }
+                    if (document.getElementById("commtid") == null) {
+                        $("#aq_commt").append(html);
+                    }
+                }
+            });
+        });
+
+        $(".font_size").hover(function () {
+            $(this).children(".size_level").slideDown("fast");
+        }, function () {
+            $(this).children(".size_level").slideUp("fast");
+        });
+        $(".size_level li").click(function () {
+            var newssize = $(".news_txt").attr("data-size"),
+                liID = $(this).attr("id");
+            if (newssize.length == 0) {
+                newssize = "standard";
+            }
+            if ($(this).hasClass("on")) {
+                return;
+            } else {
+                $(this).addClass("on").siblings().removeClass("on");
+                $(".news_txt").removeClass(newssize).addClass(liID).attr("data-size", liID);
+                wwwstore.setItem("fontSize", liID);
+            }
+        });
+        //多视频
+        newDetailVideoInit({type:"aliplayjs",useFlashPrism: false})
+
+    });
+    openComment();
+    $(".news_tit3 h2").hover(function () {
+        $(this).removeClass("cur").siblings("h2").addClass("cur");
+    }, function () {
+        $(this).addClass("cur");
+    });
+    $(document).bind("mouseover", function (e) {
+        var target = $(e.target);
+        if (target.closest(".news_tit3").length == 0) {
+            if (document.getElementById("commtid") != null) {
+                $("#comm_span").removeClass("cur").siblings("h2").addClass("cur");
+            }
+
+            if (document.getElementById("news_aski") != null) {
+                $("#cur_ans").removeClass("cur").siblings("h2").addClass("cur");
+            }
+        }
+    });
+</script>
+
+</body></html>
