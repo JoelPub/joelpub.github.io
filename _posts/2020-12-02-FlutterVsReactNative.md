@@ -1,7 +1,7 @@
 ---
 layout:     post   				    # 使用的布局（不需要改）
 title:      FlutterVsReactNative 				# 标题 
-subtitle:   苹果测试和上架   #副标题
+subtitle:   素材可用   #副标题
 date:       2020-12-02				# 时间
 author:     Joel 						# 作者
 header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
