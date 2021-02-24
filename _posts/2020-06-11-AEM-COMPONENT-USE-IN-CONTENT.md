@@ -8,11 +8,10 @@ header-img: img/post-bg-2015.jpg 	#这篇文章标题背景图片
 catalog: true 						# 是否归档
 tags:	AEM							#标签
 ---
-## Creating your first AEM SLING SERVLET:
+# How many times is an AEM Component used in the JCR?
 https://sourcedcode.com/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr
 
 
-# How many times is an AEM Component used in the JCR?
 
 ```javascript
   
