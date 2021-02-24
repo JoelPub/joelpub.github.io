@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html prefix="og: https://ogp.me/ns#" lang="en-US"><script src="AEMComponentusedInContent_files/osd.js"></script><script src="AEMComponentusedInContent_files/cookie.js"></script><script type="text/javascript" async="" src="AEMComponentusedInContent_files/analytics.js"></script><script src="AEMComponentusedInContent_files/show_ads_impl_fy2019.js" id="google_shimpl"></script><script async="" src="AEMComponentusedInContent_files/widget.js"></script><script async="" src="AEMComponentusedInContent_files/widget.js"></script><script>(function() {
+		window.addEventListener('message', function(event) {
+			if (
+				event.data &&
+				event.data.id &&
+				typeof event.data.id.startsWith === 'function' &&
+				event.data.id.startsWith('adobeExperienceCloudDebuggerContentMessagingIdentifier-')
+			) {
+				event.stopImmediatePropagation();
+			}
+		},
+		{capture: true});
+	})();</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-1', data: data });
+			}
+			const DATA_LAYER_LOCAL_STORAGE_KEY = 'com.adobe.experiencePlatformDebugger.dataLayer.key';
+const dataLayerKey = window.localStorage.getItem(DATA_LAYER_LOCAL_STORAGE_KEY);
+
+if (dataLayerKey) {
+	// sindresorhus/on-change
+	// MIT - License
+	// https://github.com/sindresorhus/on-change
+	const PATH_SEPARATOR = '.';
+	const TARGET = Symbol('target');
+	const UNSUBSCRIBE = Symbol('unsubscribe');
+
+	const isPrimitive = value =>
+		value === null || (typeof value !== 'object' && typeof value !== 'function');
+
+	const isBuiltinWithoutMutableMethods = value =>
+		value instanceof RegExp || value instanceof Number;
+
+	const isBuiltinWithMutableMethods = value => value instanceof Date;
+
+	const concatPath = (path, property) => {
+		if (property && property.toString) {
+			if (path) {
+				path += PATH_SEPARATOR;
+			}
+
+			path += property.toString();
+		}
+
+		return path;
+	};
+
+	const walkPath = (path, callback) => {
+		let index;
+
+		while (path) {
+			index = path.indexOf(PATH_SEPARATOR);
+
+			if (index === -1) {
+				index = path.length;
+			}
+
+			callback(path.slice(0, index));
+
+			path = path.slice(index + 1);
+		}
+	};
+
+	const shallowClone = value => {
+		if (Array.isArray(value)) {
+			return value.slice();
+		}
+
+		return Object.assign({}, value);
+	};
+
+	const onChange = (object, onChange, options = {}) => {
+		const proxyTarget = Symbol('ProxyTarget');
+		let inApply = false;
+		let changed = false;
+		let applyPath;
+		let applyPrevious;
+		let isUnsubscribed = false;
+		const equals = options.equals || Object.is;
+		let propCache = new WeakMap();
+		let pathCache = new WeakMap();
+		let proxyCache = new WeakMap();
+
+		const handleChange = (path, property, previous, value) => {
+			if (isUnsubscribed) {
+				return;
+			}
+
+			if (!inApply) {
+				onChange(concatPath(path, property), value, previous);
+				return;
+			}
+
+			if (
+				inApply &&
+				applyPrevious &&
+				previous !== undefined &&
+				value !== undefined &&
+				property !== 'length'
+			) {
+				let item = applyPrevious;
+
+				if (path !== applyPath) {
+					path = path.replace(applyPath, '').slice(1);
+
+					walkPath(path, key => {
+						item[key] = shallowClone(item[key]);
+						item = item[key];
+					});
+				}
+
+				item[property] = previous;
+			}
+
+			changed = true;
+		};
+
+		const getOwnPropertyDescriptor = (target, property) => {
+			let props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				return props;
+			}
+
+			props = new Map();
+			propCache.set(target, props);
+
+			let prop = props.get(property);
+			if (!prop) {
+				prop = Reflect.getOwnPropertyDescriptor(target, property);
+				props.set(property, prop);
+			}
+
+			return prop;
+		};
+
+		const invalidateCachedDescriptor = (target, property) => {
+			const props = propCache ? propCache.get(target) : undefined;
+
+			if (props) {
+				props.delete(property);
+			}
+		};
+
+		const buildProxy = (value, path) => {
+			if (isUnsubscribed) {
+				return value;
+			}
+
+			pathCache.set(value, path);
+
+			let proxy = proxyCache.get(value);
+
+			if (proxy === undefined) {
+				proxy = new Proxy(value, handler);
+				proxyCache.set(value, proxy);
+			}
+
+			return proxy;
+		};
+
+		const unsubscribe = target => {
+			isUnsubscribed = true;
+			propCache = null;
+			pathCache = null;
+			proxyCache = null;
+
+			return target;
+		};
+
+		const ignoreChange = property => {
+			return isUnsubscribed || (options.ignoreSymbols === true && typeof property === 'symbol');
+		};
+
+		const handler = {
+			get(target, property, receiver) {
+				if (property === proxyTarget || property === TARGET) {
+					return target;
+				}
+
+				if (property === UNSUBSCRIBE && pathCache.get(target) === '') {
+					return unsubscribe(target);
+				}
+
+				const value = Reflect.get(target, property, receiver);
+				if (
+					isPrimitive(value) ||
+					isBuiltinWithoutMutableMethods(value) ||
+					property === 'constructor' ||
+					options.isShallow === true
+				) {
+					return value;
+				}
+
+				// Preserve invariants
+				const descriptor = getOwnPropertyDescriptor(target, property);
+				if (descriptor && !descriptor.configurable) {
+					if (descriptor.set && !descriptor.get) {
+						return undefined;
+					}
+
+					if (descriptor.writable === false) {
+						return value;
+					}
+				}
+
+				return buildProxy(value, concatPath(pathCache.get(target), property));
+			},
+
+			set(target, property, value, receiver) {
+				if (value && value[proxyTarget] !== undefined) {
+					value = value[proxyTarget];
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property, receiver);
+				const result = Reflect.set(target[proxyTarget] || target, property, value);
+
+				if (!ignore && !equals(previous, value)) {
+					handleChange(pathCache.get(target), property, previous, value);
+				}
+
+				return result;
+			},
+
+			defineProperty(target, property, descriptor) {
+				const result = Reflect.defineProperty(target, property, descriptor);
+
+				if (!ignoreChange(property)) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, undefined, descriptor.value);
+				}
+
+				return result;
+			},
+
+			deleteProperty(target, property) {
+				if (!Reflect.has(target, property)) {
+					return true;
+				}
+
+				const ignore = ignoreChange(property);
+				const previous = ignore ? null : Reflect.get(target, property);
+				const result = Reflect.deleteProperty(target, property);
+
+				if (!ignore) {
+					invalidateCachedDescriptor(target, property);
+
+					handleChange(pathCache.get(target), property, previous);
+				}
+
+				return result;
+			},
+
+			apply(target, thisArg, argumentsList) {
+				const compare = isBuiltinWithMutableMethods(thisArg);
+
+				if (compare) {
+					thisArg = thisArg[proxyTarget];
+				}
+
+				if (!inApply) {
+					inApply = true;
+
+					if (compare) {
+						applyPrevious = thisArg.valueOf();
+					}
+
+					if (Array.isArray(thisArg) || toString.call(thisArg) === '[object Object]') {
+						applyPrevious = shallowClone(thisArg[proxyTarget]);
+					}
+
+					applyPath = pathCache.get(target);
+					applyPath = applyPath.slice(0, Math.max(applyPath.lastIndexOf(PATH_SEPARATOR), 0));
+
+					const result = Reflect.apply(target, thisArg, argumentsList);
+
+					inApply = false;
+
+					if (changed || (compare && !equals(applyPrevious, thisArg.valueOf()))) {
+						handleChange(applyPath, '', applyPrevious, thisArg[proxyTarget] || thisArg);
+						applyPrevious = null;
+						changed = false;
+					}
+
+					return result;
+				}
+
+				return Reflect.apply(target, thisArg, argumentsList);
+			}
+		};
+
+		const proxy = buildProxy(object, '');
+		onChange = onChange.bind(proxy);
+
+		return proxy;
+	};
+
+	onChange.target = proxy => proxy[TARGET] || proxy;
+	onChange.unsubscribe = proxy => proxy[UNSUBSCRIBE] || proxy;
+
+	let proxy;
+	let previousDataLayer;
+
+	function _serialize(dataLayer) {
+		try {
+			return JSON.stringify({ ...dataLayer }, null, 2);
+		} catch (e) {
+			return JSON.stringify(dataLayer, null, 2);
+		}
+	}
+
+	function _notify(dataLayer) {
+		contentScriptEventTrigger({
+			data: {
+				dataLayer
+			},
+			timestamp: Date.now(),
+			timeSincePageLoad: window.performance.now()
+		});
+	}
+
+	function onDataLayerUpdate() {
+		const dataLayer = _serialize(this);
+
+		if (previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	function onDataLayerSet(newDataLayer) {
+		const dataLayer = _serialize(newDataLayer);
+		if (!previousDataLayer || previousDataLayer !== dataLayer) {
+			previousDataLayer = dataLayer;
+			_notify(dataLayer);
+		}
+	}
+
+	Object.defineProperty(window, dataLayerKey, {
+		get() {
+			return proxy;
+		},
+		set(newDataLayer) {
+			onDataLayerSet(newDataLayer);
+			proxy = onChange(newDataLayer, onDataLayerUpdate);
+		},
+		enumerable: true,
+		configurable: true
+	});
+
+	const oldObjectDefine = Object.defineProperty.bind(Object);
+	Object.defineProperty = function(obj, prop, descriptor) {
+		if (prop === dataLayerKey) {
+			console.debug(
+				'Data layer being overwritten by Object.defineProperty(). Falling back to polling...'
+			);
+
+			function pollForChanges() {
+				const dataLayer = _serialize(window[dataLayerKey]);
+				if (previousDataLayer !== dataLayer) {
+					previousDataLayer = dataLayer;
+					_notify(dataLayer);
+				}
+				window.requestAnimationFrame(pollForChanges);
+			}
+
+			window.requestAnimationFrame(pollForChanges);
+		}
+		return oldObjectDefine(obj, prop, descriptor);
+	};
+}
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-2', data: data });
+			}
+			/**
+ * Hooks into both DTM's and Launch's logging mechanisms in order to capture all log messages and
+ * send them to the UI to display to the user
+ */
+function notifyContentScript(log) {
+	contentScriptEventTrigger({
+		data: log,
+		timestamp: Date.now(),
+		timeSincePageLoad: window.performance.now()
+	});
+}
+
+window._satellite = window._satellite || {};
+window._satellite.override = window._satellite.override || {};
+
+// Hook into _satellite in order to capture DTM logs
+if (window.Object && window.Object.defineProperty) {
+	window.Object.defineProperty(window._satellite.override, 'adobe.aepDebugger.dtmInitHook', {
+		enumerable: true,
+		get: function() {
+			onSatelliteInit();
+			return '';
+		},
+		set: function() {}
+	});
+}
+
+function onSatelliteInit() {
+	// This function will run when DTM is loaded on the page. We use it to hook into DTM logs
+	let _satellite = window._satellite;
+	if (_satellite.Logger) {
+		_satellite.Logger.keepLimit = 9999;
+	}
+
+	// override notify
+	// Reason: we want to intercept messages that go through here
+	// without worrying about limits or messing anything up internally
+	let originalNotify = _satellite.notify;
+	_satellite.notify = function(message, level) {
+		const logLevel = ['log', 'log', 'log', 'info', 'warn', 'error'];
+
+		// call original
+		originalNotify(message, level);
+
+		const log = {
+			solution: 'dtm',
+			solutions: ['dtm'],
+			level: logLevel[level] || 'log',
+			message: ''
+		};
+
+		// make sure that we have a message
+		if (message && typeof message === 'string') {
+			// only add it
+			log.message = message;
+
+			// check to see what solution it came from
+			if (message.indexOf('Adobe Analytics:') !== -1) {
+				log.solutions.push('analytics');
+			} else if (message.indexOf('Test & Target:') !== -1) {
+				log.solutions.push('target');
+			} else if (message.indexOf('Visitor ID:') !== -1) {
+				log.solutions.push('visitorService');
+			} else if (message.indexOf('AdLens:') !== -1) {
+				log.solutions.push('mediaOptimizer');
+			}
+		}
+		notifyContentScript(log);
+	};
+}
+
+function _overrideConsoleLogFunction(prefix, solution, level) {
+	const originalFunction = console[level];
+	console[level] = function() {
+		const argsAsArray = Array.prototype.slice.call(arguments);
+		originalFunction.apply(console, argsAsArray);
+		const mappedArgs = argsAsArray.map(arg => {
+			let result = '';
+			if (arg && typeof arg.toString === 'function') {
+				result = arg.toString();
+			}
+			if (!result || result === '[object Object]') {
+				try {
+					result = JSON.stringify(arg);
+				} catch (e) {
+					return '';
+				}
+			}
+			return result;
+		});
+
+		const message = mappedArgs.join(' ');
+
+		if (typeof message === 'string') {
+			if (message.indexOf(prefix) === 0) {
+				const log = {
+					solution: solution,
+					solutions: [solution],
+					level: level,
+					message: message,
+					searchIndex: message,
+					params: mappedArgs
+				};
+
+				// check to see what solution it came from
+				if (message.indexOf('[Adobe Analytics]') !== -1) {
+					log.solutions.push('analytics');
+				} else if (message.indexOf('[Adobe Target]') !== -1) {
+					log.solutions.push('target');
+				} else if (message.indexOf('[Experience Cloud ID Service]') !== -1) {
+					log.solutions.push('visitorService');
+				} else if (message.indexOf('[Adobe Media Optimizer]') !== -1) {
+					log.solutions.push('mediaOptimizer');
+				}
+				notifyContentScript(log);
+			}
+		}
+	};
+}
+
+/**
+ * Overrides the various console.* methods in order to intercept messages that
+ * are sent to the console by launch. A message was sent be launch if it starts
+ * with the rocket emoji 🚀. Note that this is a somewhat brittle solution
+ * since if the emoji ever changes this integration will break. However this
+ * is the only solution that works for now.
+ *
+ * Any messages that are not prefixed with the rocket emoji are ignored and passed
+ * through to the original console function
+ */
+function _overrideConsoleForLaunch() {
+	const prefix = '\uD83D\uDE80';
+	['error', 'info', 'log', 'warn'].forEach(
+		_overrideConsoleLogFunction.bind(null, prefix, 'launch')
+	);
+}
+
+/**
+ * Intercepts console messages made by alloy (prefixed with [alloy]) and notifies content script about each one.
+ * Note that this is a brittle solution and should not be used long term.
+ *
+ * Ideally there will be some debugging hooks built into alloy itself that we can connect to
+ */
+function _overrideConsoleForAlloy() {
+	window.__alloyNS = [];
+	const originalPush = window.__alloyNS.push;
+	window.__alloyNS.push = function(namespace) {
+		['error', 'info', 'log', 'warn'].forEach(
+			_overrideConsoleLogFunction.bind(null, `[${namespace}]`, 'alloy')
+		);
+
+		originalPush.apply(window.__alloyNS, Array.prototype.slice.call(arguments));
+	};
+}
+
+_overrideConsoleForLaunch();
+_overrideConsoleForAlloy();
+
+// Once the page has finished loading, remove _satellite if both DTM and Launch were not found
+window.addEventListener('load', function() {
+	if (!_hasDtm() && !_hasLaunch()) {
+		delete window._satellite;
+	}
+});
+
+/**
+ * @returns {boolean} whether launch is present on the page
+ */
+function _hasLaunch() {
+	return !!(window._satellite && window._satellite._container);
+}
+
+/**
+ * @returns {boolean} whether DTM is present on the page
+ */
+function _hasDtm() {
+	return !!(window._satellite && window._satellite.configurationSettings);
+}
+
+		})();
+	</script><script>
+		(function() {
+			const contentScriptEventTrigger = function(data) {
+				window.postMessage({ id:'adobeExperienceCloudDebuggerContentMessagingIdentifier-3', data: data });
+			}
+			window.___target_traces = window.___target_traces || [];
+var originalPush = window.___target_traces.push;
+
+window.___target_traces.push = function(trace) {
+	contentScriptEventTrigger({ trace });
+	originalPush.call(this, trace);
+};
+
+		})();
+	</script><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="profile" href="https://gmpg.org/xfn/11">
+<title>How many times is an AEM Component used in the JCR? | Sourced Code</title>
+<link rel="canonical" href="https://sourcedcode.com/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr">
+<script type="application/ld+json" class="aioseo-schema">
+{"@context":"https:\/\/schema.org","@graph":[{"@type":"WebSite","@id":"https:\/\/sourcedcode.com\/#website","url":"https:\/\/sourcedcode.com\/","name":"Sourced Code","description":"AEM Blog Made Just for You.","publisher":{"@id":"https:\/\/sourcedcode.com\/#organization"},"potentialAction":{"@type":"SearchAction","target":"https:\/\/sourcedcode.com\/?s={search_term_string}","query-input":"required name=search_term_string"}},{"@type":"Organization","@id":"https:\/\/sourcedcode.com\/#organization","name":"Sourced Code","url":"https:\/\/sourcedcode.com\/","logo":{"@type":"ImageObject","@id":"https:\/\/sourcedcode.com\/#organizationLogo","url":"https:\/\/sourcedcode.com\/storage\/2019\/09\/cropped-aem_logo.jpeg","width":225,"height":225},"image":{"@id":"https:\/\/sourcedcode.com\/#organizationLogo"}},{"@type":"BreadcrumbList","@id":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#breadcrumblist","itemListElement":[{"@type":"ListItem","@id":"https:\/\/sourcedcode.com\/#listItem","position":1,"item":{"@type":"WebPage","@id":"https:\/\/sourcedcode.com\/#item","name":"Home","description":"AEM Blog providing solutions to AEM developers. Topics in this technical blog will cover new topics like experience fragments, personalisation, editable templates, Apache Sling, OSGI, and much more.","url":"https:\/\/sourcedcode.com\/"},"nextItem":"https:\/\/sourcedcode.com\/blog\/aem\/#listItem"},{"@type":"ListItem","@id":"https:\/\/sourcedcode.com\/blog\/aem\/#listItem","position":2,"item":{"@type":"CollectionPage","@id":"https:\/\/sourcedcode.com\/blog\/aem\/#item","name":"AEM","url":"https:\/\/sourcedcode.com\/blog\/aem\/"},"previousItem":"https:\/\/sourcedcode.com\/#listItem"}]},{"@type":"Person","@id":"https:\/\/sourcedcode.com\/blog\/author\/sourcedc#author","url":"https:\/\/sourcedcode.com\/blog\/author\/sourcedc","name":"briankasingli","image":{"@type":"ImageObject","@id":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#authorImage","url":"https:\/\/secure.gravatar.com\/avatar\/7fb61c81cad53df9bf1149e2120733e5?s=96&d=mm&r=g","width":96,"height":96,"caption":"briankasingli"}},{"@type":"WebPage","@id":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#webpage","url":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/","name":"How many times is an AEM Component used in the JCR? | Sourced Code","inLanguage":"en-US","isPartOf":{"@id":"https:\/\/sourcedcode.com\/#website"},"breadcrumb":{"@id":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#breadcrumblist"},"author":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#author","creator":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#author","image":{"@type":"ImageObject","@id":"https:\/\/sourcedcode.com\/#mainImage","url":"https:\/\/sourcedcode.com\/storage\/2020\/06\/features-image-how-many-times-is-an-aem-component-being-used-in-the-jcr.jpg","width":1000,"height":548},"primaryImageOfPage":{"@id":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#mainImage"},"datePublished":"2020-06-11T23:09:16+00:00","dateModified":"2020-06-22T10:34:13+00:00"},{"@type":"Article","@id":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#article","name":"How many times is an AEM Component used in the JCR? | Sourced Code","headline":"How many times is an AEM Component used in the JCR?","author":{"@id":"https:\/\/sourcedcode.com\/blog\/author\/sourcedc#author"},"publisher":{"@id":"https:\/\/sourcedcode.com\/#organization"},"datePublished":"2020-06-11T23:09:16+00:00","dateModified":"2020-06-22T10:34:13+00:00","articleSection":"AEM, Deployment, Quick Reference","mainEntityOfPage":{"@id":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#webpage"},"isPartOf":{"@id":"https:\/\/sourcedcode.com\/blog\/aem\/how-many-times-is-an-aem-component-used-in-the-jcr\/#webpage"},"image":{"@type":"ImageObject","@id":"https:\/\/sourcedcode.com\/#articleImage","url":"https:\/\/sourcedcode.com\/storage\/2020\/06\/features-image-how-many-times-is-an-aem-component-being-used-in-the-jcr.jpg","width":1000,"height":548}}]}
+</script>
+<script type="text/javascript">
+window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+ga('create', "UA-116698767-1", 'auto');
+ga('send', 'pageview');
+</script>
+<script async="" src="AEMComponentusedInContent_files/analytics.js" type="text/javascript"></script>
+<link rel="alternate" type="application/rss+xml" title="Sourced Code » Feed" href="https://sourcedcode.com/feed">
+<link rel="alternate" type="application/rss+xml" title="Sourced Code » Comments Feed" href="https://sourcedcode.com/comments/feed">
+<link rel="alternate" type="application/rss+xml" title="Sourced Code » How many times is an AEM Component used in the JCR? Comments Feed" href="https://sourcedcode.com/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr/feed">
+<style type="text/css">.codecolorer-container, .codecolorer {
+background-color: #fafafa !important;
+padding: 10px  !important;
+border: none !important;
+}
+.codecolorer-container {
+margin-bottom: 30px !important;
+font-size: 14px !important;
+line-height: 23px !important;
+}
+.code-large .codecolorer-container {
+height: 800px !important;
+}
+.code-600 .codecolorer-container {
+height: 600px !important;
+}
+.code-300 .codecolorer-container {
+height: 300px !important;
+}
+.code-200 .codecolorer-container {
+height: 200px !important;
+}
+.code-150 .codecolorer-container {
+height: 100px !important;
+}
+.code-100 .codecolorer-container {
+height: 100px !important;
+}</style>
+<link rel="stylesheet" type="text/css" href="AEMComponentusedInContent_files/5xpw6.css" media="all">
+<link rel="stylesheet" id="color-blog-fonts-css" href="AEMComponentusedInContent_files/css.css" type="text/css" media="all">
+<link rel="stylesheet" type="text/css" href="AEMComponentusedInContent_files/bmyt9_002.css" media="all">
+<style id="color-blog-style-inline-css" type="text/css">
+.category-button.cb-cat-2 a{background:#3b2d1b}
+.category-button.cb-cat-2 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-2 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-2 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-3 a{background:#3b2d1b}
+.category-button.cb-cat-3 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-3 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-3 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-26 a{background:#3b2d1b}
+.category-button.cb-cat-26 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-26 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-26 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-27 a{background:#3b2d1b}
+.category-button.cb-cat-27 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-27 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-27 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-36 a{background:#3b2d1b}
+.category-button.cb-cat-36 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-36 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-36 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-25 a{background:#3b2d1b}
+.category-button.cb-cat-25 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-25 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-25 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-7 a{background:#3b2d1b}
+.category-button.cb-cat-7 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-7 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-7 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-28 a{background:#3b2d1b}
+.category-button.cb-cat-28 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-28 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-28 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-39 a{background:#3b2d1b}
+.category-button.cb-cat-39 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-39 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-39 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-37 a{background:#3b2d1b}
+.category-button.cb-cat-37 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-37 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-37 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-23 a{background:#3b2d1b}
+.category-button.cb-cat-23 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-23 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-23 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-24 a{background:#3b2d1b}
+.category-button.cb-cat-24 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-24 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-24 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-35 a{background:#3b2d1b}
+.category-button.cb-cat-35 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-35 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-35 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-30 a{background:#3b2d1b}
+.category-button.cb-cat-30 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-30 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-30 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-22 a{background:#3b2d1b}
+.category-button.cb-cat-22 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-22 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-22 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-4 a{background:#3b2d1b}
+.category-button.cb-cat-4 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-4 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-4 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-38 a{background:#3b2d1b}
+.category-button.cb-cat-38 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-38 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-38 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-32 a{background:#3b2d1b}
+.category-button.cb-cat-32 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-32 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-32 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-33 a{background:#3b2d1b}
+.category-button.cb-cat-33 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-33 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-33 .menu-item-description:after{border-top-color:#3b2d1b}
+.category-button.cb-cat-5 a{background:#3b2d1b}
+.category-button.cb-cat-5 a:hover{background:#090000}
+#site-navigation ul li.cb-cat-5 .menu-item-description{background:#3b2d1b}
+#site-navigation ul li.cb-cat-5 .menu-item-description:after{border-top-color:#3b2d1b}
+a,a:hover,a:focus,a:active,.entry-cat .cat-links a:hover,.entry-cat a:hover,.entry-footer a:hover,.comment-author .fn .url:hover,.commentmetadata .comment-edit-link,#cancel-comment-reply-link,#cancel-comment-reply-link:before,.logged-in-as a,.widget a:hover,.widget a:hover::before,.widget li:hover::before,.mt-social-icon-wrap li a:hover,#site-navigation ul li:hover>a,#site-navigation ul li.current-menu-item>a,#site-navigation ul li.current_page_ancestor>a,#site-navigation ul li.current-menu-ancestor>a,#site-navigation ul li.current_page_item>a,#site-navigation ul li.focus>a,.banner-sub-title,.entry-title a:hover,.cat-links a:hover,.entry-footer .mt-readmore-btn:hover,.btn-wrapper a:hover,.mt-readmore-btn:hover,.navigation.pagination .nav-links .page-numbers.current,.navigation.pagination .nav-links a.page-numbers:hover,#footer-menu li a:hover,.color_blog_latest_posts .mt-post-title a:hover,#mt-scrollup:hover,.menu-toggle:hover,#top-navigation ul li a:hover,.mt-search-icon:hover,.entry-meta a:hover,.front-slider-block .banner-title a:hover,.post-info-wrap .entry-meta a:hover,.single .mt-single-related-posts .entry-title a:hover,.breadcrumbs .trail-items li a:hover,.wrap-label i,.has-thumbnail .post-info-wrap .entry-title a:hover,.front-slider-block .post-info-wrap .entry-title a:hover{color:#ffb300}
+.widget_search .search-submit,.widget_search .search-submit:hover,.navigation.pagination .nav-links .page-numbers.current,.navigation.pagination .nav-links a.page-numbers:hover,.error-404.not-found,.color_blog_social_media a:hover,.custom-header{border-color:#ffb300}
+.front-slider-block .lSAction > a:hover,.top-featured-post-wrap .post-thumbnail .post-number,.post-cats-list a,#site-navigation .menu-item-description,article .post-thumbnail::before,#secondary .widget .widget-title::before,.mt-related-post-title::before,#colophon .widget .widget-title::before,.features-post-title::before,.mt-menu-search .mt-form-wrap .search-form .search-submit{background:#ffb300}
+.edit-link .post-edit-link,.reply .comment-reply-link,.widget_search .search-submit,.mt-menu-search .mt-form-wrap .search-form .search-submit:hover,article.sticky::before{background:#ffb300}
+</style>
+<link rel="stylesheet" type="text/css" href="AEMComponentusedInContent_files/bmytw.css" media="all">
+<style id="moove_gdpr_frontend-inline-css" type="text/css">
+#moove_gdpr_cookie_modal,#moove_gdpr_cookie_info_bar,.gdpr_cookie_settings_shortcode_content{font-family:Nunito,sans-serif}#moove_gdpr_save_popup_settings_button{background-color:#373737;color:#fff}#moove_gdpr_save_popup_settings_button:hover{background-color:#000}#moove_gdpr_cookie_info_bar .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content a.mgbutton,#moove_gdpr_cookie_info_bar .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content button.mgbutton{background-color:#0C4DA2}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-footer-content .moove-gdpr-button-holder a.mgbutton,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-footer-content .moove-gdpr-button-holder button.mgbutton,.gdpr_cookie_settings_shortcode_content .gdpr-shr-button.button-green{background-color:#0C4DA2;border-color:#0C4DA2}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-footer-content .moove-gdpr-button-holder a.mgbutton:hover,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-footer-content .moove-gdpr-button-holder button.mgbutton:hover,.gdpr_cookie_settings_shortcode_content .gdpr-shr-button.button-green:hover{background-color:#fff;color:#0C4DA2}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-close i,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-close span.gdpr-icon{background-color:#0C4DA2;border:1px solid #0C4DA2}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-close i:hover,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-close span.gdpr-icon:hover,#moove_gdpr_cookie_info_bar span[data-href]>u.change-settings-button{color:#0C4DA2}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li.menu-item-selected a span.gdpr-icon,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li.menu-item-selected button span.gdpr-icon{color:inherit}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li:hover a,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li:hover button{color:#000}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li a span.gdpr-icon,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li button span.gdpr-icon{color:inherit}#moove_gdpr_cookie_modal .gdpr-acc-link{line-height:0;font-size:0;color:transparent;position:absolute}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-close:hover i,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li a,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li button,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li button i,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li a i,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-tab-main .moove-gdpr-tab-main-content a:hover,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content a.mgbutton:hover,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content button.mgbutton:hover,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content a:hover,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content button:hover,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content span.change-settings-button:hover,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content u.change-settings-button:hover,#moove_gdpr_cookie_info_bar span[data-href]>u.change-settings-button,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content a.mgbutton.focus-g,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content button.mgbutton.focus-g,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content a.focus-g,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content button.focus-g,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content span.change-settings-button.focus-g,#moove_gdpr_cookie_info_bar.moove-gdpr-dark-scheme .moove-gdpr-info-bar-container .moove-gdpr-info-bar-content u.change-settings-button.focus-g{color:#0C4DA2}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li.menu-item-selected a,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li.menu-item-selected button{color:#000}#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li.menu-item-selected a i,#moove_gdpr_cookie_modal .moove-gdpr-modal-content .moove-gdpr-modal-left-content #moove-gdpr-menu li.menu-item-selected button i{color:#000}#moove_gdpr_cookie_modal.gdpr_lightbox-hide{display:none}
+</style>
+<link rel="stylesheet" type="text/css" href="AEMComponentusedInContent_files/bmyt9.css" media="all">
+<link rel="stylesheet" type="text/css" href="AEMComponentusedInContent_files/bmyt8.css" media="screen">
+<script src="AEMComponentusedInContent_files/g3yiu.js" type="text/javascript"></script>
+<script type="text/javascript" id="likebtn_frontend-js-extra">
+/* <![CDATA[ */
+var likebtn_eh_data = {"ajaxurl":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php","security":"3dc4a4b1fb"};
+/* ]]> */
+</script>
+<script src="AEMComponentusedInContent_files/5xpw6.js" type="text/javascript"></script>
+<script type="text/javascript" id="foobox-free-min-js-before">
+/* Run FooBox FREE (v2.7.16) */
+var FOOBOX = window.FOOBOX = {
+ready: true,
+disableOthers: false,
+o: {wordpress: { enabled: true }, countMessage:'image %index of %total', excludes:'.fbx-link,.nofoobox,.nolightbox,a[href*="pinterest.com/pin/create/button/"]', affiliate : { enabled: false }},
+selectors: [
+".gallery", ".wp-block-gallery", ".caption", ".wp-block-image", "a:has(img[class*=wp-image-])", ".foobox"
+],
+pre: function( $ ){
+// Custom JavaScript (Pre)
+},
+post: function( $ ){
+// Custom JavaScript (Post)
+// Custom Captions Code
+},
+custom: function( $ ){
+// Custom Extra JS
+}
+};
+</script>
+<script src="AEMComponentusedInContent_files/bmyt9.js" type="text/javascript"></script>
+<link rel="https://api.w.org/" href="https://sourcedcode.com/wp-json/"><link rel="alternate" type="application/json" href="https://sourcedcode.com/wp-json/wp/v2/posts/1870"><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://sourcedcode.com/xmlrpc.php?rsd">
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="https://sourcedcode.com/lib/wlwmanifest.xml">
+<link rel="shortlink" href="https://sourcedcode.com/?p=1870">
+<link rel="alternate" type="application/json+oembed" href="https://sourcedcode.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsourcedcode.com%2Fblog%2Faem%2Fhow-many-times-is-an-aem-component-used-in-the-jcr">
+<link rel="alternate" type="text/xml+oembed" href="https://sourcedcode.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fsourcedcode.com%2Fblog%2Faem%2Fhow-many-times-is-an-aem-component-used-in-the-jcr&amp;format=xml">
+<script async="" src="AEMComponentusedInContent_files/js" type="text/javascript"></script>
+<script type="text/javascript">
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-116698767-1');
+</script>
+<link rel="apple-touch-icon" sizes="180x180" href="https://sourcedcode.com/storage/fbrfg/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="https://sourcedcode.com/storage/fbrfg/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="https://sourcedcode.com/storage/fbrfg/favicon-16x16.png">
+<link rel="manifest" href="https://sourcedcode.com/storage/fbrfg/site.webmanifest">
+<link rel="shortcut icon" href="https://sourcedcode.com/storage/fbrfg/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/wp-content/uploads/fbrfg/browserconfig.xml">
+<meta name="theme-color" content="#ffffff"><link rel="pingback" href="https://sourcedcode.com/xmlrpc.php"> <style type="text/css" id="custom-css">
+/** MISC **/
+ins {
+background-color: #fff !important;
+}
+.entry-title {
+font-size: 30px;
+}
+.entry-content a { 
+color: #13aff0;
+text-decoration: underline;
+}
+.entry-content img {
+border: 2px solid #eee;
+margin-bottom: 15px;
+}
+.mention-block {
+background: #eee;
+padding: 15px;
+border: 3px solid #13aff0;
+margin-bottom: 15px;
+}
+.red {
+color: red !important;
+}
+#preloader-background {
+display: none !important;
+}
+.content-area ol, .content-area ul {
+margin-left: 40px;
+}
+.content-area li {
+margin-bottom: 5px;	
+}
+.cnt-margin-bottom-neg-20 {
+display: block;
+margin-bottom: -20px;
+}
+/* like widget */
+.no-border {
+border: none;
+}
+.no-padding {
+padding: 0px;
+}
+#recent-tab-content a, #popular-tab-content a {
+color: #444;
+font-size: 16px;
+line-height: 25px;
+display: inline-block;
+}
+#yikes_easy_mc_widget-2 {
+background-color: #36261E;
+}
+#yikes_easy_mc_widget-2 h4, #yikes_easy_mc_widget-2 span {
+color: white;
+}
+#yikes_easy_mc_widget-2 .yikes-easy-mc-submit-button {
+border: 1px solid #fff;
+background: #F26127;
+color: #36261E;
+font-weight: bold;
+}
+#yikes_easy_mc_widget-2 .yikes-easy-mc-submit-button:hover {
+opacity: 0.8;
+}
+/* plugin */
+i.lb-share-tt {
+position: absolute;
+left: -9999px !important;
+}
+.likebtn-button {
+margin-bottom: 10px !important;
+}
+.search .likebtn_container, .blog .likebtn_container,.home .likebtn_contaciner,
+.archive .likebtn_container,
+.author .likebtn_container {
+display: none !important;
+}
+/* top nav */
+.top-header-nav {
+text-align:right !important;
+}
+@media (max-width:767px) {
+#top-header {
+display: none;
+}
+}
+/* theme specific */
+.custom-header.no-bg-img {
+display: none;
+}
+.entry-content {
+margin-top: 0px !important;
+}
+.entry-content p {
+word-break: break-word;
+}
+.logo-ads-wrap {
+padding-bottom: 0;
+}
+.custom-header.no-bg-img {
+padding: 10px 0px 0px 30px;
+}
+a.custom-logo-link img {
+height: 50px;
+width: auto;
+position: absolute;
+}
+.site-branding .site-title, .site-branding .site-description {
+margin-left: 60px;
+}
+@media (max-width:979px) {
+a.custom-logo-link img {
+position: absolute;
+left: 12px
+}
+.site-branding .site-title, .site-branding .site-description {
+text-align: left;
+}
+}
+/* content views */
+h3.home_recent-posts {
+font-size: 30px;
+margin-bottom: 0;
+}
+.archive .entry-title a, .pt-cv-title a {
+box-shadow: none;
+font-size: 19px;
+margin-bottom: 8px;
+line-height: 1.3;
+color: #000;
+display: block;
+font-family: 'Josefin Sans', sans-serif;
+}
+.pt-cv-title a:hover {
+color: #ffb300;	
+}
+.pt-cv-wrapper .btn-success {
+color: #ffb300;
+background: none;
+border: none; 
+padding: 0;
+margin: 0;
+}
+.pt-cv-wrapper .btn-success:focus,.pt-cv-wrapper .btn-success:active, .pt-cv-wrapper .btn-success:hover {
+color: #ffb300;
+background: none;
+border: none; 
+padding: 0;
+margin: 0;
+text-decoration: underline !important;
+}
+@media (max-width:767px) {
+.elementor-355 .elementor-element.elementor-element-372308e .elementor-divider {
+display: none;
+}
+.elementor-355 .elementor-element.elementor-element-247167af.elementor-widget-heading h1.elementor-heading-title {
+font-size: 20px;
+}
+[data-id="4b6cfd54"] {
+display: none;
+}
+}
+.pt-cv-meta-fields a {
+color: #000;
+}
+.pt-cv-meta-fields a:hover {
+text-decoration: underline !important;
+color: #ffb300;
+}
+/** FOOTER **/
+span.mt-copyright-text {
+font-size: 9px;
+}
+.mt-footer-links a {
+color: #fff;
+}
+.mt-footer-links a:hover {
+text-decoration: underline;
+}
+/* ads */
+.header-widget-wrapper {
+width: 730px !important;
+height: 70px !important;
+}	
+.header-widget-wrapper #custom_html-2 {
+height: 70px !important;
+}	
+@media (max-width:1090px) {
+.header-widget-wrapper {
+display: none;
+}	
+}
+.widget_yikes_easy_mc_widget h4.widget-title {
+border-bottom: 5px solid #ffb300;
+padding-bottom: 5px;
+}
+.yikes-mailchimp-form-description.yikes-mailchimp-form-description-1 {
+font-size: 12px;
+color: #fff;
+margin-top: -5px;
+margin-bottom:10px
+}
+.widget-odd.widget-5.widget.widget_yikes_easy_mc_widget .yikes-mailchimp-form-description.yikes-mailchimp-form-description-1 {
+color: #000 !important;
+}
+.widget-odd.widget-5.widget.widget_yikes_easy_mc_widget .yikes-easy-mc-submit-button.yikes-easy-mc-submit-button-1 {
+background: #F26127;
+color: #fff;
+font-weight: 999;
+border: 0;
+}
+.code-highlight-primary {
+background-color: #ffb300;
+color: #000;
+padding: 0 5px;
+display: inline;
+}
+/*code editor*/
+.code-larger .codecolorer-container {
+height: 1000px !important;
+}
+.code-highlight-black {
+background-color: black;
+color: #fff;
+padding: 0 5px;
+display: inline;
+}
+.spacer-medium {
+margin-top: 25px;
+margin-bottom: 25px;
+}
+.spacer-large {
+margin-top: 50px;
+margin-bottom: 50px;
+}
+.spacer-extra-large {
+margin-top: 150px;
+margin-bottom: 150px;
+}
+.spacer-extra-extra-large {
+margin-top: 200px;
+margin-bottom: 150px;
+}
+.spacer-extra-extra-extra-large {
+margin-top: 250px;
+margin-bottom: 150px;
+}
+.spacer-medium {
+margin-top: 25px;
+margin-bottom: 25px;
+}
+/* generator */
+.curl-generator__reset-fields_link {
+display: inline-block;
+margin-bottom: -15px;
+}
+.curl-generator {
+background: #f0f0f0;
+padding: 10px;
+}
+.curl-generator label {
+font-weight: 600;
+}
+.curl-generator input[type=text] {
+width: auto;
+margin-right: 10px;
+}
+/* generator -- aem url */
+.form__aem-environment {
+margin-bottom: 10px;
+}
+.form__aem-environment input[name=aemUrl] {
+width: 70%;
+}
+/* password username */
+.form__username-and-password {
+margin-bottom: 10px;
+}
+/* pid */
+.form__pid input[type=text] {
+width: 70%;
+}
+/* generator -- keypair */
+.form__keypair-manager {
+background: #dcdcdc;
+padding: 15px;
+margin-top: 10px;
+margin-bottom: 10px;
+}
+.form__keypair-manager input[type=text] {
+margin-top: 5px;
+}
+.form__keypair-manager input[name=osgiValue] {
+width: 50%;
+}
+@media only screen and (min-width: 951px) {
+.form__keypair-manager 	input[name=osgiValue] {
+width: 60%;
+}
+}
+@media only screen and (max-width: 600px) {
+.form__keypair-manager 	input[name=osgiValue] {
+width: 30%;
+}
+}
+.form__keypair-manager button {
+height: 20px;
+padding: 5px 10px 18px 10px;
+background: red;
+color: white;
+font-size: 9px;
+}
+.form__keypair-manager button.form__add-key-pair-button {
+background: green;
+margin-top: 10px;
+}
+/* shareable url */
+.curl-generator__share-button button {
+background: #ffb300;
+color: #000;
+font-size: 12px;
+padding: 8px 20px;
+border-radius: 5px;
+}
+.curl-generator__share-button button:hover {
+background: #ffd46d;
+color: #333333;
+}
+.curl-generator__share-button button.copied {
+background: #ffd46d;
+color: #333333;
+}
+/* output */
+.curl-generator__output {
+margin-top: 30px;
+}
+.curl-generator__code {
+background: #2F3337;
+display: block;
+padding: 10px;
+color: #fff;
+font-size: 12px;
+line-height: 23px;
+font-family: monospace;
+margin-bottom: 30px;
+word-break: break-all;
+}
+.curl-generator__output a {
+word-break: break-all;	
+}		</style>
+<style>.helpful {
+max-width:  550px;
+margin:  0 auto;
+margin-top:  100px;
+margin-bottom:  20px;
+background-color:  #f1f1f1;
+}
+.helpful::before {
+content:  " ";
+border-top:  1px solid #cccccc;
+width:  100%;
+display:  block;
+top:  -75px;
+position:  relative;
+}
+h3.helpful-headline {
+font-size:  21px  !important;
+text-align:  center !important;
+}
+button.helpful-button {
+text-align:  center !important;
+font-size:  15px !important;
+}
+.helpful-content span {
+text-align:  center;
+font-size:  15px;
+display:  block;
+margin:  0 0 31px;
+}
+.helpful .helpful-controls > div {
+width:  100% !important;
+flex:  none;
+}
+.helpful-pro {
+max-width:  200px;
+margin:  0 auto;
+}
+.helpful-contra, .helpful-counter {
+display:  none !important;
+}
+</style><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><link rel="preload" href="AEMComponentusedInContent_files/integrator.js" as="script"><script type="text/javascript" src="AEMComponentusedInContent_files/integrator.js"></script><link type="text/css" rel="stylesheet" href="AEMComponentusedInContent_files/widget.css"></head>
+<body data-rsssl="1" class="post-template-default single single-post postid-1870 single-format-standard custom-logo site-layout--wide right-sidebar elementor-default elementor-kit-1332 gdpr-infobar-visible"><div id="wpfront-notification-bar-spacer" class="" style="top: 0px; height: 35px;">
+<div id="wpfront-notification-bar-open-button" aria-label="reopen" class="hidden top wpfront-bottom-shadow" style="top: 0px; position: fixed;"></div>
+<div id="wpfront-notification-bar" class="wpfront-fixed " style="top: 0px; height: auto; position: fixed; visibility: visible;">
+<div aria-label="close" class="wpfront-close">X</div>
+<table role="presentation" cellspacing="0" cellpadding="0" border="0">
+<tbody><tr>
+<td>
+<div class="wpfront-message">
+Decrease your AEM development time using our AEM Sling Model Reference Guide! </div>
+<div>
+<a class="wpfront-button" href="https://sourcedcode.com/blog/aem/aem-sling-model-injectors-annotations-reference-guide?utm_source=website&amp;utm_medium=banner&amp;utm_campaign=featuring_sling_models_injectors_reference_guide" target="_self">View Guide</a>
+</div>
+</td>
+</tr>
+</tbody></table>
+</div>
+</div>
+<div id="page" class="site" style="height: auto !important;">
+<a class="skip-link screen-reader-text" href="#content">Skip To Content</a>
+<header id="masthead" class="site-header"><div class="mt-logo-row-wrapper mt-clearfix"> <div class="logo-ads-wrap">
+<div class="mt-container">
+<div class="site-branding">
+<a href="https://sourcedcode.com/" class="custom-logo-link" rel="home"><img src="AEMComponentusedInContent_files/cropped-aem_logo.jpeg" class="custom-logo" alt="Sourced Code" srcset="AEMComponentusedInContent_files/cropped-aem_logo.jpeg 225w, AEMComponentusedInContent_files/cropped-aem_logo-150x150.jpeg 150w, AEMComponentusedInContent_files/cropped-aem_logo-65x65.jpeg 65w" sizes="(max-width: 225px) 100vw, 225px" width="225" height="225"></a> <p class="site-title"><a href="https://sourcedcode.com/" rel="home">Sourced Code</a></p>
+<p class="site-description">AEM Blog Made Just for You.</p>
+</div>
+<div class="header-widget-wrapper">
+<section id="custom_html-2" class="widget_text widget-odd widget-last widget-first widget-1 no-padding no-border widget widget_custom_html"><div class="textwidget custom-html-widget"><script async="" src="AEMComponentusedInContent_files/adsbygoogle.js" type="text/javascript"></script>
+<ins class="adsbygoogle" style="display:inline-block;width:728px;height:70px" data-ad-client="ca-pub-9053803095882933" data-ad-slot="9985881057" data-adsbygoogle-status="done"><ins id="aswift_0_expand" style="display:inline-table;border:none;height:70px;margin:0;padding:0;position:relative;visibility:visible;width:728px;background-color:transparent;" tabindex="0" title="Advertisement" aria-label="Advertisement"><ins id="aswift_0_anchor" style="display:block;border:none;height:70px;margin:0;padding:0;position:relative;visibility:visible;width:728px;background-color:transparent;"><iframe id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;border:0;width:728px;height:70px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-9053803095882933&amp;output=html&amp;h=70&amp;slotname=9985881057&amp;adk=2449754613&amp;adf=2847809027&amp;pi=t.ma~as.9985881057&amp;w=728&amp;lmt=1612821124&amp;psa=0&amp;format=728x70&amp;url=https%3A%2F%2Fsourcedcode.com%2Fblog%2Faem%2Fhow-many-times-is-an-aem-component-used-in-the-jcr&amp;flash=0&amp;wgl=1&amp;dt=1614156925586&amp;bpp=7&amp;bdt=20467&amp;idt=1447&amp;shv=r20210222&amp;cbv=r20190131&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;correlator=5234833490717&amp;frm=20&amp;pv=2&amp;ga_vid=2120255245.1614156924&amp;ga_sid=1614156928&amp;ga_hid=975704737&amp;ga_fc=0&amp;u_tz=480&amp;u_his=1&amp;u_java=0&amp;u_h=1050&amp;u_w=1680&amp;u_ah=972&amp;u_aw=1680&amp;u_cd=24&amp;u_nplug=0&amp;u_nmime=0&amp;adx=549&amp;ady=65&amp;biw=1357&amp;bih=864&amp;scr_x=0&amp;scr_y=0&amp;eid=21068769%2C21068893%2C21069110&amp;oid=3&amp;pvsid=3939133700621027&amp;pem=157&amp;rx=0&amp;eae=0&amp;fc=896&amp;brdim=0%2C23%2C0%2C23%2C1680%2C23%2C1372%2C966%2C1372%2C864&amp;vis=1&amp;rsz=%7C%7CleE%7C&amp;abl=CS&amp;pfx=0&amp;fu=8200&amp;bc=31&amp;ifi=1&amp;uci=a!1&amp;fsb=1&amp;xpc=8HlvukV34R&amp;p=https%3A//sourcedcode.com&amp;dtd=2468" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" data-google-container-id="a!1" width="728" height="70" frameborder="0"></iframe></ins></ins></ins>
+<script type="text/javascript">
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div></section> </div>
+</div>
+</div>
+<div class="mt-social-menu-wrapper"><div class="mt-container"> <div class="menu-toggle"><a href="javascript:void(0)"><i class="fa fa-navicon"></i>Menu</a></div>
+<nav itemscope="" id="site-navigation" class="main-navigation">
+<div class="menu-main-menu-nav-container"><ul id="primary-menu" class="menu nav-menu" aria-expanded="false"><li id="menu-item-1303" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-1303 cb-cat-2"><a href="https://sourcedcode.com/blog/category/aem">AEM</a></li>
+<li id="menu-item-1298" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1298 cb-cat-32"><a href="https://sourcedcode.com/blog/category/aem/sling-models">Sling Models</a></li>
+<li id="menu-item-1299" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1299 cb-cat-23"><a href="https://sourcedcode.com/blog/category/aem/junit4">Junit4</a></li>
+<li id="menu-item-1295" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-1295 cb-cat-28"><a href="https://sourcedcode.com/blog/category/aem/development">Development</a></li>
+<li id="menu-item-1296" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-1296 cb-cat-7"><a href="https://sourcedcode.com/blog/category/aem/deployment">Deployment</a></li>
+<li id="menu-item-1629" class="menu-item menu-item-type-post_type menu-item-object-post menu-item-1629"><a href="https://sourcedcode.com/blog/aem/articles-list-view">Articles List View</a></li>
+<li id="menu-item-2643" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-2643"><a href="https://sourcedcode.com/tools">Tools</a></li>
+</ul></div> </nav>
+<div class="mt-social-search-wrapper"> <div class="mt-menu-search">
+<div class="mt-search-icon"><a href="javascript:void(0)">Search<i class="fa fa-search"></i></a></div>
+<div class="mt-form-wrap">
+<div class="mt-form-close"><a href="javascript:void(0)"><i class="fa fa-close"></i></a></div>
+<form role="search" method="get" class="search-form" action="https://sourcedcode.com/">
+<label>
+<span class="screen-reader-text">Search for:</span>
+<input type="search" class="search-field" placeholder="Search …" name="s">
+</label>
+<input type="submit" class="search-submit" value="Search">
+</form> </div>
+</div>
+</div></div></div></div></header> <div class="custom-header no-bg-img">
+<div class="mt-container">
+<h1 class="entry-title">How many times is an AEM Component used in the JCR?</h1> <nav id="breadcrumb" class="mt-breadcrumb">
+<div role="navigation" aria-label="Breadcrumbs" class="breadcrumb-trail breadcrumbs" itemprop="breadcrumb"><div class="mt-container"><ul class="trail-items" itemscope="" itemtype="http://schema.org/BreadcrumbList"><meta name="numberOfItems" content="3"><meta name="itemListOrder" content="Ascending"><li itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem" class="trail-item trail-begin"><a href="https://sourcedcode.com/" rel="home" itemprop="item"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem" class="trail-item"><a href="https://sourcedcode.com/blog/category/aem" itemprop="item"><span itemprop="name">AEM</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope="" itemtype="http://schema.org/ListItem" class="trail-item trail-end"><span itemprop="name"><span itemprop="name">How many times is an AEM Component used in the JCR?</span></span><meta itemprop="position" content="3"></li></ul></div></div> </nav>
+</div>
+</div>
+<div id="content" class="site-content" style="height: auto !important;">
+<div class="mt-container" style="height: auto !important;">
+<div class="mt-page-content-wrapper">
+<div itemscope="" id="primary" class="content-area">
+<main id="main" class="site-main">
+<article id="post-1870" class="has-thumbnail post-1870 post type-post status-publish format-standard has-post-thumbnail hentry category-aem category-deployment category-aem-quick-reference">
+<div class="post-thumbnail">
+<img src="AEMComponentusedInContent_files/features-image-how-many-times-is-an-aem-component-being-used.jpg" class="attachment-full size-full wp-post-image" alt="" loading="lazy" srcset="AEMComponentusedInContent_files/features-image-how-many-times-is-an-aem-component-being-used.jpg 1000w, AEMComponentusedInContent_files/features-image-how-many-times-is-an-aem-component-being-_002.jpg 300w, AEMComponentusedInContent_files/features-image-how-many-times-is-an-aem-component-being-_003.jpg 768w, AEMComponentusedInContent_files/features-image-how-many-times-is-an-aem-component-being-_004.jpg 600w" sizes="(max-width: 1000px) 100vw, 1000px" width="1000" height="548"> <div class="post-info-wrap">
+<div class="post-cat"> <div class="post-cats-list">
+<span class="category-button cb-cat-2"><a href="https://sourcedcode.com/blog/category/aem">AEM</a></span>
+<span class="category-button cb-cat-7"><a href="https://sourcedcode.com/blog/category/aem/deployment">Deployment</a></span>
+<span class="category-button cb-cat-22"><a href="https://sourcedcode.com/blog/category/aem/aem-quick-reference">Quick Reference</a></span>
+</div></div>
+<div class="entry-meta">
+<span class="posted-on"><a href="https://sourcedcode.com/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr" rel="bookmark"><time class="entry-date published" datetime="2020-06-11T23:09:16+00:00">June 11, 2020</time><time class="updated" datetime="2020-06-22T10:34:13+00:00">June 22, 2020</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="https://sourcedcode.com/blog/author/sourcedc">briankasingli</a></span></span>
+</div>
+<h3 class="entry-title"><a href="https://sourcedcode.com/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr" rel="bookmark">How many times is an AEM Component used in the JCR?</a></h3> </div>
+</div>
+<div class="entry-content">
+<div class="likebtn_container" style=""><span class="likebtn-wrapper lb-loaded lb-style-white lb-popup-position-top lb-tooltip-disabled lb-popup-style-light" data-identifier="post_1870" data-site_id="5d8490546fd08b5249160984" data-btn_size="100" data-icon_l="thmb4-u" data-icon_d="hrt1" data-dislike_enabled="false" data-icon_dislike_show="false" data-tooltip_enabled="false" data-style="" data-unlike_allowed="" data-show_copyright="" data-item_url="https://sourcedcode.com/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr" data-item_title="How many times is an AEM Component used in the JCR?" data-item_image="https://sourcedcode.com/storage/2020/06/features-image-how-many-times-is-an-aem-component-being-used-in-the-jcr.jpg" data-item_date="2020-06-11T23:09:16+00:00" data-engine="WordPress" data-plugin_v="2.6.31" data-prx="https://sourcedcode.com/wp-admin/admin-ajax.php?action=likebtn_prx" data-event_handler="likebtn_eh"><span class="likebtn-button lb-like" id="lb-like-0"><span onclick="LikeBtn.vote(1, 0, event);" class="lb-a" data-lb_index="0"><i class="lb-tt lb-tooltip-tt"><i class="lb-tt-lt"></i><i class="lb-tt-rt"></i><i class="lb-tt-m">I like this</i><i class="lb-tt-mu">Unlike</i><i class="lb-tt-m2"></i><i class="lb-tt-lb"></i><i class="lb-tt-rb"></i><i class="lb-tt-a"></i></i><span class="likebtn-icon lb-like-icon">&nbsp;</span><span class="likebtn-label lb-like-label">Like</span></span><span class="lb-count" data-count="4">4</span></span></span></div><p>Can
+ we detect and remove unused components from our codebase? Is this AEM 
+component being used at all? How many times is my component used within 
+my running AEM instance? </p>
+<p>These are the common questions we have when we are trying to figure 
+out the number of use and the node-paths of the targeted searched 
+component within the Java content repository, known as “JCR”. In this 
+article, you will discover one of the quickest techniques used to 
+retrieve the total number of uses and node-paths of a component within 
+the JCR by using the Query Builder API, <a href="#query-debugger-tool">query debugger tool</a>. </p>
+<p>If you don’t have certain user priveledges within your AEM instance, 
+there’s another way to find out the usage of your component(s), <a href="#components-console">Components Console</a>;
+ however, the Components Console is restricted in a sense where the 
+component search results-list only display pages of a given component 
+and does not provide a total number of how many pages are returned from 
+the search.</p>
+<div class="mention-block">
+<strong>Quick Links</strong><p></p>
+<ol>
+<li><a href="#query-debugger-tool">Component Search by the Query Builder API, Query Builder Debugger Tool</a></li>
+<li><a href="#components-console">Component Search by the Components Console</a></li>
+<li><a href="#search-by-cq-template"><strong>Extra</strong>: How many pages are using an AEM template?</a></li>
+<li><a href="#search-for-all-nodes-with-the-existing-property"><strong>Extra</strong>: How to search for all nodes in AEM, JCR, with an existing property?</a></li>
+</ol>
+</div>
+<hr class="spacer-large">
+<h2 id="query-debugger-tool">1. Component Search by the Query Builder API, Query Builder Debugger Tool</h2>
+<p>The AEM Query Builder is an API which can be used to search for nodes
+ in JCR. Well defined “Predicates” are typically created from using the 
+Query Builder Debugging Tool, as this tool serves instant search results
+ within the UI.</p>
+<p><strong>Step 1</strong>: With your running AEM instance, visit <a href="http://localhost:4502/libs/cq/search/content/querydebug.html" rel="noopener noreferrer" target="_blank">http://localhost:4502/libs/cq/search/content/querydebug.html</a>.</p>
+<p><strong>Step <a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-image-query-builder-find-component.jpg">2</a></strong>: Paste in the search query below &amp; hit search; <a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-image-query-builder-find-component.jpg">view screenshot</a>.<br>
+<em style="color: red; font-size:12px;">Replace with your component’s path: weretail/components/content/heroimage</em><br>
+<em style="color: blue; font-size:12px;">Note!: sometimes the descendant path must be more nested, so /content/we-retail/gb/en</em></p>
+<div class="codecolorer-container java default" style="overflow:auto;white-space:nowrap;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br>2<br>3<br></div></td><td><div class="java codecolorer">path<span class="sy0">=/</span>content<span class="sy0">/</span>we<span class="sy0">-</span>retail<br>
+<span class="nu0">1</span>_property<span class="sy0">=</span>sling<span class="sy0">:</span>resourceType<br>
+<span class="nu0">1</span>_property.<span class="me1">value</span><span class="sy0">=</span>weretail<span class="sy0">/</span>components<span class="sy0">/</span>content<span class="sy0">/</span>heroimage</div></td></tr></tbody></table></div>
+<p><i>This query searches for all types of nodes with the 
+sling:resourceType equals to the value, 
+weretail/components/content/heroimage, and where the path is descendant 
+from /content/we-retail; to learn more about the Query builder API and 
+queries, <a href="https://docs.adobe.com/content/help/en/experience-manager-64/developing/platform/query-builder/querybuilder-api.html" rel="noopener noreferrer" target="_blank">click here (Adobe Documentation)</a></i></p>
+<p><strong>Step 3</strong>: Review the results.<br>
+<a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-image-query-builder-find-component.jpg"><img loading="lazy" src="AEMComponentusedInContent_files/blog-post-image-query-builder-find-component-300x128.jpg" alt="Query Builder Debugger" class="alignnone size-medium wp-image-1889" srcset="AEMComponentusedInContent_files/blog-post-image-query-builder-find-component-300x128.jpg 300w, AEMComponentusedInContent_files/blog-post-image-query-builder-find-component-1024x436.jpg 1024w, AEMComponentusedInContent_files/blog-post-image-query-builder-find-component-768x327.jpg 768w, AEMComponentusedInContent_files/blog-post-image-query-builder-find-component-600x255.jpg 600w, AEMComponentusedInContent_files/blog-post-image-query-builder-find-component.jpg 1300w" sizes="(max-width: 300px) 100vw, 300px" width="300" height="128"></a></p>
+<div id="search-by-cq-template" class="mention-block">
+<strong>Extra:</strong><p></p>
+<h2 style="font-size: 16px;">Find out How many pages are using an AEM template?</h2>
+<p>The query below will find all cq:Page nodes in the JCR, which 
+cq:template equals to /conf/we-retail/settings/wcm/templates/hero-page; 
+under the content path /content/we-retail. The search results will show 
+you the absolute node page path of whom has the matched property and 
+value set.</p>
+<div class="codecolorer-container java default" style="overflow:auto;white-space:nowrap;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br>2<br>3<br>4<br></div></td><td><div class="java codecolorer">type<span class="sy0">=</span>cq<span class="sy0">:</span>Page<br>
+path<span class="sy0">=/</span>content<span class="sy0">/</span>we<span class="sy0">-</span>retail<br>
+<span class="nu0">1</span>_property<span class="sy0">=</span>jcr<span class="sy0">:</span>content<span class="sy0">/</span>cq<span class="sy0">:</span>template<br>
+<span class="nu0">1</span>_property.<span class="me1">value</span><span class="sy0">=/</span>conf<span class="sy0">/</span>we<span class="sy0">-</span>retail<span class="sy0">/</span>settings<span class="sy0">/</span>wcm<span class="sy0">/</span>templates<span class="sy0">/</span>hero<span class="sy0">-</span>page</div></td></tr></tbody></table></div>
+<p>Ensuring that the “path” property is set is important, because you 
+would not want to excessively triverse through the entire JCR; which 
+will exhaust the AEM environment performance.
+</p></div>
+<div id="search-for-all-nodes-with-the-existing-property" class="mention-block">
+<strong>Extra:</strong><p></p>
+<h2 style="font-size: 16px;">How to search for all nodes in AEM, JCR, with an existing property?</h2>
+<p>The query below will search all nodes in the JCR, which 
+“myCustomProperty” exists; under the content path /content/we-retail. 
+The search results will show you the absolute node page path of whom has
+ the matched property and value set.</p>
+<div class="codecolorer-container java default" style="overflow:auto;white-space:nowrap;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br>2<br>3<br></div></td><td><div class="java codecolorer">path<span class="sy0">=/</span>content<span class="sy0">/</span>we<span class="sy0">-</span>retail<br>
+property<span class="sy0">=</span>myCustomProperty<br>
+property.<span class="me1">operation</span><span class="sy0">=</span>exists</div></td></tr></tbody></table></div>
+<p>Ensuring that the “path” property is set is important, because you 
+would not want to excessively triverse through the entire JCR; which 
+will exhaust the AEM environment performance.
+</p></div>
+<hr class="spacer-large">
+<h2 id="components-console">2. Component Search by the Components Console</h2>
+<p>This out of the box Components Console, CC, is available from AEM 
+6.2+ right under Tools -&gt; General -&gt; Components. The CC displays 
+search results in a form of pages where the component is being used; 
+rather than each node from the example above. This console is accessible
+ to authors so that even they can check for which pages use the searched
+ component.</p>
+<p><strong>Step 1</strong>: Within your running AEM instance, visit <a href="http://localhost:4502/libs/wcm/core/content/sites/components.html">http://localhost:4502/libs/wcm/core/content/sites/components.html</a>.</p>
+<p><strong>Step <a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-component-console-steps-a.jpg"></a><a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-component-console-steps-a.jpg">2</a></strong>:
+ Search for a component. Insert your search criteria with either by 
+“keyword”, “component path”, or “component group”. On every change of 
+the search criteria, you should see results in a list format on the 
+right hand side of the search left side bar.<br>
+<strong>Step <a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-component-console-steps-a.jpg">3</a></strong>: Click on the targeted component, and you will be redirected to the details page.<br>
+<strong>Step <a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-component-console-steps-b.jpg">4</a></strong>:
+ From the details page, click on “live usage”, and a results-list of 
+pages will be displayed, where the targeted component can be found.<br>
+<strong>Step <a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-component-console-steps-b.jpg">5</a></strong>: From the results-list, clicking on a link will open the page’s editor.</p>
+<table>
+<tbody><tr>
+<td style="border: none;" width="50%" align="center">Components Console – Steps 2 &amp; 3<a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-component-console-steps-a.jpg"><img loading="lazy" src="AEMComponentusedInContent_files/blog-post-component-console-steps-a-300x164.jpg" alt="Components Console - Steps 2 &amp; 3" class="alignnone size-medium wp-image-1913" srcset="AEMComponentusedInContent_files/blog-post-component-console-steps-a-300x164.jpg 300w, AEMComponentusedInContent_files/blog-post-component-console-steps-a-1024x559.jpg 1024w, AEMComponentusedInContent_files/blog-post-component-console-steps-a-768x419.jpg 768w, AEMComponentusedInContent_files/blog-post-component-console-steps-a-600x328.jpg 600w, AEMComponentusedInContent_files/blog-post-component-console-steps-a.jpg 1200w" sizes="(max-width: 300px) 100vw, 300px" width="300" height="164"></a></td>
+<td style="border: none;" width="50%" align="center">Components Console – Steps 4 &amp; 5 <a class="foobox fbx-link fbx-instance" href="https://sourcedcode.com/storage/2020/06/blog-post-component-console-steps-b.jpg"><img loading="lazy" src="AEMComponentusedInContent_files/blog-post-component-console-steps-b-300x164.jpg" alt="Components Console - Steps 4 &amp; 5" class="alignnone size-medium wp-image-1914" srcset="AEMComponentusedInContent_files/blog-post-component-console-steps-b-300x164.jpg 300w, AEMComponentusedInContent_files/blog-post-component-console-steps-b-1024x559.jpg 1024w, AEMComponentusedInContent_files/blog-post-component-console-steps-b-768x419.jpg 768w, AEMComponentusedInContent_files/blog-post-component-console-steps-b-600x328.jpg 600w, AEMComponentusedInContent_files/blog-post-component-console-steps-b.jpg 1200w" sizes="(max-width: 300px) 100vw, 300px" width="300" height="164"></a></td>
+</tr>
+</tbody></table>
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+$.post('https://sourcedcode.com/wp-admin/admin-ajax.php', {action: 'wpt_view_count', id: '1870'});
+});
+</script>
+<div class="helpful ">
+<div class="helpful-header">
+<h3 class="helpful-headline">Was this post helpful?</h3> </div>
+<div class="helpful-content" role="alert">
+<span>Let us know if you liked the post. That’s the only way we can improve.</span>
+</div>
+<div class="helpful-controls">
+<div>
+<button class="helpful-pro helpful-button" type="button" data-value="pro" data-post="1870" role="button">
+Yes <span class="helpful-counter">1</span> </button>
+</div>
+<div>
+<button class="helpful-contra helpful-button" type="button" data-value="contra" data-post="1870" role="button">
+No <span class="helpful-counter">0</span> </button>
+</div>
+</div>
+</div>
+</div>
+<footer class="entry-footer">
+</footer>
+<div class="mt-author-box">
+<div itemprop="image" class="mt-author__avatar">
+<img alt="" src="AEMComponentusedInContent_files/7fb61c81cad53df9bf1149e2120733e5.png" class="avatar avatar-96 photo" loading="lazy" width="96" height="96"> </div>
+<div class="mt-author-info">
+<h5 itemprop="name" class="mt-author-name"><a href="https://sourcedcode.com/blog/author/sourcedc" title="Posts by briankasingli" rel="author">briankasingli</a></h5>
+<div class="mt-author-bio">
+Hello, I am an Adobe AEM MVP &amp; a certified Lead AEM Developer who is
+ currently working as a Senior AEM Full Stack Developer at Whitbread, 
+UK, London. I have 10 years of overall web engineering experience and 6 
+years of AEM experience in practice.
+I hope to give back to the AEM Full Stack Development community by 
+sharing my knowledge with the world. </div>
+<div class="mt-author-meta">
+<div class="mt-author-website">
+<span>Website</span>
+<a href="https://www.linkedin.com/in/briankasingli" target="_blank">https://www.linkedin.com/in/briankasingli</a>
+</div>
+</div>
+</div>
+</div></article>
+<nav class="navigation post-navigation" role="navigation" aria-label="Posts">
+<h2 class="screen-reader-text">Post navigation</h2>
+<div class="nav-links"><div class="nav-previous"><a href="https://sourcedcode.com/blog/aem/how-to-enable-configuration-for-osgi-components-with-r6" rel="prev">How to Enable Configuration for OSGI Components with R6</a></div><div class="nav-next"><a href="https://sourcedcode.com/blog/aem/5-popular-ways-to-replicate-a-page-in-aem" rel="next">5 Popular Ways to Replicate a Page in AEM</a></div></div>
+</nav>
+<div id="comments" class="comments-area">
+<div id="respond" class="comment-respond">
+<h3 id="reply-title" class="comment-reply-title">Leave a Reply <small><a rel="nofollow" id="cancel-comment-reply-link" href="https://sourcedcode.com/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr#respond" style="display:none;">Cancel reply</a></small></h3><form action="https://sourcedcode.com/comments/" method="post" id="commentform" class="comment-form" novalidate=""><p class="comment-notes"><span id="email-notes">Your email address will not be published.</span> Required fields are marked <span class="required">*</span></p><p class="comment-form-comment"><label for="comment">Comment</label> <textarea id="comment" name="comment" cols="45" rows="8" maxlength="65525" required="required"></textarea></p><p class="comment-form-author"><label for="author">Name <span class="required">*</span></label> <input id="author" name="author" type="text" size="30" maxlength="245" required="required"></p>
+<p class="comment-form-email"><label for="email">Email <span class="required">*</span></label> <input id="email" name="email" type="email" size="30" maxlength="100" aria-describedby="email-notes" required="required"></p>
+<p class="comment-form-url"><label for="url">Website</label> <input id="url" name="url" type="url" size="30" maxlength="200"></p>
+<p class="comment-form-cookies-consent"><input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes"> <label for="wp-comment-cookies-consent">Save my name, email, and website in this browser for the next time I comment.</label></p>
+<p class="comment-form-comment-subscribe"><label for="cren_subscribe_to_comment"><input id="cren_subscribe_to_comment" name="cren_subscribe_to_comment" type="checkbox" value="on" checked="checked">Notify me via e-mail if anyone answers my comment.</label></p>
+<p class="comment-form-comment-subscribe"><label for="cren_gdpr"><input id="cren_gdpr" name="cren_gdpr" type="checkbox" value="yes" required="required">I consent to Sourced Code collecting and storing the data I submit in this form. <a target="_blank" href="https://sourcedcode.com/privacy-policy">(Privacy Policy)</a> <span class="required">*</span></label></p>
+<div class="anr_captcha_field"><div id="anr_captcha_field_1" class="anr_captcha_field_div"></div></div><p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="Post Comment"> <input type="hidden" name="comment_post_ID" value="1870" id="comment_post_ID">
+<input type="hidden" name="comment_parent" id="comment_parent" value="0">
+</p><input type="hidden" id="ak_js" name="ak_js" value="226"><textarea name="ak_hp_textarea" cols="45" rows="8" maxlength="100" style="display: none !important;"></textarea></form> </div>
+</div> <section class="mt-single-related-posts">
+<h2 class="mt-related-post-title">Related Posts</h2>
+<div class="mt-related-posts-wrapper">
+<article id="post-2682" class="has-thumbnail wow fadeInUp post-2682 post type-post status-publish format-standard has-post-thumbnail hentry category-aem category-touch-ui">
+<div class="thumb-cat-wrap">
+<div class="post-thumbnail">
+<img src="AEMComponentusedInContent_files/featured-image-re-usable-color-select-in-touch-ui-dialogs-w-.jpg" class="attachment-color-blog-full-width size-color-blog-full-width wp-post-image" alt="" loading="lazy" srcset="AEMComponentusedInContent_files/featured-image-re-usable-color-select-in-touch-ui-dialogs-w-.jpg 768w, AEMComponentusedInContent_files/featured-image-re-usable-color-select-in-touch-ui-dialog_002.jpg 300w, AEMComponentusedInContent_files/featured-image-re-usable-color-select-in-touch-ui-dialog_003.jpg 600w" sizes="(max-width: 768px) 100vw, 768px" width="768" height="421"> </div>
+<div class="post-cats-list">
+<span class="category-button cb-cat-2"><a href="https://sourcedcode.com/blog/category/aem">AEM</a></span>
+<span class="category-button cb-cat-33"><a href="https://sourcedcode.com/blog/category/aem/touch-ui">Touch UI</a></span>
+</div></div> <div class="entry-cat">
+<span class="posted-on"><a href="https://sourcedcode.com/blog/aem/re-usable-color-select-in-touch-ui-dialogs-w-acs-commons-generic-lists" rel="bookmark"><time class="entry-date published" datetime="2021-01-19T20:52:03+00:00">January 19, 2021</time><time class="updated" datetime="2021-01-21T11:15:09+00:00">January 21, 2021</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="https://sourcedcode.com/blog/author/sourcedc">briankasingli</a></span></span> </div>
+<header class="entry-header">
+<h2 class="entry-title"><a href="https://sourcedcode.com/blog/aem/re-usable-color-select-in-touch-ui-dialogs-w-acs-commons-generic-lists" rel="bookmark">Re-usable Color Select in Touch UI Dialogs w/ ACS Common’s Generic Lists</a></h2> </header>
+<footer class="entry-footer">
+</footer>
+</article>
+<article id="post-2594" class="has-thumbnail wow fadeInUp post-2594 post type-post status-publish format-standard has-post-thumbnail hentry category-aem category-dispatcher">
+<div class="thumb-cat-wrap">
+<div class="post-thumbnail">
+<img src="AEMComponentusedInContent_files/featured-image-how-to-setup-the-aem-dispatcher-flush-agent.jpg" class="attachment-color-blog-full-width size-color-blog-full-width wp-post-image" alt="" loading="lazy" srcset="AEMComponentusedInContent_files/featured-image-how-to-setup-the-aem-dispatcher-flush-agent.jpg 1000w, AEMComponentusedInContent_files/featured-image-how-to-setup-the-aem-dispatcher-flush-agent-3.jpg 300w, AEMComponentusedInContent_files/featured-image-how-to-setup-the-aem-dispatcher-flush-agent-7.jpg 768w, AEMComponentusedInContent_files/featured-image-how-to-setup-the-aem-dispatcher-flush-agent-6.jpg 600w" sizes="(max-width: 1000px) 100vw, 1000px" width="1000" height="548"> </div>
+<div class="post-cats-list">
+<span class="category-button cb-cat-2"><a href="https://sourcedcode.com/blog/category/aem">AEM</a></span>
+<span class="category-button cb-cat-39"><a href="https://sourcedcode.com/blog/category/aem/dispatcher">Dispatcher</a></span>
+</div></div> <div class="entry-cat">
+<span class="posted-on"><a href="https://sourcedcode.com/blog/aem/how-to-setup-the-aem-dispatcher-flush-agent" rel="bookmark"><time class="entry-date published" datetime="2021-01-09T20:24:04+00:00">January 9, 2021</time><time class="updated" datetime="2021-01-11T11:58:44+00:00">January 11, 2021</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="https://sourcedcode.com/blog/author/sourcedc">briankasingli</a></span></span> </div>
+<header class="entry-header">
+<h2 class="entry-title"><a href="https://sourcedcode.com/blog/aem/how-to-setup-the-aem-dispatcher-flush-agent" rel="bookmark">How to Setup the AEM Dispatcher Flush Agent?</a></h2> </header>
+<footer class="entry-footer">
+</footer>
+</article>
+<article id="post-2580" class="has-thumbnail wow fadeInUp post-2580 post type-post status-publish format-standard has-post-thumbnail hentry category-aem category-development category-short-post">
+<div class="thumb-cat-wrap">
+<div class="post-thumbnail">
+<img src="AEMComponentusedInContent_files/featured-image-errors-while-building-the-latest-aem-project-.jpg" class="attachment-color-blog-full-width size-color-blog-full-width wp-post-image" alt="" loading="lazy" srcset="AEMComponentusedInContent_files/featured-image-errors-while-building-the-latest-aem-project-.jpg 1000w, AEMComponentusedInContent_files/featured-image-errors-while-building-the-latest-aem-proj_002.jpg 300w, AEMComponentusedInContent_files/featured-image-errors-while-building-the-latest-aem-proj_003.jpg 768w, AEMComponentusedInContent_files/featured-image-errors-while-building-the-latest-aem-proj_004.jpg 600w" sizes="(max-width: 1000px) 100vw, 1000px" width="1000" height="548"> </div>
+<div class="post-cats-list">
+<span class="category-button cb-cat-2"><a href="https://sourcedcode.com/blog/category/aem">AEM</a></span>
+<span class="category-button cb-cat-28"><a href="https://sourcedcode.com/blog/category/aem/development">Development</a></span>
+<span class="category-button cb-cat-38"><a href="https://sourcedcode.com/blog/category/aem/short-post">Short Post</a></span>
+</div></div> <div class="entry-cat">
+<span class="posted-on"><a href="https://sourcedcode.com/blog/aem/errors-while-building-the-latest-aem-project-archetype-24-on-macos" rel="bookmark"><time class="entry-date published" datetime="2021-01-06T16:16:34+00:00">January 6, 2021</time><time class="updated" datetime="2021-01-06T18:35:03+00:00">January 6, 2021</time></a></span><span class="byline"><span class="author vcard"><a class="url fn n" href="https://sourcedcode.com/blog/author/sourcedc">briankasingli</a></span></span> </div>
+<header class="entry-header">
+<h2 class="entry-title"><a href="https://sourcedcode.com/blog/aem/errors-while-building-the-latest-aem-project-archetype-24-on-macos" rel="bookmark">Errors while building the latest AEM Project Archetype 24 on MacOS</a></h2> </header>
+<footer class="entry-footer">
+</footer>
+</article> </div>
+</section>
+</main>
+</div>
+<aside id="secondary" class="widget-area" style="height: auto !important;">
+<section id="yikes_easy_mc_widget-2" class="widget-odd widget-first widget-1 widget widget_yikes_easy_mc_widget"><h4 class="widget-title">Get Me Hooked on AEM!</h4>
+<section id="yikes-mailchimp-container-1" class="yikes-mailchimp-container yikes-mailchimp-container-1 ">
+<section class="yikes-mailchimp-form-description yikes-mailchimp-form-description-1">Sign up for emails to get the latest AEM tutorials, news, updates &amp; more.</section> <form id="join-our-newsletter-1" class="yikes-easy-mc-form yikes-easy-mc-form-1  " method="POST" data-attr-form-id="1">
+<label for="yikes-easy-mc-form-1-FNAME" class="FNAME-label ">
+<span class="FNAME-label">
+First Name </span>
+<input id="yikes-easy-mc-form-1-FNAME" name="FNAME" placeholder="" class="yikes-easy-mc-text " type="text">
+</label>
+<label for="yikes-easy-mc-form-1-EMAIL" class="EMAIL-label yikes-mailchimp-field-required ">
+<span class="EMAIL-label">
+Email Address </span>
+<input id="yikes-easy-mc-form-1-EMAIL" name="EMAIL" placeholder="" class="yikes-easy-mc-email " required="required" type="email">
+</label>
+<input type="hidden" name="yikes-mailchimp-honeypot" id="yikes-mailchimp-honeypot-1" value="">
+<input type="hidden" name="yikes-mailchimp-associated-list-id" id="yikes-mailchimp-associated-list-id-1" value="fc3dc11c8f">
+<input type="hidden" name="yikes-mailchimp-submitted-form" id="yikes-mailchimp-submitted-form-1" value="1">
+<button type="submit" class="yikes-easy-mc-submit-button yikes-easy-mc-submit-button-1 btn btn-primary "> <span class="yikes-mailchimp-submit-button-span-text">Submit</span></button>
+<input type="hidden" id="yikes_easy_mc_new_subscriber_1" name="yikes_easy_mc_new_subscriber" value="99145ae2dd">
+<input type="hidden" name="_wp_http_referer" value="/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr">
+</form>
+</section>
+</section><section id="custom_html-3" class="widget_text widget-even widget-2 no-padding no-border widget widget_custom_html"><div class="textwidget custom-html-widget"><script async="" src="AEMComponentusedInContent_files/adsbygoogle.js" type="text/javascript"></script>
+<ins class="adsbygoogle" style="display: block; height: 250px;" data-ad-client="ca-pub-9053803095882933" data-ad-slot="8439691635" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done"><ins id="aswift_1_expand" style="display:inline-table;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:324px;background-color:transparent;" tabindex="0" title="Advertisement" aria-label="Advertisement"><ins id="aswift_1_anchor" style="display: block; border: medium none; height: 250px; margin: 0px; padding: 0px; position: relative; visibility: visible; width: 324px; background-color: transparent; overflow: visible;"><iframe id="aswift_1" name="aswift_1" style="left:0;position:absolute;top:0;border:0;width:324px;height:250px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-9053803095882933&amp;output=html&amp;h=250&amp;slotname=8439691635&amp;adk=3317048848&amp;adf=3923205887&amp;pi=t.ma~as.8439691635&amp;w=324&amp;fwrn=4&amp;fwrnh=100&amp;lmt=1612821124&amp;rafmt=1&amp;psa=0&amp;format=324x250&amp;url=https%3A%2F%2Fsourcedcode.com%2Fblog%2Faem%2Fhow-many-times-is-an-aem-component-used-in-the-jcr&amp;flash=0&amp;fwr=0&amp;fwrattr=true&amp;rpe=1&amp;resp_fmts=3&amp;wgl=1&amp;dt=1614156925586&amp;bpp=3&amp;bdt=20467&amp;idt=1461&amp;shv=r20210222&amp;cbv=r20190131&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;prev_fmts=728x70&amp;correlator=5234833490717&amp;frm=20&amp;pv=1&amp;ga_vid=2120255245.1614156924&amp;ga_sid=1614156928&amp;ga_hid=975704737&amp;ga_fc=0&amp;u_tz=480&amp;u_his=1&amp;u_java=0&amp;u_h=1050&amp;u_w=1680&amp;u_ah=972&amp;u_aw=1680&amp;u_cd=24&amp;u_nplug=0&amp;u_nmime=0&amp;adx=955&amp;ady=606&amp;biw=1357&amp;bih=864&amp;scr_x=0&amp;scr_y=0&amp;eid=21068769%2C21068893%2C21069110&amp;oid=3&amp;pvsid=3939133700621027&amp;pem=157&amp;rx=0&amp;eae=0&amp;fc=896&amp;brdim=0%2C23%2C0%2C23%2C1680%2C23%2C1372%2C966%2C1372%2C864&amp;vis=1&amp;rsz=%7C%7CoeE%7C&amp;abl=CS&amp;pfx=0&amp;fu=8328&amp;bc=31&amp;ifi=2&amp;uci=a!2&amp;fsb=1&amp;xpc=qvhVKmWRVk&amp;p=https%3A//sourcedcode.com&amp;dtd=2477" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" data-google-container-id="a!2" width="324" height="250" frameborder="0"></iframe></ins></ins></ins>
+<script type="text/javascript">
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div></section> <section id="wpt_widget-2" class="widget-odd widget-3 nopadding widget widget_wpt"> <div class="wpt_widget_content" id="wpt_widget-2_content" data-widget-number="2">
+<ul class="wpt-tabs has-2-tabs">
+<li class="tab_title selected"><a href="#" id="popular-tab">Popular</a></li>
+<li class="tab_title"><a href="#" id="recent-tab">Recent</a></li>
+</ul>
+<div class="clear"></div>
+<div class="inside">
+<div id="popular-tab-content" class="tab-content" style="">					<ul>
+													<li>
+								
+								<div class="entry-title"><a title="AEM Sling Model Injectors Annotations Reference Guide" href="https://sourcedcode.com/blog/aem/aem-sling-model-injectors-annotations-reference-guide">AEM Sling Model Injectors Annotations Reference Guide</a></div>
+
+																	<div class="wpt-postmeta">
+																					January 4, 2020																																							</div> <!--end .entry-meta-->
+								
+								
+								<div class="clear"></div>
+							</li>
+													<li>
+								
+								<div class="entry-title"><a title="How to use AEM JCR SQL2 query strings to query for nodes in Java Content Repository" href="https://sourcedcode.com/blog/aem/aem-jcr-sql2-tutorial-and-examples-and-cheatsheet">How to use AEM JCR SQL2 query strings to query for nodes in Java Content...</a></div>
+
+																	<div class="wpt-postmeta">
+																					April 2, 2018																																							</div> <!--end .entry-meta-->
+								
+								
+								<div class="clear"></div>
+							</li>
+													<li>
+								
+								<div class="entry-title"><a title="JUnit 4: AEM Sling Models Unit Test Example Using wcm.io AEM Mocks" href="https://sourcedcode.com/blog/aem/aem-sling-models-unit-test-junit-4-with-examples">JUnit 4: AEM Sling Models Unit Test Example Using wcm.io AEM Mocks</a></div>
+
+																	<div class="wpt-postmeta">
+																					May 27, 2019																																							</div> <!--end .entry-meta-->
+								
+								
+								<div class="clear"></div>
+							</li>
+													<li>
+								
+								<div class="entry-title"><a title="How to make a simple HTTP POST request to AEM with a HTTP Rest Client, Postman" href="https://sourcedcode.com/blog/aem/how-to-make-simple-http-post-methods-in-aem-with-a-http-rest-client">How to make a simple HTTP POST request to AEM with a HTTP Rest Client,...</a></div>
+
+																	<div class="wpt-postmeta">
+																					March 31, 2018																																							</div> <!--end .entry-meta-->
+								
+								
+								<div class="clear"></div>
+							</li>
+													<li>
+								
+								<div class="entry-title"><a title="AEM Global Objects for Backend and Front-end Sightly (HTL) Development" href="https://sourcedcode.com/blog/aem/aem-global-objects-for-backend-and-front-end-sightly-htl">AEM Global Objects for Backend and Front-end Sightly (HTL) Development</a></div>
+
+																	<div class="wpt-postmeta">
+																					May 25, 2019																																							</div> <!--end .entry-meta-->
+								
+								
+								<div class="clear"></div>
+							</li>
+													<li>
+								
+								<div class="entry-title"><a title="What is the AEM Apache Sling Referrer Filter OSGI configuration?" href="https://sourcedcode.com/blog/aem/in-aem-what-is-the-apache-sling-referrer-filter-osgi-configuration">What is the AEM Apache Sling Referrer Filter OSGI configuration?</a></div>
+
+																	<div class="wpt-postmeta">
+																					April 1, 2018																																							</div> <!--end .entry-meta-->
+								
+								
+								<div class="clear"></div>
+							</li>
+													<li>
+								
+								<div class="entry-title"><a title="JUnit 4: AEM Sling Servlet Unit Test Example Using wcm.io AEM Mocks, Servlet by Resource Type" href="https://sourcedcode.com/blog/aem/aem-sling-servlet-osgi-r7-by-resource-type-unit-test-junit-4-with-examples">JUnit 4: AEM Sling Servlet Unit Test Example Using wcm.io AEM Mocks, Servlet by Resource...</a></div>
+
+																	<div class="wpt-postmeta">
+																					December 21, 2019																																							</div> <!--end .entry-meta-->
+								
+								
+								<div class="clear"></div>
+							</li>
+											</ul>
+					<div class="clear"></div>
+														<div class="wpt-pagination">
+													<a href="#" class="next"><span>Next »</span></a>
+							</div>
+			<div class="clear"></div>
+			<input type="hidden" class="page_num" name="page_num" value="1">
+													</div>
+<div id="recent-tab-content" class="tab-content" style="display: none;">
+</div>
+<div class="clear" style="display: none;"></div>
+</div>
+<div class="clear"></div>
+</div>
+<script type="text/javascript">
+jQuery(function($) {
+$('#wpt_widget-2_content').data('args', {"allow_pagination":"1","post_num":"7","title_length":"15","comment_num":"5","show_thumb":null,"thumb_size":"small","show_date":"1","show_excerpt":null,"excerpt_length":"15","show_comment_num":null,"show_avatar":"1","show_love":null,"classes":"nopadding"});
+});
+</script>
+</section> <section id="custom_html-4" class="widget_text widget-even widget-4 no-padding no-border widget widget_custom_html"><div class="textwidget custom-html-widget"><script async="" src="AEMComponentusedInContent_files/adsbygoogle.js" type="text/javascript"></script>
+<ins class="adsbygoogle" style="display: block; height: 250px;" data-ad-client="ca-pub-9053803095882933" data-ad-slot="5971448579" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done"><ins id="aswift_2_expand" style="display:inline-table;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:324px;background-color:transparent;" tabindex="0" title="Advertisement" aria-label="Advertisement"><ins id="aswift_2_anchor" style="display: block; border: medium none; height: 250px; margin: 0px; padding: 0px; position: relative; visibility: visible; width: 324px; background-color: transparent; overflow: visible;"><iframe id="aswift_2" name="aswift_2" style="left:0;position:absolute;top:0;border:0;width:324px;height:250px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-9053803095882933&amp;output=html&amp;h=250&amp;slotname=5971448579&amp;adk=2626587451&amp;adf=2889373664&amp;pi=t.ma~as.5971448579&amp;w=324&amp;fwrn=4&amp;fwrnh=100&amp;lmt=1612821124&amp;rafmt=1&amp;psa=0&amp;format=324x250&amp;url=https%3A%2F%2Fsourcedcode.com%2Fblog%2Faem%2Fhow-many-times-is-an-aem-component-used-in-the-jcr&amp;flash=0&amp;fwr=0&amp;fwrattr=true&amp;rpe=1&amp;resp_fmts=3&amp;wgl=1&amp;dt=1614156925586&amp;bpp=2&amp;bdt=20467&amp;idt=1462&amp;shv=r20210222&amp;cbv=r20190131&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;prev_fmts=728x70%2C324x250&amp;correlator=5234833490717&amp;frm=20&amp;pv=1&amp;ga_vid=2120255245.1614156924&amp;ga_sid=1614156928&amp;ga_hid=975704737&amp;ga_fc=0&amp;u_tz=480&amp;u_his=1&amp;u_java=0&amp;u_h=1050&amp;u_w=1680&amp;u_ah=972&amp;u_aw=1680&amp;u_cd=24&amp;u_nplug=0&amp;u_nmime=0&amp;adx=955&amp;ady=1098&amp;biw=1357&amp;bih=864&amp;scr_x=0&amp;scr_y=0&amp;eid=21068769%2C21068893%2C21069110&amp;oid=3&amp;pvsid=3939133700621027&amp;pem=157&amp;rx=0&amp;eae=0&amp;fc=896&amp;brdim=0%2C23%2C0%2C23%2C1680%2C23%2C1372%2C966%2C1372%2C864&amp;vis=1&amp;rsz=%7C%7CoeEbr%7C&amp;abl=CS&amp;pfx=0&amp;fu=8328&amp;bc=31&amp;ifi=3&amp;uci=a!3&amp;btvi=1&amp;fsb=1&amp;xpc=iyWCO4ITNP&amp;p=https%3A//sourcedcode.com&amp;dtd=2484" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" data-google-container-id="a!3" width="324" height="250" frameborder="0"></iframe></ins></ins></ins>
+<script type="text/javascript">
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div></section><section id="yikes_easy_mc_widget-3" class="widget-odd widget-5 widget widget_yikes_easy_mc_widget"><h4 class="widget-title">Get Me Hooked on AEM!</h4>
+<section id="yikes-mailchimp-container-1" class="yikes-mailchimp-container yikes-mailchimp-container-1 ">
+<section class="yikes-mailchimp-form-description yikes-mailchimp-form-description-1">Sign up for emails to get the latest AEM tutorials, news, updates &amp; more.</section> <form id="join-our-newsletter-1" class="yikes-easy-mc-form yikes-easy-mc-form-1  " method="POST" data-attr-form-id="1">
+<label for="yikes-easy-mc-form-1-FNAME" class="FNAME-label ">
+<span class="FNAME-label">
+First Name </span>
+<input id="yikes-easy-mc-form-1-FNAME" name="FNAME" placeholder="" class="yikes-easy-mc-text " type="text">
+</label>
+<label for="yikes-easy-mc-form-1-EMAIL" class="EMAIL-label yikes-mailchimp-field-required ">
+<span class="EMAIL-label">
+Email Address </span>
+<input id="yikes-easy-mc-form-1-EMAIL" name="EMAIL" placeholder="" class="yikes-easy-mc-email " required="required" type="email">
+</label>
+<input type="hidden" name="yikes-mailchimp-honeypot" id="yikes-mailchimp-honeypot-1" value="">
+<input type="hidden" name="yikes-mailchimp-associated-list-id" id="yikes-mailchimp-associated-list-id-1" value="fc3dc11c8f">
+<input type="hidden" name="yikes-mailchimp-submitted-form" id="yikes-mailchimp-submitted-form-1" value="1">
+<button type="submit" class="yikes-easy-mc-submit-button yikes-easy-mc-submit-button-1 btn btn-primary "> <span class="yikes-mailchimp-submit-button-span-text">Get me Hooked!</span></button>
+<input type="hidden" id="yikes_easy_mc_new_subscriber_1" name="yikes_easy_mc_new_subscriber" value="99145ae2dd">
+<input type="hidden" name="_wp_http_referer" value="/blog/aem/how-many-times-is-an-aem-component-used-in-the-jcr">
+</form>
+</section>
+</section><section id="categories-2" class="widget-even widget-6 widget widget_categories"><h4 class="widget-title">Topics</h4>
+<ul>
+<li class="cat-item cat-item-2"><a href="https://sourcedcode.com/blog/category/aem">AEM</a> (44)
+</li>
+<li class="cat-item cat-item-3"><a href="https://sourcedcode.com/blog/category/aem/aem-63">AEM63</a> (2)
+</li>
+<li class="cat-item cat-item-26"><a href="https://sourcedcode.com/blog/category/aem/assets">Assets</a> (4)
+</li>
+<li class="cat-item cat-item-27"><a href="https://sourcedcode.com/blog/category/aem/caching">Caching</a> (1)
+</li>
+<li class="cat-item cat-item-36"><a href="https://sourcedcode.com/blog/category/aem/client-libraries">Client Libraries</a> (5)
+</li>
+<li class="cat-item cat-item-25"><a href="https://sourcedcode.com/blog/category/aem/content">Content</a> (3)
+</li>
+<li class="cat-item cat-item-7"><a href="https://sourcedcode.com/blog/category/aem/deployment">Deployment</a> (6)
+</li>
+<li class="cat-item cat-item-28"><a href="https://sourcedcode.com/blog/category/aem/development">Development</a> (23)
+</li>
+<li class="cat-item cat-item-39"><a href="https://sourcedcode.com/blog/category/aem/dispatcher">Dispatcher</a> (1)
+</li>
+<li class="cat-item cat-item-37"><a href="https://sourcedcode.com/blog/category/aem/client-libraries/javascript">JavaScript</a> (2)
+</li>
+<li class="cat-item cat-item-23"><a href="https://sourcedcode.com/blog/category/aem/junit4">Junit4</a> (4)
+</li>
+<li class="cat-item cat-item-24"><a href="https://sourcedcode.com/blog/category/aem/migration">Migration</a> (1)
+</li>
+<li class="cat-item cat-item-35"><a href="https://sourcedcode.com/blog/category/aem/osgi">OSGI</a> (3)
+</li>
+<li class="cat-item cat-item-30"><a href="https://sourcedcode.com/blog/category/aem/performance">Performance</a> (2)
+</li>
+<li class="cat-item cat-item-22"><a href="https://sourcedcode.com/blog/category/aem/aem-quick-reference">Quick Reference</a> (9)
+</li>
+<li class="cat-item cat-item-4"><a href="https://sourcedcode.com/blog/category/aem/security">Security</a> (2)
+</li>
+<li class="cat-item cat-item-38"><a href="https://sourcedcode.com/blog/category/aem/short-post">Short Post</a> (1)
+</li>
+<li class="cat-item cat-item-32"><a href="https://sourcedcode.com/blog/category/aem/sling-models">Sling Models</a> (7)
+</li>
+<li class="cat-item cat-item-33"><a href="https://sourcedcode.com/blog/category/aem/touch-ui">Touch UI</a> (5)
+</li>
+<li class="cat-item cat-item-5"><a href="https://sourcedcode.com/blog/category/video-tutorial">Video Tutorial</a> (3)
+</li>
+</ul>
+</section><section id="custom_html-5" class="widget_text widget-odd widget-last widget-7 no-padding no-border widget widget_custom_html"><div class="textwidget custom-html-widget"><script async="" src="AEMComponentusedInContent_files/adsbygoogle.js" type="text/javascript"></script>
+<ins class="adsbygoogle" style="display: block; height: 250px;" data-ad-client="ca-pub-9053803095882933" data-ad-slot="4900745765" data-ad-format="auto" data-full-width-responsive="true" data-adsbygoogle-status="done"><ins id="aswift_3_expand" style="display:inline-table;border:none;height:250px;margin:0;padding:0;position:relative;visibility:visible;width:324px;background-color:transparent;" tabindex="0" title="Advertisement" aria-label="Advertisement"><ins id="aswift_3_anchor" style="display: block; border: medium none; height: 250px; margin: 0px; padding: 0px; position: relative; visibility: visible; width: 324px; background-color: transparent; overflow: visible;"><iframe id="aswift_3" name="aswift_3" style="left:0;position:absolute;top:0;border:0;width:324px;height:250px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-9053803095882933&amp;output=html&amp;h=250&amp;slotname=4900745765&amp;adk=2899197714&amp;adf=2096700844&amp;pi=t.ma~as.4900745765&amp;w=324&amp;fwrn=4&amp;fwrnh=100&amp;lmt=1612821124&amp;rafmt=1&amp;psa=0&amp;format=324x250&amp;url=https%3A%2F%2Fsourcedcode.com%2Fblog%2Faem%2Fhow-many-times-is-an-aem-component-used-in-the-jcr&amp;flash=0&amp;fwr=0&amp;fwrattr=true&amp;rpe=1&amp;resp_fmts=3&amp;wgl=1&amp;dt=1614156925586&amp;bpp=1&amp;bdt=20467&amp;idt=1463&amp;shv=r20210222&amp;cbv=r20190131&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;prev_fmts=728x70%2C324x250%2C324x250&amp;correlator=5234833490717&amp;frm=20&amp;pv=1&amp;ga_vid=2120255245.1614156924&amp;ga_sid=1614156928&amp;ga_hid=975704737&amp;ga_fc=0&amp;u_tz=480&amp;u_his=1&amp;u_java=0&amp;u_h=1050&amp;u_w=1680&amp;u_ah=972&amp;u_aw=1680&amp;u_cd=24&amp;u_nplug=0&amp;u_nmime=0&amp;adx=955&amp;ady=2744&amp;biw=1357&amp;bih=864&amp;scr_x=0&amp;scr_y=0&amp;eid=21068769%2C21068893%2C21069110&amp;oid=3&amp;pvsid=3939133700621027&amp;pem=157&amp;rx=0&amp;eae=0&amp;fc=896&amp;brdim=0%2C23%2C0%2C23%2C1680%2C23%2C1372%2C966%2C1372%2C864&amp;vis=1&amp;rsz=%7C%7CoeEbr%7C&amp;abl=CS&amp;pfx=0&amp;fu=8328&amp;bc=31&amp;ifi=4&amp;uci=a!4&amp;btvi=2&amp;fsb=1&amp;xpc=Zh0AIajzDS&amp;p=https%3A//sourcedcode.com&amp;dtd=2490" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" data-google-container-id="a!4" width="324" height="250" frameborder="0"></iframe></ins></ins></ins>
+<script type="text/javascript">
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script></div></section></aside></div>
+</div>
+</div>
+<footer itemscope="" id="colophon" class="site-footer"> <div id="bottom-footer">
+<div class="mt-container">
+<nav id="footer-navigation" class="footer-navigation">
+</nav>
+<div class="site-info">
+<span class="mt-copyright-text">
+Copyright © 2020 SourcedCode. All rights reserved. </span>
+<span class="sep"> | </span>
+Theme: Color Blog by <a itemprop="url" href="https://mysterythemes.com/">Mystery Themes</a>. </div>
+</div>
+</div>
+</footer><div id="mt-scrollup" class="animated arrow-hide" style="display: none;">Back To Top</div>
+</div>
+<script type="text/javascript">var likebtn_wl = 1; (function(d, e, s) {a = d.createElement(e);m = d.getElementsByTagName(e)[0];a.async = 1;a.src = s;m.parentNode.insertBefore(a, m)})(document, 'script', '//w.likebtn.com/js/w/widget.js'); if (typeof(LikeBtn) != "undefined") { LikeBtn.init(); }</script>
+<div id="aioseo-admin"></div>
+<script type="text/javascript">var clicky_site_ids = clicky_site_ids || []; clicky_site_ids.push(101225991);</script>
+<script async="" src="AEMComponentusedInContent_files/js.js" type="text/javascript"></script>
+<aside id="moove_gdpr_cookie_info_bar" class="moove-gdpr-align-center moove-gdpr-dark-scheme gdpr_infobar_postion_bottom" role="note" aria-label="GDPR Cookie Banner">
+<div class="moove-gdpr-info-bar-container">
+<div class="moove-gdpr-info-bar-content">
+<div class="moove-gdpr-cookie-notice">
+<p>We are using cookies to give you the best experience on our website.</p><p>You can find out more about which cookies we are using or switch them off in <span data-href="#moove_gdpr_cookie_modal" class="change-settings-button">settings</span>.</p></div>
+<div class="moove-gdpr-button-holder">
+<button class="mgbutton moove-gdpr-infobar-allow-all" aria-label="Accept">Accept</button>
+</div>
+</div>
+</div>
+</aside>
+<style type="text/css">
+#wpfront-notification-bar 
+{
+background: #000000;
+background: -moz-linear-gradient(top, #000000 0%, #000000 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#000000), color-stop(100%,#000000));
+background: -webkit-linear-gradient(top, #000000 0%,#000000 100%);
+background: -o-linear-gradient(top, #000000 0%,#000000 100%);
+background: -ms-linear-gradient(top, #000000 0%,#000000 100%);
+background: linear-gradient(to bottom, #000000 0%, #000000 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000',GradientType=0 );
+}
+#wpfront-notification-bar div.wpfront-message
+{
+color: #ffffff;
+}
+#wpfront-notification-bar a.wpfront-button
+{
+background: #ffb300;
+background: -moz-linear-gradient(top, #ffb300 0%, #ffb300 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#ffb300), color-stop(100%,#ffb300));
+background: -webkit-linear-gradient(top, #ffb300 0%,#ffb300 100%);
+background: -o-linear-gradient(top, #ffb300 0%,#ffb300 100%);
+background: -ms-linear-gradient(top, #ffb300 0%,#ffb300 100%);
+background: linear-gradient(to bottom, #ffb300 0%, #ffb300 100%);
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffb300', endColorstr='#ffb300',GradientType=0 );
+color: #000000;
+}
+#wpfront-notification-bar-open-button
+{
+background-color: #00b7ea;
+}
+#wpfront-notification-bar  div.wpfront-close 
+{
+border: 1px solid #ffb300;
+background-color: #ffb300;
+color: #000000;
+}
+#wpfront-notification-bar  div.wpfront-close:hover 
+{
+border: 1px solid #aaaaaa;
+background-color: #aaaaaa;
+}
+</style>
+
+<style type="text/css">
+</style>
+<script type="text/javascript">
+function __load_wpfront_notification_bar() {
+if (typeof wpfront_notification_bar === "function") {
+wpfront_notification_bar({"position":1,"height":0,"fixed_position":"on","animate_delay":0,"close_button":true,"button_action_close_bar":"on","auto_close_after":0,"display_after":1,"is_admin_bar_showing":false,"display_open_button":false,"keep_closed":false,"keep_closed_for":0,"position_offset":0,"display_scroll":false,"display_scroll_offset":0,"keep_closed_cookie":"wpfront-notification-bar-keep-closed","log":false});
+} else {
+setTimeout(__load_wpfront_notification_bar, 100);
+}
+}
+__load_wpfront_notification_bar();
+</script>
+<link rel="stylesheet" type="text/css" href="AEMComponentusedInContent_files/bmytw_002.css" media="all">
+<script type="text/javascript" id="pt-cv-content-views-script-js-extra">
+/* <![CDATA[ */
+var PT_CV_PUBLIC = {"_prefix":"pt-cv-","page_to_show":"5","_nonce":"e132295a4b","is_admin":"","is_mobile":"","ajaxurl":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php","lang":"","loading_image_src":"data:image\/gif;base64,R0lGODlhDwAPALMPAMrKygwMDJOTkz09PZWVla+vr3p6euTk5M7OzuXl5TMzMwAAAJmZmWZmZszMzP\/\/\/yH\/C05FVFNDQVBFMi4wAwEAAAAh+QQFCgAPACwAAAAADwAPAAAEQvDJaZaZOIcV8iQK8VRX4iTYoAwZ4iCYoAjZ4RxejhVNoT+mRGP4cyF4Pp0N98sBGIBMEMOotl6YZ3S61Bmbkm4mAgAh+QQFCgAPACwAAAAADQANAAAENPDJSRSZeA418itN8QiK8BiLITVsFiyBBIoYqnoewAD4xPw9iY4XLGYSjkQR4UAUD45DLwIAIfkEBQoADwAsAAAAAA8ACQAABC\/wyVlamTi3nSdgwFNdhEJgTJoNyoB9ISYoQmdjiZPcj7EYCAeCF1gEDo4Dz2eIAAAh+QQFCgAPACwCAAAADQANAAAEM\/DJBxiYeLKdX3IJZT1FU0iIg2RNKx3OkZVnZ98ToRD4MyiDnkAh6BkNC0MvsAj0kMpHBAAh+QQFCgAPACwGAAAACQAPAAAEMDC59KpFDll73HkAA2wVY5KgiK5b0RRoI6MuzG6EQqCDMlSGheEhUAgqgUUAFRySIgAh+QQFCgAPACwCAAIADQANAAAEM\/DJKZNLND\/kkKaHc3xk+QAMYDKsiaqmZCxGVjSFFCxB1vwy2oOgIDxuucxAMTAJFAJNBAAh+QQFCgAPACwAAAYADwAJAAAEMNAs86q1yaWwwv2Ig0jUZx3OYa4XoRAfwADXoAwfo1+CIjyFRuEho60aSNYlOPxEAAAh+QQFCgAPACwAAAIADQANAAAENPA9s4y8+IUVcqaWJ4qEQozSoAzoIyhCK2NFU2SJk0hNnyEOhKR2AzAAj4Pj4GE4W0bkJQIAOw=="};
+var PT_CV_PAGINATION = {"first":"\u00ab","prev":"\u2039","next":"\u203a","last":"\u00bb","goto_first":"Go to first page","goto_prev":"Go to previous page","goto_next":"Go to next page","goto_last":"Go to last page","current_page":"Current page is","goto_page":"Go to page"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/cv.js" id="pt-cv-content-views-script-js"></script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/mt-combine-scripts.js" id="color-blog-combine-scripts-js"></script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/navigation.js" id="color-blog-navigation-js"></script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/skip-link-focus-fix.js" id="color-blog-skip-link-focus-fix-js"></script>
+<script type="text/javascript" id="color-blog-custom-scripts-js-extra">
+/* <![CDATA[ */
+var color_blogObject = {"menu_sticky":"off","wow_effect":"off"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/mt-custom-scripts.js" id="color-blog-custom-scripts-js"></script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/comment-reply.js" id="comment-reply-js"></script>
+<script type="text/javascript" id="moove_gdpr_frontend-js-extra">
+/* <![CDATA[ */
+var moove_frontend_gdpr_scripts = {"ajaxurl":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php","post_id":"1870","plugin_dir":"https:\/\/sourcedcode.com\/core\/modules\/gdpr-cookie-compliance","show_icons":"all","is_page":"","strict_init":"1","enabled_default":{"third_party":0,"advanced":0},"geo_location":"false","force_reload":"false","is_single":"1","hide_save_btn":"false","current_user":"0","cookie_expiration":"365"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/main.js" id="moove_gdpr_frontend-js"></script>
+<script type="text/javascript" id="helpful-js-extra">
+/* <![CDATA[ */
+var helpful = {"ajax_url":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php","ajax_data":{"user_id":"143ee86820279d2d8d8b3fceb178faf0","_wpnonce":"fb7e998a35"},"translations":{"fieldIsRequired":"This field is required."},"ajax_session":{"helpful_user":"143ee86820279d2d8d8b3fceb178faf0"}};
+/* ]]> */
+</script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/helpful.js" id="helpful-js"></script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/wp-embed.js" id="wp-embed-js"></script>
+<script type="text/javascript" id="yikes-easy-mc-ajax-js-extra">
+/* <![CDATA[ */
+var yikes_mailchimp_ajax = {"ajax_url":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php","page_data":"1870","interest_group_checkbox_error":"This field is required.","preloader_url":"https:\/\/sourcedcode.com\/core\/modules\/f83326792c\/includes\/images\/ripple.svg","loading_dots":"https:\/\/sourcedcode.com\/core\/modules\/f83326792c\/includes\/images\/bars.svg","ajax_security_nonce":"7152829acb","feedback_message_placement":"before"};
+var yikes_mailchimp_ajax = {"ajax_url":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php","page_data":"1870","interest_group_checkbox_error":"This field is required.","preloader_url":"https:\/\/sourcedcode.com\/core\/modules\/f83326792c\/includes\/images\/ripple.svg","loading_dots":"https:\/\/sourcedcode.com\/core\/modules\/f83326792c\/includes\/images\/bars.svg","ajax_security_nonce":"7152829acb","feedback_message_placement":"before"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/yikes-mc-ajax-forms.js" id="yikes-easy-mc-ajax-js"></script>
+<script type="text/javascript" id="form-submission-helpers-js-extra">
+/* <![CDATA[ */
+var form_submission_helpers = {"ajax_url":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php","preloader_url":"https:\/\/sourcedcode.com\/wp-admin\/images\/wpspin_light.gif","countries_with_zip":{"US":"US","GB":"GB","CA":"CA","IE":"IE","CN":"CN","IN":"IN","AU":"AU","BR":"BR","MX":"MX","IT":"IT","NZ":"NZ","JP":"JP","FR":"FR","GR":"GR","DE":"DE","NL":"NL","PT":"PT","ES":"ES"},"page_data":"1870"};
+var form_submission_helpers = {"ajax_url":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php","preloader_url":"https:\/\/sourcedcode.com\/wp-admin\/images\/wpspin_light.gif","countries_with_zip":{"US":"US","GB":"GB","CA":"CA","IE":"IE","CN":"CN","IN":"IN","AU":"AU","BR":"BR","MX":"MX","IT":"IT","NZ":"NZ","JP":"JP","FR":"FR","GR":"GR","DE":"DE","NL":"NL","PT":"PT","ES":"ES"},"page_data":"1870"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/form-submission-helpers.js" id="form-submission-helpers-js"></script>
+<script type="text/javascript" id="wpt_widget-js-extra">
+/* <![CDATA[ */
+var wpt = {"ajax_url":"https:\/\/sourcedcode.com\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type="text/javascript" src="AEMComponentusedInContent_files/wp-tab-widget.js" id="wpt_widget-js"></script>
+<div id="moove_gdpr_cookie_modal" class="gdpr_lightbox-hide" role="complementary" aria-label="GDPR Settings Screen">
+<div class="moove-gdpr-modal-content moove-clearfix logo-position-left moove_gdpr_modal_theme_v1">
+<button class="moove-gdpr-modal-close" aria-label="Close GDPR Cookie Settings">
+<span class="gdpr-sr-only">Close GDPR Cookie Settings</span>
+<span class="gdpr-icon moovegdpr-arrow-close"></span>
+</button>
+<div class="moove-gdpr-modal-left-content">
+<div class="moove-gdpr-company-logo-holder">
+<img src="AEMComponentusedInContent_files/gdpr-logo.png" alt="Sourced Code" title="Sourced Code" class="img-responsive" width="350" height="233">
+</div>
+<ul id="moove-gdpr-menu">
+<li class="menu-item-on menu-item-privacy_overview menu-item-selected">
+<button data-href="#privacy_overview" class="moove-gdpr-tab-nav" aria-label="Privacy Overview">
+<span class="gdpr-svg-icon">
+<svg class="icon icon-privacy-overview" viewBox="0 0 26 32">
+<path d="M11.082 27.443l1.536 0.666 1.715-0.717c5.018-2.099 8.294-7.014 8.294-12.442v-5.734l-9.958-5.325-9.702 5.325v5.862c0 5.376 3.2 10.24 8.115 12.365zM4.502 10.138l8.166-4.506 8.397 4.506v4.813c0 4.838-2.893 9.19-7.347 11.034l-1.101 0.461-0.922-0.41c-4.352-1.894-7.194-6.195-7.194-10.957v-4.941zM12.029 14.259h1.536v7.347h-1.536v-7.347zM12.029 10.394h1.536v2.483h-1.536v-2.483z" fill="currentColor"></path>
+</svg>
+</span>
+<span class="gdpr-nav-tab-title">Privacy Overview</span>
+</button>
+</li>
+<li class="menu-item-strict-necessary-cookies menu-item-off">
+<button data-href="#strict-necessary-cookies" class="moove-gdpr-tab-nav" aria-label="Strictly Necessary Cookies">
+<span class="gdpr-svg-icon">
+<svg class="icon icon-strict-necessary" viewBox="0 0 26 32">
+<path d="M22.685 5.478l-9.984 10.752-2.97-4.070c-0.333-0.461-0.973-0.538-1.434-0.205-0.435 0.333-0.538 0.947-0.23 1.408l3.686 5.094c0.179 0.256 0.461 0.41 0.768 0.435h0.051c0.282 0 0.538-0.102 0.742-0.307l10.854-11.699c0.358-0.435 0.333-1.075-0.102-1.434-0.384-0.384-0.998-0.358-1.382 0.026v0zM22.301 12.954c-0.563 0.102-0.922 0.64-0.794 1.203 0.128 0.614 0.179 1.229 0.179 1.843 0 5.094-4.122 9.216-9.216 9.216s-9.216-4.122-9.216-9.216 4.122-9.216 9.216-9.216c1.536 0 3.021 0.384 4.378 1.101 0.512 0.23 1.126 0 1.357-0.538 0.205-0.461 0.051-0.998-0.384-1.254-5.478-2.944-12.314-0.922-15.283 4.557s-0.922 12.314 4.557 15.258 12.314 0.922 15.258-4.557c0.896-1.638 1.357-3.482 1.357-5.35 0-0.768-0.077-1.51-0.23-2.253-0.102-0.538-0.64-0.896-1.178-0.794z" fill="currentColor"></path>
+</svg>
+</span>
+<span class="gdpr-nav-tab-title">Strictly Necessary Cookies</span>
+</button>
+</li>
+</ul>
+<div class="moove-gdpr-branding-cnt">
+<a href="https://wordpress.org/plugins/gdpr-cookie-compliance" target="_blank" rel="noopener noreferrer nofollow" class="moove-gdpr-branding">Powered by&nbsp; <span>GDPR Cookie Compliance</span></a>
+</div>
+</div>
+<div class="moove-gdpr-modal-right-content">
+<div class="moove-gdpr-modal-title">
+</div>
+<div class="main-modal-content">
+<div class="moove-gdpr-tab-content">
+<div id="privacy_overview" class="moove-gdpr-tab-main">
+<span class="tab-title">Privacy Overview</span>
+<div class="moove-gdpr-tab-main-content">
+<p>This website uses cookies so that we can provide you with the best 
+user experience possible. Cookie information is stored in your browser 
+and performs functions such as recognising you when you return to our 
+website and helping our team to understand which sections of the website
+ you find most interesting and useful.</p>
+</div>
+</div>
+<div id="strict-necessary-cookies" class="moove-gdpr-tab-main" style="display:none">
+<span class="tab-title">Strictly Necessary Cookies</span>
+<div class="moove-gdpr-tab-main-content">
+<p>Strictly Necessary Cookie should be enabled at all times so that we can save your preferences for cookie settings.</p>
+<div class="moove-gdpr-status-bar ">
+<div class="gdpr-cc-form-wrap">
+<div class="gdpr-cc-form-fieldset">
+<label class="cookie-switch" for="moove_gdpr_strict_cookies">
+<span class="gdpr-sr-only">Enable or Disable Cookies</span>
+<input type="checkbox" aria-label="Strictly Necessary Cookies" value="check" name="moove_gdpr_strict_cookies" id="moove_gdpr_strict_cookies">
+<span class="cookie-slider cookie-round" data-text-enable="Enabled" data-text-disabled="Disabled"></span>
+</label>
+</div>
+</div>
+</div>
+<div class="moove-gdpr-strict-warning-message" style="margin-top: 10px;">
+<p>If you disable this cookie, we will not be able to save your 
+preferences. This means that every time you visit this website you will 
+need to enable or disable cookies again.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="moove-gdpr-modal-footer-content">
+<div class="moove-gdpr-button-holder">
+<button class="mgbutton moove-gdpr-modal-allow-all button-visible" aria-label="Enable All">Enable All</button>
+<button class="mgbutton moove-gdpr-modal-save-settings button-visible" aria-label="Save Settings">Save Settings</button>
+</div>
+</div>
+</div>
+<div class="moove-clearfix"></div>
+</div>
+</div>
+<script type="text/javascript">
+var anr_onloadCallback = function() {
+for ( var i = 0; i < document.forms.length; i++ ) {
+var form = document.forms[i];
+var captcha_div = form.querySelector( '.anr_captcha_field_div' );
+if ( null === captcha_div )
+continue;
+captcha_div.innerHTML = '';
+( function( form ) {
+var anr_captcha = grecaptcha.render( captcha_div,{
+'sitekey' : '6LdgBMwUAAAAABILVdGe9wEm95yCgzJ3z5VZXxHq',
+'size'  : 'normal',
+'theme' : 'light'
+});
+if ( typeof jQuery !== 'undefined' ) {
+jQuery( document.body ).on( 'checkout_error', function(){
+grecaptcha.reset(anr_captcha);
+});
+}
+if ( typeof wpcf7 !== 'undefined' ) {
+document.addEventListener( 'wpcf7submit', function() {
+grecaptcha.reset(anr_captcha);
+}, false );
+}
+})(form);
+}
+};
+</script>
+<script async="" src="AEMComponentusedInContent_files/api.js" defer="defer" type="text/javascript">
+</script>
+
+<div class="fbx-modal fbx-1 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-2 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-3 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-4 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-5 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-6 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-7 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-8 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-9 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><div class="fbx-modal fbx-10 fbx-rounded fbx-light fbx-mac fbx-firefox fbx-no-buttons fbx-tablet fbx-landscape" tabindex="0"><div class="fbx-inner-spacer"></div><div class="fbx-loader"><div></div></div><div class="fbx-inner fbx-inner-shadow"><div class="fbx-stage"><div class="fbx-item-current"></div><div class="fbx-item-next"></div><div class="fbx-caption fbx-slide-caption"></div></div><a class="fbx-prev fbx-btn-transition fbx-btn-shadow"></a><div class="fbx-credit" style="display: none;"><a target="_blank" href=""><em></em><span> FooBox</span></a></div><span class="fbx-count" style="display: none;"></span><a class="fbx-next fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-close fbx-btn-transition fbx-btn-shadow"></a><a class="fbx-open-caption">…</a></div></div><ins class="adsbygoogle adsbygoogle-noablate" style="display: none !important;" data-adsbygoogle-status="done"><ins id="aswift_4_expand" style="display:inline-table;border:none;height:0px;margin:0;padding:0;position:relative;visibility:visible;width:0px;background-color:transparent;" tabindex="0" title="Advertisement" aria-label="Advertisement"><ins id="aswift_4_anchor" style="display:block;border:none;height:0px;margin:0;padding:0;position:relative;visibility:visible;width:0px;background-color:transparent;"><iframe id="aswift_4" name="aswift_4" style="left:0;position:absolute;top:0;border:0;width:undefinedpx;height:undefinedpx;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" src="https://googleads.g.doubleclick.net/pagead/ads?client=ca-pub-9053803095882933&amp;output=html&amp;adk=1812271804&amp;adf=3025194257&amp;lmt=1612821124&amp;plat=1%3A17858568%2C2%3A17858568%2C9%3A32776%2C16%3A8388608%2C17%3A32%2C24%3A32%2C25%3A32%2C30%3A1081344%2C32%3A32&amp;format=0x0&amp;url=https%3A%2F%2Fsourcedcode.com%2Fblog%2Faem%2Fhow-many-times-is-an-aem-component-used-in-the-jcr&amp;ea=0&amp;flash=0&amp;pra=7&amp;wgl=1&amp;dt=1614156925586&amp;bpp=1&amp;bdt=20468&amp;idt=1464&amp;shv=r20210222&amp;cbv=r20190131&amp;ptt=9&amp;saldr=aa&amp;abxe=1&amp;prev_fmts=728x70%2C324x250%2C324x250%2C324x250&amp;nras=1&amp;correlator=5234833490717&amp;frm=20&amp;pv=1&amp;ga_vid=2120255245.1614156924&amp;ga_sid=1614156928&amp;ga_hid=975704737&amp;ga_fc=0&amp;u_tz=480&amp;u_his=1&amp;u_java=0&amp;u_h=1050&amp;u_w=1680&amp;u_ah=972&amp;u_aw=1680&amp;u_cd=24&amp;u_nplug=0&amp;u_nmime=0&amp;adx=-12245933&amp;ady=-12245933&amp;biw=1357&amp;bih=864&amp;scr_x=0&amp;scr_y=0&amp;eid=21068769%2C21068893%2C21069110&amp;oid=3&amp;pvsid=3939133700621027&amp;pem=157&amp;rx=0&amp;eae=2&amp;fc=896&amp;brdim=0%2C23%2C0%2C23%2C1680%2C23%2C1372%2C966%2C1372%2C864&amp;vis=1&amp;rsz=%7C%7Cs%7C&amp;abl=NS&amp;fu=8200&amp;bc=31&amp;ifi=5&amp;uci=a!5&amp;fsb=1&amp;dtd=2497" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" allowfullscreen="true" data-google-container-id="a!5" frameborder="0"></iframe></ins></ins></ins><script type="text/javascript" async="" src="AEMComponentusedInContent_files/in.js"></script><iframe id="google_osd_static_frame_1476872466920" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe></body><iframe id="google_esf" name="google_esf" src="https://googleads.g.doubleclick.net/pagead/html/r20210222/r20190131/zrt_lookup.html#" style="display: none;" data-ad-client="ca-pub-9053803095882933"></iframe></html>
