@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="en-US">
+    <head>
+        <title>How to create your own javascript library  | Our Code World</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <link rel="apple-touch-icon-precomposed" sizes="57x57" href="https://cdn.ourcodeworld.com/assets/icons/apple-touch-icon-57x57.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="https://cdn.ourcodeworld.com/assets/icons/apple-touch-icon-114x114.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="https://cdn.ourcodeworld.com/assets/icons/apple-touch-icon-72x72.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://cdn.ourcodeworld.com/assets/icons/apple-touch-icon-144x144.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="60x60" href="https://cdn.ourcodeworld.com/assets/icons/apple-touch-icon-60x60.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://cdn.ourcodeworld.com/assets/icons/apple-touch-icon-120x120.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="76x76" href="https://cdn.ourcodeworld.com/assets/icons/apple-touch-icon-76x76.png" />
+        <link rel="apple-touch-icon-precomposed" sizes="152x152" href="https://cdn.ourcodeworld.com/assets/icons/apple-touch-icon-152x152.png" />
+        <link rel="icon" type="image/png" href="https://cdn.ourcodeworld.com/assets/icons/favicon-196x196.png" sizes="196x196" />
+        <link rel="icon" type="image/png" href="https://cdn.ourcodeworld.com/assets/icons/favicon-96x96.png" sizes="96x96" />
+        <link rel="icon" type="image/png" href="https://cdn.ourcodeworld.com/assets/icons/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" type="image/png" href="https://cdn.ourcodeworld.com/assets/icons/favicon-16x16.png" sizes="16x16" />
+        <link rel="icon" type="image/png" href="https://cdn.ourcodeworld.com/assets/icons/favicon-128.png" sizes="128x128" />
+        <meta name="msapplication-TileImage" content="https://cdn.ourcodeworld.com/assets/icons/mstile-144x144.png" />
+        <meta name="msapplication-square70x70logo" content="https://cdn.ourcodeworld.com/assets/icons/mstile-70x70.png" />
+        <meta name="msapplication-square150x150logo" content="https://cdn.ourcodeworld.com/assets/icons/mstile-150x150.png " />
+        <meta name="msapplication-wide310x150logo" content="https://cdn.ourcodeworld.com/assets/icons/mstile-310x150.png" />
+        <meta name="msapplication-square310x310logo" content="https://cdn.ourcodeworld.com/assets/icons/mstile-310x310.png" /><meta property="og:site_name" content="Our Code World"/>
+        <meta property="og:title" content="How to create your own javascript library"/>
+        <meta property="og:url" content="https://ourcodeworld.com/articles/read/37/how-to-create-your-own-javascript-library"/>
+        <meta property="og:description" content="Learn to create efficiently a javascript library to wrap all your functions"/>
+        <meta property="og:type" content="article" />
+        <meta property="og:locale" content="en_US" />
+        <meta property="article:publisher" content="https://www.facebook.com/ourcodeworld" />
+        <meta property="article:published_time" content="2016-02-09T17:54:00+00:00" />
+        <meta property="article:modified_time" content="2016-02-09T19:06:00+00:00" />
+        <meta property="og:updated_time" content="2016-02-09T19:06:00+00:00" />
+        <meta name="keywords" content="javascript,library">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:site" content="@ourcodeworld">
+        <meta name="twitter:creator" content="@ourcodeworld">
+        <meta name="twitter:title" content="How to create your own javascript library">
+        <meta name="twitter:description" content="Learn to create efficiently a javascript library to wrap all your functions">
+        <link rel="alternate" href="https://ourcodeworld.com/articles/read/37/how-to-create-your-own-javascript-library" hreflang="en-US" />
+        <link rel="alternate" href="https://ourcodeworld.co/articulos/leer/37/como-crear-tu-propia-biblioteca-javascript" hreflang="es-CO" />
+
+        <meta name="twitter:image:src" content="https://cdn.ourcodeworld.com/public-media/articles/articleocw-56ba2aa476b9a.png" />
+        <meta property="og:image" content="https://cdn.ourcodeworld.com/public-media/articles/articleocw-56ba2aa476b9a.png" />
+        <meta property="og:image:secure_url" content="https://cdn.ourcodeworld.com/public-media/articles/articleocw-56ba2aa476b9a.png" />
+    
+        <meta name="author" content="Carlos Delgado">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700|Roboto+Condensed:400,400i,700,700i" rel="stylesheet">
+        <link href="https://cdn.ourcodeworld.com/assets/vendor/bootstrap/css/bootstrap.css" rel="stylesheet">
+        <link href="https://cdn.ourcodeworld.com/assets/css/style-ourcodeworld.css" rel="stylesheet">
+        <link href="https://cdn.ourcodeworld.com/assets/css/custom.css" rel="stylesheet">
+        <link rel="shortcut icon" href="https://cdn.ourcodeworld.com/favicon.ico">
+        <link rel="search" type="application/opensearchdescription+xml" title="Welcome to Our Code World" href="/opensearch.xml">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.css" /><!-- Global site tag (gtag.js) - Google Analytics --> <script async src="https://www.googletagmanager.com/gtag/js?id=UA-112789410-1"></script> <script>
+    function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","UA-112789410-1");
+</script>
+<style>
+            .fa-svg-icon {
+                display: inline-flex;
+                align-self: center;
+                fill: #fff;
+            }
+
+            .fa-svg-icon svg {
+                height:1em;
+                width:1em;
+            }
+
+            .fa-svg-icon.svg-baseline svg {
+                top: .125em;
+                position: relative;
+            }
+        </style>
+        <script src="https://cdn.ourcodeworld.com/assets/vendor/google/gdpr.en_US.js" defer></script>
+        <script src="https://cdn.ourcodeworld.com/assets/vendor/jquery/jquery.min.js" defer></script>
+        <script src="https://cdn.ourcodeworld.com/assets/vendor/jquery/jquery-migrate-3.3.2.min.js" defer></script>
+        <script src="https://cdn.ourcodeworld.com/assets/vendor/bootstrap/js/bootstrap.bundle.min.js" defer></script>
+        <script src="https://cdn.ourcodeworld.com/assets/js/init.js" defer></script>
+        <script src="https://cdn.jsdelivr.net/npm/cookieconsent@3/build/cookieconsent.min.js" defer></script>
+        <script>
+            window.addEventListener("load", function () {
+                window.cookieconsent.initialise({
+                    "palette": {
+                        "popup": {
+                            "background": "#edeff5",
+                            "text": "#000000"
+                        },
+                        "button": {
+                            "background": "#03a9f4"
+                        }
+                    },
+                    "theme": "edgeless",
+                    "position": "bottom-right",
+                    "content": {
+                        "message": "Our Code World uses cookies to ensure you get the best experience on our website.",
+                        "href": "https://ourcodeworld.com/privacy-policy",
+                        "dismiss": "Got it !",
+                        "link": "Learn more"
+                    }
+                })
+            });
+        </script>
+        
+                    </head>
+    <body>
+        <div class="site-wrapper clearfix">
+            <div class="header-mobile clearfix" id="header-mobile">
+                <div class="header-mobile__logo">
+                    <a href="/">
+                        <img src="https://cdn.ourcodeworld.com/assets-v2/brand/logo.png" alt="Our Code World" class="header-mobile__logo-img">
+                    </a>
+                </div>
+                <div class="header-mobile__inner"><a id="header-mobile__toggle" class="burger-menu-icon"><span class="burger-menu-icon__line"></span></a> <span class="header-mobile__search-icon" id="header-mobile__search-icon"><span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1216 832q0-185-131.5-316.5t-316.5-131.5-316.5 131.5-131.5 316.5 131.5 316.5 316.5 131.5 316.5-131.5 131.5-316.5zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124-143 0-273.5-55.5t-225-150-150-225-55.5-273.5 55.5-273.5 150-225 225-150 273.5-55.5 273.5 55.5 225 150 150 225 55.5 273.5q0 220-124 399l343 343q37 37 37 90z"/></svg></span></span></div>
+            </div>
+            <header class="header header--layout-3">
+                <div class="header__top-bar clearfix">
+                    <div class="container">
+                        <div class="header__top-bar-inner">
+                            <ul class="social-links social-links--inline social-links--main-nav social-links--top-bar">
+                                <li class="social-links__item">
+                                    <a href="https://www.facebook.com/ourcodeworld" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Facebook"><span class="fa-svg-icon"><svg style="height: 2em; width: 2em;fill: #fff;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1376 128q119 0 203.5 84.5t84.5 203.5v960q0 119-84.5 203.5t-203.5 84.5h-188v-595h199l30-232h-229v-148q0-56 23.5-84t91.5-28l122-1v-207q-63-9-178-9-136 0-217.5 80t-81.5 226v171h-200v232h200v595h-532q-119 0-203.5-84.5t-84.5-203.5v-960q0-119 84.5-203.5t203.5-84.5h960z"/></svg></span></a>
+                                </li>
+                                <li class="social-links__item">
+                                    <a href="https://twitter.com/ourcodeworld" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Twitter"><span class="fa-svg-icon"><svg style="height: 2em; width: 2em;fill: #fff;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1684 408q-67 98-162 167 1 14 1 42 0 130-38 259.5t-115.5 248.5-184.5 210.5-258 146-323 54.5q-271 0-496-145 35 4 78 4 225 0 401-138-105-2-188-64.5t-114-159.5q33 5 61 5 43 0 85-11-112-23-185.5-111.5t-73.5-205.5v-4q68 38 146 41-66-44-105-115t-39-154q0-88 44-163 121 149 294.5 238.5t371.5 99.5q-8-38-8-74 0-134 94.5-228.5t228.5-94.5q140 0 236 102 109-21 205-78-37 115-142 178 93-10 186-50z"/></svg></span></a>
+                                </li>
+                                <li class="social-links__item">
+                                    <a href="https://github.com/ourcodeworld" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Github"><span class="fa-svg-icon"><svg style="height: 2em; width: 2em;fill: #fff;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M896 128q209 0 385.5 103t279.5 279.5 103 385.5q0 251-146.5 451.5t-378.5 277.5q-27 5-40-7t-13-30q0-3 .5-76.5t.5-134.5q0-97-52-142 57-6 102.5-18t94-39 81-66.5 53-105 20.5-150.5q0-119-79-206 37-91-8-204-28-9-81 11t-92 44l-38 24q-93-26-192-26t-192 26q-16-11-42.5-27t-83.5-38.5-85-13.5q-45 113-8 204-79 87-79 206 0 85 20.5 150t52.5 105 80.5 67 94 39 102.5 18q-39 36-49 103-21 10-45 15t-57 5-65.5-21.5-55.5-62.5q-19-32-48.5-52t-49.5-24l-20-3q-21 0-29 4.5t-5 11.5 9 14 13 12l7 5q22 10 43.5 38t31.5 51l10 23q13 38 44 61.5t67 30 69.5 7 55.5-3.5l23-4q0 38 .5 88.5t.5 54.5q0 18-13 30t-40 7q-232-77-378.5-277.5t-146.5-451.5q0-209 103-385.5t279.5-279.5 385.5-103zm-477 1103q3-7-7-12-10-3-13 2-3 7 7 12 9 6 13-2zm31 34q7-5-2-16-10-9-16-3-7 5 2 16 10 10 16 3zm30 45q9-7 0-19-8-13-17-6-9 5 0 18t17 7zm42 42q8-8-4-19-12-12-20-3-9 8 4 19 12 12 20 3zm57 25q3-11-13-16-15-4-19 7t13 15q15 6 19-6zm63 5q0-13-17-11-16 0-16 11 0 13 17 11 16 0 16-11zm58-10q-2-11-18-9-16 3-14 15t18 8 14-14z"/></svg></span></a>
+                                </li>
+                                <li class="social-links__item">
+                                    <a href="https://www.youtube.com/ourcodeworld?sub_confirmation=1" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="YouTube"><span class="fa-svg-icon"><svg style="height: 2em; width: 2em;fill: #fff;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M711 1128l484-250-484-253v503zm185-862q168 0 324.5 4.5t229.5 9.5l73 4q1 0 17 1.5t23 3 23.5 4.5 28.5 8 28 13 31 19.5 29 26.5q6 6 15.5 18.5t29 58.5 26.5 101q8 64 12.5 136.5t5.5 113.5v176q1 145-18 290-7 55-25 99.5t-32 61.5l-14 17q-14 15-29 26.5t-31 19-28 12.5-28.5 8-24 4.5-23 3-16.5 1.5q-251 19-627 19-207-2-359.5-6.5t-200.5-7.5l-49-4-36-4q-36-5-54.5-10t-51-21-56.5-41q-6-6-15.5-18.5t-29-58.5-26.5-101q-8-64-12.5-136.5t-5.5-113.5v-176q-1-145 18-290 7-55 25-99.5t32-61.5l14-17q14-15 29-26.5t31-19.5 28-13 28.5-8 23.5-4.5 23-3 17-1.5q251-18 627-18z"/></svg></span></a>
+                                </li>
+                                <li class="social-links__item">
+                                    <a href="https://www.instagram.com/ourcodeworld/" class="social-links__link" data-toggle="tooltip" data-placement="bottom" title="Instagram"><span class="fa-svg-icon"><svg style="height: 2em; width: 2em;fill: #fff;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1152 896q0-106-75-181t-181-75-181 75-75 181 75 181 181 75 181-75 75-181zm138 0q0 164-115 279t-279 115-279-115-115-279 115-279 279-115 279 115 115 279zm108-410q0 38-27 65t-65 27-65-27-27-65 27-65 65-27 65 27 27 65zm-502-220q-7 0-76.5-.5t-105.5 0-96.5 3-103 10-71.5 18.5q-50 20-88 58t-58 88q-11 29-18.5 71.5t-10 103-3 96.5 0 105.5.5 76.5-.5 76.5 0 105.5 3 96.5 10 103 18.5 71.5q20 50 58 88t88 58q29 11 71.5 18.5t103 10 96.5 3 105.5 0 76.5-.5 76.5.5 105.5 0 96.5-3 103-10 71.5-18.5q50-20 88-58t58-88q11-29 18.5-71.5t10-103 3-96.5 0-105.5-.5-76.5.5-76.5 0-105.5-3-96.5-10-103-18.5-71.5q-20-50-58-88t-88-58q-29-11-71.5-18.5t-103-10-96.5-3-105.5 0-76.5.5zm768 630q0 229-5 317-10 208-124 322t-322 124q-88 5-317 5t-317-5q-208-10-322-124t-124-322q-5-88-5-317t5-317q10-208 124-322t322-124q88-5 317-5t317 5q208 10 322 124t124 322q5 88 5 317z"/></svg></span></a>
+                                </li>
+                            </ul>
+                            <ul class="nav-account">
+                                <li class="nav-account__item">
+                                    <a href="javascript:void(0);">Language
+: 
+                                        <span class="highlight">en-US</span>
+                                    </a>
+                                    <ul class="main-nav__sub">
+                                        <li>
+                                            <a href="https://ourcodeworld.com">English</a>
+                                        </li>
+                                        <li>
+                                            <a href="https://ourcodeworld.co">Español</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                                                <li class="nav-account__item nav-account__item--logout">
+                                                                            <a href="/login">Login</a>
+                                                                    </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="header__primary">
+                    <div class="container">
+                        <div class="header__primary-inner">
+                            <div class="header-logo">
+                                <a href="/">
+                                    <img src="https://cdn.ourcodeworld.com/assets-v2/brand/logo.png" alt="Our Code World" class="header-logo__img" style="width: 130px;">
+                                </a>
+                            </div>
+                            <nav class="main-nav">
+                                <ul class="main-nav__list">
+                                    <li class="">
+                                        <a href="/">
+                                            Home
+
+                                        </a>
+                                    </li>
+                                    <li class="">
+                                        <a href="/articles">
+                                            Content
+
+                                        </a>
+                                        <div class="main-nav__megamenu">
+                                            <div class="row"> 
+                                                <ul class="col-lg-3 col-md-3 col-12 main-nav__ul main-nav__ul-1cols">
+                                                    <li class="main-nav__title">Blog</li>
+                                                    <li>
+                                                        <a href="/articles">
+                                                            Articles
+
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/categories/tops">
+                                                            Tops
+
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/categories">
+                                                            Explore by categories
+
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                                <ul class="col-lg-3 col-md-3 col-12 main-nav__ul main-nav__ul-2cols">
+                                                    <li class="main-nav__title">
+                                                        Other pages
+
+                                                    </li>
+                                                    <li>
+                                                        <a href="/about">
+                                                            About
+
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/advertise-with-us">
+                                                            Advertise with us
+
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/authors">
+                                                            Authors
+
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/contact">
+                                                            Contact us
+
+                                                        </a>
+                                                    </li>
+                                                </ul>
+
+                                                <ul class="col-lg-2 col-md-3 col-12 main-nav__ul">
+                                                    <li class="main-nav__title">Legal</li>
+                                                    <li>
+                                                        <a href="/privacy-policy">
+                                                            Privacy Policy
+
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="/comments-policy">
+                                                            Comment Policy
+
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="">
+                                        <a href="javascript:void(0);">
+                                            Inquiries
+
+                                        </a>
+                                        <ul class="main-nav__sub">
+                                            <li><a href="/about">About
+</a></li>
+                                            <li><a href="/advertise-with-us">Advertise with us
+</a></li>
+                                            <li><a href="/contact">Contact us
+</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <!-- Main Navigation / End -->
+                            <div class="header__primary-spacer"></div>
+                            <!-- Header Search Form -->
+                            <div class="header-search-form">
+                                <form action="/search" id="mobile-search-form" class="search-form">
+                                    <input type="text" class="form-control header-mobile__search-control" name="q" placeholder="Enter your search here...
+">
+                                    <button type="submit" class="header-mobile__search-submit"><span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1216 832q0-185-131.5-316.5t-316.5-131.5-316.5 131.5-131.5 316.5 131.5 316.5 316.5 131.5 316.5-131.5 131.5-316.5zm512 832q0 52-38 90t-90 38q-54 0-90-38l-343-342q-179 124-399 124-143 0-273.5-55.5t-225-150-150-225-55.5-273.5 55.5-273.5 150-225 225-150 273.5-55.5 273.5 55.5 225 150 150 225 55.5 273.5q0 220-124 399l343 343q37 37 37 90z"/></svg></span></button>
+                                </form>
+                            </div>
+                            <!-- Header Search Form / End -->
+                        </div>
+                    </div>
+                </div>
+                <!-- Header Primary / End -->
+            </header>
+                        <div class="site-content">
+                <div class="container">
+        <div class="marquee-wrapper marquee-wrapper--boxed">
+            <div class="container">
+                <div class="marquee-label"><i class="fa fa-star"></i> Latest articles</div>
+                <div class="marquee" data-startvisible="true" data-duration="18000" data-gap="10" data-duplicated="true">
+                    <ul class="posts posts--inline">
+                                                                                
+                            <li class="posts__item posts__item--category-1">
+                                <div class="posts__cat"><span class="label posts__cat-label posts__cat-label--category-1">Javascript</span></div>
+                                <h6 class="posts__title posts__title--color-hover">
+                                    <a href="/articles/read/1486/how-to-print-the-numbers-from-1-to-100-without-including-numbers-in-your-javascript-code" target="_blank">
+                                        How to print the numbers from 1 to 100 without including numbers in your JavaScript code
+                                    </a>
+                                </h6>
+                            </li>
+                                                                                
+                            <li class="posts__item posts__item--category-1">
+                                <div class="posts__cat"><span class="label posts__cat-label posts__cat-label--category-1">Others</span></div>
+                                <h6 class="posts__title posts__title--color-hover">
+                                    <a href="/articles/read/1445/how-to-install-a-lamp-stack-on-oracle-linux" target="_blank">
+                                        How to install a LAMP stack on Oracle Linux
+                                    </a>
+                                </h6>
+                            </li>
+                                                                                
+                            <li class="posts__item posts__item--category-1">
+                                <div class="posts__cat"><span class="label posts__cat-label posts__cat-label--category-1">Ubuntu</span></div>
+                                <h6 class="posts__title posts__title--color-hover">
+                                    <a href="/articles/read/867/how-to-convert-a-word-file-to-pdf-docx-to-pdf-in-libreoffice-with-the-cli-in-ubuntu-2004" target="_blank">
+                                        How to convert a Word file to PDF (docx to pdf) in LibreOffice with the CLI in Ubuntu 20.04
+                                    </a>
+                                </h6>
+                            </li>
+                                                                                
+                            <li class="posts__item posts__item--category-1">
+                                <div class="posts__cat"><span class="label posts__cat-label posts__cat-label--category-1">Symfony</span></div>
+                                <h6 class="posts__title posts__title--color-hover">
+                                    <a href="/articles/read/1490/how-to-manually-sign-in-a-registered-user-in-symfony-5" target="_blank">
+                                        How to manually sign-in a registered user in Symfony 5
+                                    </a>
+                                </h6>
+                            </li>
+                                                                                
+                            <li class="posts__item posts__item--category-1">
+                                <div class="posts__cat"><span class="label posts__cat-label posts__cat-label--category-1">Others</span></div>
+                                <h6 class="posts__title posts__title--color-hover">
+                                    <a href="/articles/read/1496/how-learning-to-code-can-advance-your-engineering-career" target="_blank">
+                                        How Learning To Code Can Advance Your Engineering Career
+                                    </a>
+                                </h6>
+                            </li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8 col-lg-8">
+                                
+                <div class="card card--lg post post--single" style="overflow: visible!important;">
+                    <div class="card__content">
+                                                    <figure class="post__thumbnail">
+                                <img src="https://cdn.ourcodeworld.com/assets/images/loading.gif" data-src="https://cdn.ourcodeworld.com/public-media/articles/articleocw-56ba2aa476b9a.png" alt="How to create your own javascript library" class="img mx-auto d-block lazy">
+                            </figure>
+                            <hr>
+                                                <header class="post__header">
+                            <h1 class="post__title">
+                                How to create your own javascript library
+                            </h1>
+                            <ul class="post__meta meta">
+                                <li class="meta__item meta__item--date">
+                                    <time datetime="2016-02-09 07:06">February 09 2016</time>
+                                </li>
+                                <li class="meta__item" title="43,267 views"><span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1664 960q-152-236-381-353 61 104 61 225 0 185-131.5 316.5t-316.5 131.5-316.5-131.5-131.5-316.5q0-121 61-225-229 117-381 353 133 205 333.5 326.5t434.5 121.5 434.5-121.5 333.5-326.5zm-720-384q0-20-14-34t-34-14q-125 0-214.5 89.5t-89.5 214.5q0 20 14 34t34 14 34-14 14-34q0-86 61-147t147-61q20 0 34-14t14-34zm848 384q0 34-20 69-140 230-376.5 368.5t-499.5 138.5-499.5-139-376.5-368q-20-35-20-69t20-69q140-229 376.5-368t499.5-139 499.5 139 376.5 368q20 35 20 69z"/></svg></span> 43.3K</li>
+                                <li class="meta__item">
+                                    <span class="fa-svg-icon"><svg style="height: 1em; width: 1em;fill: #fff;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M704 384q-153 0-286 52t-211.5 141-78.5 191q0 82 53 158t149 132l97 56-35 84q34-20 62-39l44-31 53 10q78 14 153 14 153 0 286-52t211.5-141 78.5-191-78.5-191-211.5-141-286-52zm0-128q191 0 353.5 68.5t256.5 186.5 94 257-94 257-256.5 186.5-353.5 68.5q-86 0-176-16-124 88-278 128-36 9-86 16h-3q-11 0-20.5-8t-11.5-21q-1-3-1-6.5t.5-6.5 2-6l2.5-5 3.5-5.5 4-5 4.5-5 4-4.5q5-6 23-25t26-29.5 22.5-29 25-38.5 20.5-44q-124-72-195-177t-71-224q0-139 94-257t256.5-186.5 353.5-68.5zm822 1169q10 24 20.5 44t25 38.5 22.5 29 26 29.5 23 25q1 1 4 4.5t4.5 5 4 5 3.5 5.5l2.5 5 2 6 .5 6.5-1 6.5q-3 14-13 22t-22 7q-50-7-86-16-154-40-278-128-90 16-176 16-271 0-472-132 58 4 88 4 161 0 309-45t264-129q125-92 192-212t67-254q0-77-23-152 129 71 204 178t75 230q0 120-71 224.5t-195 176.5z"/></svg></span>
+                                    <a 
+                                        href="https://ourcodeworld.com/articles/read/37/how-to-create-your-own-javascript-library#disqus_thread"
+                                        data-disqus-identifier="/articles/read/37/how-to-create-your-own-javascript-library"
+                                    >
+                                        <i class="fa fa-spinner fa-spin fa-fw"></i>
+                                    </a>
+                                </li>
+                                <div class="dropdown d-inline">
+                                    <button class="btn btn-primary btn-outline btn-sm dropdown-toggle" type="button" id="article-lang-switcher" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="fa-svg-icon"><svg style="height: 1.2em; width: 1.2em;fill: #fff;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M782 1078q-1 3-12.5-.5t-31.5-11.5l-20-9q-44-20-87-49-7-5-41-31.5t-38-28.5q-67 103-134 181-81 95-105 110-4 2-19.5 4t-18.5 0q6-4 82-92 21-24 85.5-115t78.5-118q17-30 51-98.5t36-77.5q-8-1-110 33-8 2-27.5 7.5t-34.5 9.5-17 5q-2 2-2 10.5t-1 9.5q-5 10-31 15-23 7-47 0-18-4-28-21-4-6-5-23 6-2 24.5-5t29.5-6q58-16 105-32 100-35 102-35 10-2 43-19.5t44-21.5q9-3 21.5-8t14.5-5.5 6 .5q2 12-1 33 0 2-12.5 27t-26.5 53.5-17 33.5q-25 50-77 131l64 28q12 6 74.5 32t67.5 28q4 1 10.5 25.5t4.5 30.5zm-205-486q3 15-4 28-12 23-50 38-30 12-60 12-26-3-49-26-14-15-18-41l1-3q3 3 19.5 5t26.5 0 58-16q36-12 55-14 17 0 21 17zm698 129l63 227-139-42zm-1108 800l694-232v-1032l-694 233v1031zm1241-317l102 31-181-657-100-31-216 536 102 31 45-110 211 65zm-503-962l573 184v-380zm311 1323l158 13-54 160-40-66q-130 83-276 108-58 12-91 12h-84q-79 0-199.5-39t-183.5-85q-8-7-8-16 0-8 5-13.5t13-5.5q4 0 18 7.5t30.5 16.5 20.5 11q73 37 159.5 61.5t157.5 24.5q95 0 167-14.5t157-50.5q15-7 30.5-15.5t34-19 28.5-16.5zm448-1079v1079l-774-246q-14 6-375 127.5t-368 121.5q-13 0-18-13 0-1-1-3v-1078q3-9 4-10 5-6 20-11 107-36 149-50v-384l558 198q2 0 160.5-55t316-108.5 161.5-53.5q20 0 20 21v418z"/></svg></span> Read this article in other language
+                                    </button>
+                                    <div class="dropdown-menu" aria-labelledby="article-lang-switcher">
+                                        <a class="dropdown-item" href="https://ourcodeworld.co/articulos/leer/37/como-crear-tu-propia-biblioteca-javascript">Español</a>
+                                        <a class="dropdown-item" href="https://ourcodeworld.com/articles/read/37/how-to-create-your-own-javascript-library">English</a>
+                                    </div>
+                                </div>
+                            </ul>
+                        </header>
+                        <style>
+                            #article-content{
+                                font-size: 1.2em!important;
+                            }
+                        </style>
+                        
+                                                                                    <style>
+        #carbon-block{
+            display: flex;
+            justify-content: center;
+            padding-bottom: 10px;
+        }
+
+        #carbonads {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial,
+            sans-serif;
+        }
+
+        #carbonads {
+            display: block;
+            overflow: hidden;
+            max-width: 728px;
+            position: relative;
+            background-color: hsl(0, 0%, 99%);
+            border: solid 1px #eee;
+            font-size: 22px;
+            box-sizing: content-box;
+        }
+
+        #carbonads > span {
+            display: block;
+        }
+
+        #carbonads a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        #carbonads a:hover {
+            color: inherit;
+        }
+
+        .carbon-wrap {
+            display: flex;
+            align-items: center;
+        }
+
+        .carbon-img {
+            display: block;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .carbon-img img {
+            display: block;
+            height: 90px;
+            width: auto;
+        }
+
+        .carbon-text {
+            display: block;
+            padding: 0 1em;
+            line-height: 1.35;
+            text-align: left;
+        }
+
+        .carbon-poweredby {
+            display: block;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            padding: 6px 10px;
+            background: repeating-linear-gradient(
+                            -45deg,
+                            transparent,
+                            transparent 5px,
+                            hsla(0, 0%, 0%, 0.025) 5px,
+                            hsla(0, 0%, 0%, 0.025) 10px
+            )
+            hsla(203, 11%, 95%, 0.8);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            font-size: 8px;
+            border-top-left-radius: 4px;
+            line-height: 1;
+        }
+
+        @media only screen and (min-width: 320px) and (max-width: 759px) {
+            .carbon-text {
+              font-size: 14px;
+            }
+        }
+    </style>
+    
+        
+        
+                    <div id="carbon-block"></div>
+        <script>
+            try {
+                fetch(new Request("https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js", { method: 'HEAD', mode: 'no-cors' })).then(function(response) {
+                    return true;
+                }).catch(function(e) {
+                    var carbonScript = document.createElement("script");
+                    carbonScript.src = "//cdn.carbonads.com/carbon.js?serve=CE7D62JY&placement=ourcodeworldcom";
+                    carbonScript.id = "_carbonads_js";
+                    document.getElementById("carbon-block").appendChild(carbonScript);
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        </script>
+    
+                                                
+                        <article id="article-content" itemscope itemtype="http://schema.org/BlogPosting"><p>There are many facts and important points of why create your own library in javascript :</p>
+<ul><li><u>Feels pretty cool</u></li>
+<li>Is a good way to organize your code</li>
+<li>Your code will be more maintainable</li>
+<li>Share easily with whoever you want</li>
+<li>Write what you always need once</li>
+</ul><p>But always before write your own plugin you need to have a clear idea, <b>why i want to write this plugin</b>, is recommendable that you search good on google if there's already a plugin that makes what you want to achieve, this will be quicker,easily to integrate and may be even better than what you're tryng to do, remember : <b>We don't want to re-create the wheel, that's very inproductive and we should avoid it if we are allowed to.</b></p>
+<p><b>In this tutorial, we are going to create a simple library with pure javascript without prototyping, we'll use native objects instead.</b></p>
+<p><b><a href="http://stackoverflow.com/questions/8433459/js-why-use-prototype" target="_blank" rel="noopener">If you want to know what's the difference between the use of prototype and manage manually objects, this post should help to clear your doubts.</a></b></p>
+<p><b>1) Create the basic structure</b></p>
+<p>The following code will create a global variable accesible after the code is executed called <b>myWindowGlobalLibraryName</b>.</p>
+<pre class="language-js"><code>(function(window){
+  // You can enable the strict mode commenting the following line  
+  // 'use strict';
+
+  // This function will contain all our code
+  function myLibrary(){
+    var _myLibraryObject = {};
+
+    // We will add functions to our library here !
+
+    return _myLibraryObject;
+  }
+
+  // We need that our library is globally accesible, then we save in the window
+  if(typeof(window.myWindowGlobalLibraryName) === 'undefined'){
+    window.myWindowGlobalLibraryName = myLibrary();
+  }
+})(window); // We send the window variable withing our function
+
+
+// Then we can call it using
+console.log(myWindowGlobalLibraryName);</code></pre>
+<p>Since we wrap almost everything in anonymous functions, if our code fails, it should not damage all the external javascript.</p>
+<p><b>2) Create custom functions for your library</b></p>
+<p>In this example we will create a custom log function that we will call <b>myCustomLog.</b></p>
+<pre class="language-js"><code>(function(window){
+  // You can enable the strict mode commenting the following line  
+  // 'use strict';
+
+  // This function will contain all our code
+  function myLibrary(){
+    var _myLibraryObject = {};
+    
+
+    // Just create a property to our library object.
+    _myLibraryObject.myCustomLog = function(thingToLog){
+        console.log("My-Custom-Log &gt; Type of variable : " + typeof(thingToLog));
+        console.log("My-Custom-Log &gt; Is number : " + !isNaN(thingToLog));
+        console.log("My-Custom-Log &gt; Length : " + (thingToLog).length);
+
+        return console.log(thingToLog);
+    };
+
+    return _myLibraryObject;
+  }
+
+  // We need that our library is globally accesible, then we save in the window
+  if(typeof(window.myWindowGlobalLibraryName) === 'undefined'){
+    window.myWindowGlobalLibraryName = myLibrary();
+  }
+})(window); // We send the window variable withing our function
+
+
+// Then we can call our custom function using
+myWindowGlobalLibraryName.myCustomLog(["My library","Rules"]);</code></pre>
+<p></p>
+<p><b>3) If you need, create publicly inaccessible properties in your library (in scope)</b></p>
+<p>In order to save settings or other kind of properties of non interest to the user (or simply that we dont want anybody see them), we can declare a simple variable in the scope of our function and it will be cannot retrieved outside of our wrapper.</p>
+<pre class="language-js"><code>(function(window){
+  // You can enable the strict mode commenting the following line  
+  // 'use strict';
+
+
+  // This function will contain all our code
+  function myLibrary(){
+    var _myLibraryObject = {};
+
+    // This variable will be inaccessible to the user, only can be visible in the scope of your library.
+    var settings = {
+      volume:100,
+      mute:false
+    };
+    
+
+    // Change a private property
+    _myLibraryObject.setVolume = function(volume){
+         settings.volume = volume;
+         return volume;
+    };
+    
+    // Change a private property
+    _myLibraryObject.setMute = function(muteStatus){
+         if(typeof(muteStatus) === 'boolean'){
+           settings.mute = muteStatus;
+         }else{
+           console.error("You need to disable or enable the sound !");
+         }
+
+         return settings.mute;
+    };
+    
+    // Change a private property
+    _myLibraryObject.haveSound = function(){
+         return settings.mute;
+    };
+
+    return _myLibraryObject;
+  }
+
+  // We need that our library is globally accesible, then we save in the window
+  if(typeof(window.myWindowGlobalLibraryName) === 'undefined'){
+    window.myWindowGlobalLibraryName = myLibrary();
+  }
+})(window); // We send the window variable withing our function
+
+
+// Now see the content of your library
+console.log(myWindowGlobalLibraryName);
+
+// It should ouput only 3 properties (setMute, setVolume, haveSound)
+// And the settings variable can be only be accessed in your library, not outside</code></pre>
+<p>Note: Althoug the settings variable cannot be retrieved outside your wrapper, if your create a method that returns the variable, then it can be changed outside of your wrapper, for example</p>
+<pre class="language-js"><code>// Then your variable will be exposed with this method !
+_myLibraryObject.getSettings = function(){
+    return settings;
+};
+
+// You can create a get method without expose your variable using something like this
+// The object keys will be copied to a new object instead our object.
+// Note that you need to achieve this method according to the structure of your variable (or if it's an array)
+
+_myLibraryObject.getSettings = function(){
+  var mySecurityCopy = {};
+
+  for(var i in settings){
+      if(i)
+        mySecurityCopy[i] = settings[i];
+      }      
+  }
+
+  return mySecurityCopy;
+ };</code></pre>
+<p>Now create a library and share it with us !</p></article>
+                    </div>
+                    <div class="card-footer">
+                        <hr>
+                        <div class="row text-center">
+                            <div id="ocw-share" class="social-share" style="width: 100%; font-size: 1.3em;"></div>
+                        </div>
+                    </div>
+                </div>
+                                                                    <div class="post-author card card--lg">
+                        <div class="card__content">
+                            <header class="post-author__header">
+                                <figure class="post-author__avatar">
+                                                                            <img data-src="https://cdn.ourcodeworld.com/public-media/users/profile-5ea884b9287a1.jpg" alt="Carlos Delgado" class="lazy">
+                                                                    </figure>
+                                <div class="post-author__info">
+                                    <h4 class="post-author__name">
+                                        <a href="/authors/sdkcarlos" target="_blank">
+                                            Carlos Delgado
+                                        </a>
+                                    </h4>
+                                </div>
+                                <ul class="post-author__social-links social-links social-links--btn">
+                                                                            <li class="social-links__item" style="background-color: white;">
+                                            <a style="background-color: white;" target="_blank" href="https://github.com/sdkcarlos" class="social-links__link social-links__link--fb"><span class="fa-svg-icon"><svg style="height: 2em; width: 2em;fill: #000;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M896 128q209 0 385.5 103t279.5 279.5 103 385.5q0 251-146.5 451.5t-378.5 277.5q-27 5-40-7t-13-30q0-3 .5-76.5t.5-134.5q0-97-52-142 57-6 102.5-18t94-39 81-66.5 53-105 20.5-150.5q0-119-79-206 37-91-8-204-28-9-81 11t-92 44l-38 24q-93-26-192-26t-192 26q-16-11-42.5-27t-83.5-38.5-85-13.5q-45 113-8 204-79 87-79 206 0 85 20.5 150t52.5 105 80.5 67 94 39 102.5 18q-39 36-49 103-21 10-45 15t-57 5-65.5-21.5-55.5-62.5q-19-32-48.5-52t-49.5-24l-20-3q-21 0-29 4.5t-5 11.5 9 14 13 12l7 5q22 10 43.5 38t31.5 51l10 23q13 38 44 61.5t67 30 69.5 7 55.5-3.5l23-4q0 38 .5 88.5t.5 54.5q0 18-13 30t-40 7q-232-77-378.5-277.5t-146.5-451.5q0-209 103-385.5t279.5-279.5 385.5-103zm-477 1103q3-7-7-12-10-3-13 2-3 7 7 12 9 6 13-2zm31 34q7-5-2-16-10-9-16-3-7 5 2 16 10 10 16 3zm30 45q9-7 0-19-8-13-17-6-9 5 0 18t17 7zm42 42q8-8-4-19-12-12-20-3-9 8 4 19 12 12 20 3zm57 25q3-11-13-16-15-4-19 7t13 15q15 6 19-6zm63 5q0-13-17-11-16 0-16 11 0 13 17 11 16 0 16-11zm58-10q-2-11-18-9-16 3-14 15t18 8 14-14z"/></svg></span></a>
+                                        </li>
+                                                                                                                <li class="social-links__item" style="background-color: #0077B5;">
+                                            <a style="background-color: #0077B5;" target="_blank" href="https://www.linkedin.com/in/carlos-fernando-delgado-maldonado-ourcodeworld/" class="social-links__link social-links__link--fb"><span class="fa-svg-icon"><svg style="height: 2em; width: 2em;fill: #fff;" viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M477 625v991h-330v-991h330zm21-306q1 73-50.5 122t-135.5 49h-2q-82 0-132-49t-50-122q0-74 51.5-122.5t134.5-48.5 133 48.5 51 122.5zm1166 729v568h-329v-530q0-105-40.5-164.5t-126.5-59.5q-63 0-105.5 34.5t-63.5 85.5q-11 30-11 81v553h-329q2-399 2-647t-1-296l-1-48h329v144h-2q20-32 41-56t56.5-52 87-43.5 114.5-15.5q171 0 275 113.5t104 332.5z"/></svg></span></a>
+                                        </li>
+                                                                                                                                            </ul>
+                            </header>
+                            <div class="post-author__description">
+                                <p>Interested in programming since he was 14 years old, Carlos is a self-taught programmer and founder and author of most of the articles at Our Code World.</p>
+                            </div>
+                        </div>
+                    </div>
+                                                    <div class="post-comment-form card card--lg">
+                        <header class="post-comment-form__header card__header">
+                            <h4>This could interest you</h4>
+                        </header>
+                        <div class="post-comment-form__content card__content">
+                            <div style="width: 100%;">
+                                        
+        
+            <div class="d-block mx-auto text-center">
+            <iframe class="lazy" data-lazy-function="postarticle1" id="ourcodeworld.com_300x250_article_1_DFP" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" width="300" height="250"></iframe> <script>
+    (window.lazyFunctions = window.lazyFunctions || {});
+    window.lazyFunctions["postarticle1"] = function(element){
+        !function(){var e="ourcodeworld.com_300x250_article_1_DFP",t=new XMLHttpRequest;t.onreadystatechange=function(){if(4==t.readyState&&200==t.status){var n=document.getElementById(e).contentWindow.document;n.open(),n.write(t.responseText),n.close()}},t.open("GET","https://pubads.g.doubleclick.net/gampad/adx?iu=/147246189/"+e+"&sz="+encodeURI("300x250")+"&t=Placement_type%3Dserving&"+Date.now(),!0),t.send()}();
+    };
+</script>
+        </div>
+    
+                            </div>
+                        </div>
+                    </div>
+                                <div class="post-comment-form card card--lg" id="comment-box">
+                    <header class="post-comment-form__header card__header">
+                        <h4>Become a more social person</h4>
+                    </header>
+                    <div class="post-comment-form__content card__content">
+                                                    <script type="application/ld+json">
+                                {
+                                    "@context": "http://schema.org",
+                                    "@type": "NewsArticle",
+                                    "mainEntityOfPage":{
+                                        "@type":"WebPage",
+                                        "@id":"https://ourcodeworld.com/articles/read/37/how-to-create-your-own-javascript-library"
+                                    },
+                                    "headline": "How\u0020to\u0020create\u0020your\u0020own\u0020javascript\u0020library",
+                                    "image": {
+                                        "@type": "ImageObject",
+                                                                                    "url": "https://ourcodeworld.com/public-media/articles/articleocw-56ba2aa476b9a.png",
+                                                                                "height": 800,
+                                        "width": 800
+                                    },
+                                    "datePublished": "2016-02-09T17:54:00+00:00",
+                                    "dateModified": "2016-02-09T19:06:00+00:00",
+                                    "author": {
+                                        "@type": "Person",
+                                        "name": "Carlos Delgado"
+                                    },
+                                    "publisher": {
+                                        "@type": "Organization",
+                                        "name": "Our Code World",
+                                        "logo": {
+                                            "@type": "ImageObject",
+                                            "url": "https://ourcodeworld.com/assets-v2/brand/ocw_logo.png",
+                                            "width": 600,
+                                            "height": 60
+                                        }
+                                    },
+                                    "description": "Learn to create efficiently a javascript library to wrap all your functions",
+                                    "name" : "How to create your own javascript library"
+                                }
+                            </script>
+                            <div id="disqus_thread" class="lazy" data-lazy-function="disqus"></div>
+                            <script>
+                                (window.lazyFunctions = window.lazyFunctions || {});
+                                window.lazyFunctions["disqus"] = function(element){
+                                    var disqus_config = function () {
+                                        this.page.url = 'https://ourcodeworld.com/articles/read/37/how-to-create-your-own-javascript-library';  // Replace PAGE_URL with your page's canonical URL variable
+                                        this.page.identifier = '/articles/read/37/how-to-create-your-own-javascript-library'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                                    };
+                                    (function () {
+                                        var d = document, s = d.createElement('script');
+                                        s.src = 'https://ourcodeworld.disqus.com/embed.js';
+                                        s.setAttribute('data-timestamp', +new Date());
+                                        (d.head || d.body).appendChild(s);
+                                    })();
+                                };
+                            </script>
+                            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+                                            </div>
+		</div>
+            </div>
+                    
+                        <div class="col-md-4 col-lg-4" id="sidebar-panel">
+                                    <aside class="widget widget--sidebar card widget-tabbed">
+                        <div class="widget__title card__header">
+                        <h4>Related Articles - <a href="/categories/javascript" target="_blank">Javascript</a></h4></div>
+                        <div class="widget__content card__content">
+                            <div class="widget-tabbed__tabs">
+                                <ul class="posts posts--simple-list">
+                                                                                                                    <li class="posts__item posts__item--category-1" style="padding-bottom: 10px;">
+                                            <div class="posts__inner">
+                                                <h6 class="posts__title"><a href="/articles/read/1486/how-to-print-the-numbers-from-1-to-100-without-including-numbers-in-your-javascript-code">How to print the numbers from 1 to 100 without including numbers in your JavaScript code</a></h6>
+                                                <span class="posts__date">April 16 2021</span><div class="posts__cat">
+                                                    <span class="label posts__cat-label posts__cat-label--category-2">
+                                                                                                                    Javascript
+                                                                                                            </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                                                                                                    <li class="posts__item posts__item--category-1" style="padding-bottom: 10px;">
+                                            <div class="posts__inner">
+                                                <h6 class="posts__title"><a href="/articles/read/1477/how-to-convert-a-panoramic-picture-to-cubemap-tiles-with-javascript">How to convert a panoramic picture to cubemap tiles with JavaScript</a></h6>
+                                                <span class="posts__date">March 31 2021</span><div class="posts__cat">
+                                                    <span class="label posts__cat-label posts__cat-label--category-2">
+                                                                                                                    Javascript
+                                                                                                            </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                                                                                                    <li class="posts__item posts__item--category-1" style="padding-bottom: 10px;">
+                                            <div class="posts__inner">
+                                                <h6 class="posts__title"><a href="/articles/read/1473/how-to-obtain-the-sum-of-integers-between-2-indexes-in-the-array-with-javascript">How to obtain the sum of integers between 2 indexes in the array with JavaScript</a></h6>
+                                                <span class="posts__date">March 29 2021</span><div class="posts__cat">
+                                                    <span class="label posts__cat-label posts__cat-label--category-2">
+                                                                                                                    Javascript
+                                                                                                            </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                                                                                                    <li class="posts__item posts__item--category-1" style="padding-bottom: 10px;">
+                                            <div class="posts__inner">
+                                                <h6 class="posts__title"><a href="/articles/read/1472/how-to-optimally-count-how-many-pairs-it-is-possible-to-form-from-an-array-of-strings-in-javascript">How to optimally count how many pairs it is possible to form from an array of strings in JavaScript</a></h6>
+                                                <span class="posts__date">March 29 2021</span><div class="posts__cat">
+                                                    <span class="label posts__cat-label posts__cat-label--category-2">
+                                                                                                                    Javascript
+                                                                                                            </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                                                                                                    <li class="posts__item posts__item--category-1" style="padding-bottom: 10px;">
+                                            <div class="posts__inner">
+                                                <h6 class="posts__title"><a href="/articles/read/1470/how-to-find-the-closest-value-to-zero-from-an-array-with-positive-and-negative-numbers-in-javascript">How to find the closest value to zero from an array with positive and negative numbers in JavaScript</a></h6>
+                                                <span class="posts__date">March 26 2021</span><div class="posts__cat">
+                                                    <span class="label posts__cat-label posts__cat-label--category-2">
+                                                                                                                    Javascript
+                                                                                                            </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                                                    </ul>
+                            </div>
+                        </div>
+                    </aside>
+                                
+                <div class="card">
+        <div class="card__header">
+            <h4>Get Rid Of Ads in Our Code World For a Year</h4>
+        </div>
+        <div class="card__content">
+            <p class="text-center">
+                Sign up to get an ad-free subscription for a year in Our Code World from April 14 to April 17 at no cost (normally $2 USD).
+            </p>
+            <a href="/register" class="btn btn-primary-inverse btn-block">
+                Create Account and Remove Ads For a Year
+            </a>
+        </div>
+    </div>
+
+                
+                                    <aside class="widget card widget--sidebar widget-newslog">
+                        <div class="widget__title card__header"><h4><a href="/advertise-with-us" target="_blank">Advertise with us
+</a></h4></div>
+                        <div class="widget__content card__content text-center" style="padding-left: 0px!important; padding-right: 0px!important;">
+                            <div class="row margin-bottom-20 margin-top-20">
+                                <div class="col-md-12 col-lg-12 text-center">
+                                            
+        
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <!-- OCW Quad --> <ins class="adsbygoogle"
+     style="display:block"
+     data-ad-client="ca-pub-5670702528070068"
+     data-ad-slot="1545890314"
+     data-ad-format="auto"
+     data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                
+        
+        
+    
+                                </div>
+                            </div>
+                            <div class="spacer"></div>
+                            <div class="row margin-bottom-20 margin-top-20">
+                                <div class="col-md-12 col-lg-12 text-center">
+                                            
+        
+        
+                        <iframe class="lazy" data-lazy-function="sidebarblock2" id="ourcodeworld.com_300x250_right_2_DFP" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" width="1" height="1"></iframe> <script>
+    (window.lazyFunctions = window.lazyFunctions || {});
+    window.lazyFunctions["sidebarblock2"] = function(element){
+        !function(){var e="ourcodeworld.com_300x250_right_2_DFP",t=new XMLHttpRequest;t.onreadystatechange=function(){if(4==t.readyState&&200==t.status){var n=document.getElementById(e).contentWindow.document;n.open(),n.write(t.responseText),n.close()}},t.open("GET","https://pubads.g.doubleclick.net/gampad/adx?iu=/147246189/"+e+"&sz="+encodeURI("300x250")+"&t=Placement_type%3Dserving&"+Date.now(),!0),t.send()}();
+    };
+</script>
+                
+        
+    
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+
+                                            <div class="card">
+                            <div class="card-body" style="text-align:center!important;">
+                                        
+        
+            <iframe class="lazy" data-lazy-function="vertical" id="ourcodeworld.com_300x600_1_DFP" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" topmargin="0" leftmargin="0" width="300" height="600"></iframe> <script>
+    (window.lazyFunctions = window.lazyFunctions || {});
+    window.lazyFunctions["vertical"] = function(element){
+        !function(){var e="ourcodeworld.com_300x600_1_DFP",t=new XMLHttpRequest;t.onreadystatechange=function(){if(4==t.readyState&&200==t.status){var n=document.getElementById(e).contentWindow.document;n.open(),n.write(t.responseText),n.close()}},t.open("GET","https://pubads.g.doubleclick.net/gampad/adx?iu=/147246189/"+e+"&sz="+encodeURI("300x600|300x250")+"&t=Placement_type%3Dserving&"+Date.now(),!0),t.send()}();
+        console.log("Setupad: Vertical ad succesfully loaded");
+    };
+</script>
+    
+                            </div>
+                        </div>
+                        <div class="card shadow-z3">
+                            <div class="card-body" style="text-align:center!important;">
+                                                
+        
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <!-- OCW Quad --> <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-5670702528070068"
+    data-ad-slot="1545890314"
+    data-ad-format="auto"
+    data-full-width-responsive="true"></ins>
+<script>
+     (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+            
+                            </div>
+                        </div>
+                                                    
+                <aside id="floating-social" class="widget card widget--sidebar widget-newslog">
+                    <div class="widget__title card__header">
+                        <h4>
+                            Follow us on your favorite social network
+                        </h4>
+                    </div>
+                    <div class="widget__content card__content">
+                        <aside class="widget widget--sidebar widget-social widget-social--buttons">
+        <a href="https://www.facebook.com/ourcodeworld" class="btn-social-counter btn-social-counter--fb" target="_blank">
+            <div class="btn-social-counter__icon">
+                <span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1376 128q119 0 203.5 84.5t84.5 203.5v960q0 119-84.5 203.5t-203.5 84.5h-188v-595h199l30-232h-229v-148q0-56 23.5-84t91.5-28l122-1v-207q-63-9-178-9-136 0-217.5 80t-81.5 226v171h-200v232h200v595h-532q-119 0-203.5-84.5t-84.5-203.5v-960q0-119 84.5-203.5t203.5-84.5h960z"/></svg></span>
+            </div>
+            <h6 class="btn-social-counter__title">Like Our Facebook Page</h6>
+            <span class="btn-social-counter__count">
+                <span class="btn-social-counter__count-num"></span> Like us
+            </span>	
+            <span class="btn-social-counter__add-icon"></span>
+        </a>
+        <a href="https://twitter.com/ourcodeworld" class="btn-social-counter btn-social-counter--twitter" target="_blank">
+            <div class="btn-social-counter__icon">
+                <span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1684 408q-67 98-162 167 1 14 1 42 0 130-38 259.5t-115.5 248.5-184.5 210.5-258 146-323 54.5q-271 0-496-145 35 4 78 4 225 0 401-138-105-2-188-64.5t-114-159.5q33 5 61 5 43 0 85-11-112-23-185.5-111.5t-73.5-205.5v-4q68 38 146 41-66-44-105-115t-39-154q0-88 44-163 121 149 294.5 238.5t371.5 99.5q-8-38-8-74 0-134 94.5-228.5t228.5-94.5q140 0 236 102 109-21 205-78-37 115-142 178 93-10 186-50z"/></svg></span>
+            </div>
+            <h6 class="btn-social-counter__title">Follow Us on Twitter</h6>
+            <span class="btn-social-counter__count">
+                <span class="btn-social-counter__count-num"></span> Follow us
+            </span> 
+            <span class="btn-social-counter__add-icon"></span> 
+        </a>
+        <a href="https://github.com/ourcodeworld" class="btn-social-counter btn-social-counter--github" target="_blank">
+            <div class="btn-social-counter__icon">
+                <span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M896 128q209 0 385.5 103t279.5 279.5 103 385.5q0 251-146.5 451.5t-378.5 277.5q-27 5-40-7t-13-30q0-3 .5-76.5t.5-134.5q0-97-52-142 57-6 102.5-18t94-39 81-66.5 53-105 20.5-150.5q0-119-79-206 37-91-8-204-28-9-81 11t-92 44l-38 24q-93-26-192-26t-192 26q-16-11-42.5-27t-83.5-38.5-85-13.5q-45 113-8 204-79 87-79 206 0 85 20.5 150t52.5 105 80.5 67 94 39 102.5 18q-39 36-49 103-21 10-45 15t-57 5-65.5-21.5-55.5-62.5q-19-32-48.5-52t-49.5-24l-20-3q-21 0-29 4.5t-5 11.5 9 14 13 12l7 5q22 10 43.5 38t31.5 51l10 23q13 38 44 61.5t67 30 69.5 7 55.5-3.5l23-4q0 38 .5 88.5t.5 54.5q0 18-13 30t-40 7q-232-77-378.5-277.5t-146.5-451.5q0-209 103-385.5t279.5-279.5 385.5-103zm-477 1103q3-7-7-12-10-3-13 2-3 7 7 12 9 6 13-2zm31 34q7-5-2-16-10-9-16-3-7 5 2 16 10 10 16 3zm30 45q9-7 0-19-8-13-17-6-9 5 0 18t17 7zm42 42q8-8-4-19-12-12-20-3-9 8 4 19 12 12 20 3zm57 25q3-11-13-16-15-4-19 7t13 15q15 6 19-6zm63 5q0-13-17-11-16 0-16 11 0 13 17 11 16 0 16-11zm58-10q-2-11-18-9-16 3-14 15t18 8 14-14z"/></svg></span>
+            </div>
+            <span class="btn-social-counter__count">
+                <span class="btn-social-counter__count-num"></span> Star us on Github
+            </span> 
+            <span class="btn-social-counter__add-icon"></span> 
+        </a>
+        <a href="https://www.youtube.com/ourcodeworld?sub_confirmation=1" class="btn-social-counter btn-social-counter--youtube" target="_blank">
+            <div class="btn-social-counter__icon">
+                <span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M711 1128l484-250-484-253v503zm185-862q168 0 324.5 4.5t229.5 9.5l73 4q1 0 17 1.5t23 3 23.5 4.5 28.5 8 28 13 31 19.5 29 26.5q6 6 15.5 18.5t29 58.5 26.5 101q8 64 12.5 136.5t5.5 113.5v176q1 145-18 290-7 55-25 99.5t-32 61.5l-14 17q-14 15-29 26.5t-31 19-28 12.5-28.5 8-24 4.5-23 3-16.5 1.5q-251 19-627 19-207-2-359.5-6.5t-200.5-7.5l-49-4-36-4q-36-5-54.5-10t-51-21-56.5-41q-6-6-15.5-18.5t-29-58.5-26.5-101q-8-64-12.5-136.5t-5.5-113.5v-176q-1-145 18-290 7-55 25-99.5t32-61.5l14-17q14-15 29-26.5t31-19.5 28-13 28.5-8 23.5-4.5 23-3 17-1.5q251-18 627-18z"/></svg></span>
+            </div>
+            <h6 class="btn-social-counter__title">Subscribe to our YouTube channel</h6>
+            <span class="btn-social-counter__count">
+                <span class="btn-social-counter__count-num"></span> Subscribe</span> 
+            <span class="btn-social-counter__add-icon"></span> 
+        </a>
+        <a href="http://feeds.feedburner.com/OurCodeWorldRssFeed" class="btn-social-counter btn-social-counter--rss" target="_blank">
+            <div class="btn-social-counter__icon">
+                <span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M576 1344q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm512 123q2 28-17 48-18 21-47 21h-135q-25 0-43-16.5t-20-41.5q-22-229-184.5-391.5t-391.5-184.5q-25-2-41.5-20t-16.5-43v-135q0-29 21-47 17-17 43-17h5q160 13 306 80.5t259 181.5q114 113 181.5 259t80.5 306zm512 2q2 27-18 47-18 20-46 20h-143q-26 0-44.5-17.5t-19.5-42.5q-12-215-101-408.5t-231.5-336-336-231.5-408.5-102q-25-1-42.5-19.5t-17.5-43.5v-143q0-28 20-46 18-18 44-18h3q262 13 501.5 120t425.5 294q187 186 294 425.5t120 501.5z"/></svg></span>
+            </div>
+            <h6 class="btn-social-counter__title">Subscribe to Our RSS</h6>
+            <span class="btn-social-counter__count">
+                <span class="btn-social-counter__count-num">subscribe</span>
+            </span> 
+            <span class="btn-social-counter__add-icon"></span> 
+        </a>
+        <a href="https://www.instagram.com/ourcodeworld/" class="btn-social-counter btn-social-counter--instagram" target="_blank">
+            <div class="btn-social-counter__icon">
+                <span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1152 896q0-106-75-181t-181-75-181 75-75 181 75 181 181 75 181-75 75-181zm138 0q0 164-115 279t-279 115-279-115-115-279 115-279 279-115 279 115 115 279zm108-410q0 38-27 65t-65 27-65-27-27-65 27-65 65-27 65 27 27 65zm-502-220q-7 0-76.5-.5t-105.5 0-96.5 3-103 10-71.5 18.5q-50 20-88 58t-58 88q-11 29-18.5 71.5t-10 103-3 96.5 0 105.5.5 76.5-.5 76.5 0 105.5 3 96.5 10 103 18.5 71.5q20 50 58 88t88 58q29 11 71.5 18.5t103 10 96.5 3 105.5 0 76.5-.5 76.5.5 105.5 0 96.5-3 103-10 71.5-18.5q50-20 88-58t58-88q11-29 18.5-71.5t10-103 3-96.5 0-105.5-.5-76.5.5-76.5 0-105.5-3-96.5-10-103-18.5-71.5q-20-50-58-88t-88-58q-29-11-71.5-18.5t-103-10-96.5-3-105.5 0-76.5.5zm768 630q0 229-5 317-10 208-124 322t-322 124q-88 5-317 5t-317-5q-208-10-322-124t-124-322q-5-88-5-317t5-317q10-208 124-322t322-124q88-5 317-5t317 5q208 10 322 124t124 322q5 88 5 317z"/></svg></span>
+            </div>
+            <h6 class="btn-social-counter__title">Follow Us on Instagram</h6>
+            <span class="btn-social-counter__count">
+                <span class="btn-social-counter__count-num"></span> Follow us</span> 
+            <span class="btn-social-counter__add-icon"></span>
+        </a>
+    </aside>
+
+                    </div>
+                </aside>
+                <link rel="stylesheet" type="text/css" href="https://cdn.ourcodeworld.com/assets-v2/css/social-btn-styles.css" />
+            </div>
+        </div>
+    </div>
+            </div>
+            <footer id="footer" class="footer">
+                <!-- Sponsors -->
+                <div class="sponsors-wrapper">
+                    <div class="container">
+                        <div class="sponsors">
+                            <ul class="sponsors-logos">
+                                <li class="sponsors__item">
+                                    <a href="https://bestfreehtmlcsstemplates.com/" target="_blank"><img src="https://cdn.ourcodeworld.com/assets/images/brands/bestfreehtmlcsstemplates.png" alt="Best Free HTML/CSS Templates"></a>
+                                </li>
+                                <li class="sponsors__item">
+                                    <a href="https://1.envato.market/n1JbM" target="_blank"><img src="https://cdn.ourcodeworld.com/assets/images/brands/logo-envato-market.png" alt="Envato Market"></a>
+                                </li>
+                                <li class="sponsors__item">
+                                    <a href="https://javascriptobfuscator.dev/" target="_blank"><img src="https://cdn.ourcodeworld.com/assets/images/brands/jsobfuscator.png" alt="Free Online JavaScript Obfuscator"></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sponsors / End -->
+                <!-- Footer Widgets -->
+                <div class="footer-widgets effect-duotone effect-duotone--base">
+                    <div class="footer-widgets__inner">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12 col-lg-6">
+                                    <div class="row">
+                                        <div class="col-12 col-sm-6 col-md-6">
+                                            <div class="footer-col-inner">
+                                                <aside class="widget widget--footer widget_nav_menu">
+                                                    <h4 class="widget__title">
+                                                        Our Code World
+
+                                                    </h4>
+                                                    <div class="widget__content">
+                                                        <p>Our Code World is a free blog about programming, where you will find solutions to simple and complex tasks of your daily life as a developer.
+</p>
+                                                    </div>
+                                                </aside>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-sm-3 col-md-3">
+                                            <div class="footer-col-inner">
+                                                <aside class="widget widget--footer widget_nav_menu">
+                                                    <h4 class="widget__title">Legal
+</h4>
+                                                    <div class="widget__content">
+                                                        <ul class="widget__list">
+                                                            <li><a href="/privacy-policy">Privacy Policy
+</a></li>
+                                                            <li><a href="/comments-policy">Comment Policy
+</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </aside>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-sm-3 col-md-3">
+                                            <div class="footer-col-inner">
+                                                <!-- Widget: Pages -->
+                                                <aside class="widget widget--footer widget_pages">
+                                                    <h4 class="widget__title">About
+</h4>
+                                                    <div class="widget__content">
+                                                        <ul class="widget__list">
+                                                            <li><a href="/about">About
+</a></li>
+                                                            <li><a href="/advertise-with-us">Advertise with us
+</a></li>
+                                                            <li><a href="/authors">Authors
+</a></li>
+                                                            <li><a href="/contact">Contact us
+</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </aside>
+                                                <!-- Widget: Pages / End -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                                                <div class="col-sm-6 col-lg-3">
+                                    <div class="footer-col-inner">
+                                        <!-- Widget: Popular Posts / End -->
+                                        <div class="widget widget--footer widget-popular-posts">
+                                            <h4 class="widget__title">Advertising
+</h4>
+                                            <div class="widget__content">
+                                                        
+        
+        
+        
+                        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <!-- OCW Quad --> <ins class="adsbygoogle"
+    style="display:block"
+    data-ad-client="ca-pub-5670702528070068"
+    data-ad-slot="1545890314"
+    data-ad-format="rectangle"
+    data-full-width-responsive="false"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+                
+    
+                                            </div>
+                                        </div>
+                                        <!-- Widget: Popular Posts / End -->
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-lg-3">
+                                    <div class="footer-col-inner">
+                                        <!-- Widget: Popular Posts / End -->
+                                        <div class="widget widget--footer widget-popular-posts">
+                                            <h4 class="widget__title">&nbsp;</h4>
+                                            <div class="widget__content">
+                                                        
+        
+        
+        
+        
+                        <!-- Ads -->            
+                                            </div>
+                                        </div>
+                                        <!-- Widget: Popular Posts / End -->
+                                    </div>
+                                </div>
+                                                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-social">
+                    <div class="container">
+                        <ul class="footer-social__list list-unstyled">
+                            <li class="footer-social__item">
+                                <a href="https://www.facebook.com/ourcodeworld" class="footer-social__link"><span class="footer-social__icon"><span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1376 128q119 0 203.5 84.5t84.5 203.5v960q0 119-84.5 203.5t-203.5 84.5h-188v-595h199l30-232h-229v-148q0-56 23.5-84t91.5-28l122-1v-207q-63-9-178-9-136 0-217.5 80t-81.5 226v171h-200v232h200v595h-532q-119 0-203.5-84.5t-84.5-203.5v-960q0-119 84.5-203.5t203.5-84.5h960z"/></svg></span></span><div class="footer-social__txt"><span class="footer-social__name">Facebook</span> <span class="footer-social__user">/ourcodeworld</span></div></a>
+                            </li>
+                            <li class="footer-social__item">
+                                <a href="https://twitter.com/ourcodeworld" class="footer-social__link"><span class="footer-social__icon"><span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1684 408q-67 98-162 167 1 14 1 42 0 130-38 259.5t-115.5 248.5-184.5 210.5-258 146-323 54.5q-271 0-496-145 35 4 78 4 225 0 401-138-105-2-188-64.5t-114-159.5q33 5 61 5 43 0 85-11-112-23-185.5-111.5t-73.5-205.5v-4q68 38 146 41-66-44-105-115t-39-154q0-88 44-163 121 149 294.5 238.5t371.5 99.5q-8-38-8-74 0-134 94.5-228.5t228.5-94.5q140 0 236 102 109-21 205-78-37 115-142 178 93-10 186-50z"/></svg></span></span><div class="footer-social__txt"><span class="footer-social__name">Twitter</span> <span class="footer-social__user">@ourcodeworld</span></div></a>
+                            </li>
+                            <li class="footer-social__item">
+                                <a href="https://www.youtube.com/ourcodeworld?sub_confirmation=1" class="footer-social__link"><span class="footer-social__icon"><span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M711 1128l484-250-484-253v503zm185-862q168 0 324.5 4.5t229.5 9.5l73 4q1 0 17 1.5t23 3 23.5 4.5 28.5 8 28 13 31 19.5 29 26.5q6 6 15.5 18.5t29 58.5 26.5 101q8 64 12.5 136.5t5.5 113.5v176q1 145-18 290-7 55-25 99.5t-32 61.5l-14 17q-14 15-29 26.5t-31 19-28 12.5-28.5 8-24 4.5-23 3-16.5 1.5q-251 19-627 19-207-2-359.5-6.5t-200.5-7.5l-49-4-36-4q-36-5-54.5-10t-51-21-56.5-41q-6-6-15.5-18.5t-29-58.5-26.5-101q-8-64-12.5-136.5t-5.5-113.5v-176q-1-145 18-290 7-55 25-99.5t32-61.5l14-17q14-15 29-26.5t31-19.5 28-13 28.5-8 23.5-4.5 23-3 17-1.5q251-18 627-18z"/></svg></span></span><div class="footer-social__txt"><span class="footer-social__name">YouTube</span> <span class="footer-social__user">@ourcodeworld</span></div></a>
+                            </li>
+                            <li class="footer-social__item">
+                                <a href="https://github.com/ourcodeworld" class="footer-social__link"><span class="footer-social__icon"><span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M896 128q209 0 385.5 103t279.5 279.5 103 385.5q0 251-146.5 451.5t-378.5 277.5q-27 5-40-7t-13-30q0-3 .5-76.5t.5-134.5q0-97-52-142 57-6 102.5-18t94-39 81-66.5 53-105 20.5-150.5q0-119-79-206 37-91-8-204-28-9-81 11t-92 44l-38 24q-93-26-192-26t-192 26q-16-11-42.5-27t-83.5-38.5-85-13.5q-45 113-8 204-79 87-79 206 0 85 20.5 150t52.5 105 80.5 67 94 39 102.5 18q-39 36-49 103-21 10-45 15t-57 5-65.5-21.5-55.5-62.5q-19-32-48.5-52t-49.5-24l-20-3q-21 0-29 4.5t-5 11.5 9 14 13 12l7 5q22 10 43.5 38t31.5 51l10 23q13 38 44 61.5t67 30 69.5 7 55.5-3.5l23-4q0 38 .5 88.5t.5 54.5q0 18-13 30t-40 7q-232-77-378.5-277.5t-146.5-451.5q0-209 103-385.5t279.5-279.5 385.5-103zm-477 1103q3-7-7-12-10-3-13 2-3 7 7 12 9 6 13-2zm31 34q7-5-2-16-10-9-16-3-7 5 2 16 10 10 16 3zm30 45q9-7 0-19-8-13-17-6-9 5 0 18t17 7zm42 42q8-8-4-19-12-12-20-3-9 8 4 19 12 12 20 3zm57 25q3-11-13-16-15-4-19 7t13 15q15 6 19-6zm63 5q0-13-17-11-16 0-16 11 0 13 17 11 16 0 16-11zm58-10q-2-11-18-9-16 3-14 15t18 8 14-14z"/></svg></span></span><div class="footer-social__txt"><span class="footer-social__name">Github</span> <span class="footer-social__user">@ourcodeworld</span></div></a>
+                            </li>
+                            <li class="footer-social__item">
+                                <a href="https://www.instagram.com/ourcodeworld/" class="footer-social__link"><span class="footer-social__icon"><span class="fa-svg-icon"><svg  viewBox="0 0 1792 1792" xmlns="http://www.w3.org/2000/svg"><path d="M1152 896q0-106-75-181t-181-75-181 75-75 181 75 181 181 75 181-75 75-181zm138 0q0 164-115 279t-279 115-279-115-115-279 115-279 279-115 279 115 115 279zm108-410q0 38-27 65t-65 27-65-27-27-65 27-65 65-27 65 27 27 65zm-502-220q-7 0-76.5-.5t-105.5 0-96.5 3-103 10-71.5 18.5q-50 20-88 58t-58 88q-11 29-18.5 71.5t-10 103-3 96.5 0 105.5.5 76.5-.5 76.5 0 105.5 3 96.5 10 103 18.5 71.5q20 50 58 88t88 58q29 11 71.5 18.5t103 10 96.5 3 105.5 0 76.5-.5 76.5.5 105.5 0 96.5-3 103-10 71.5-18.5q50-20 88-58t58-88q11-29 18.5-71.5t10-103 3-96.5 0-105.5-.5-76.5.5-76.5 0-105.5-3-96.5-10-103-18.5-71.5q-20-50-58-88t-88-58q-29-11-71.5-18.5t-103-10-96.5-3-105.5 0-76.5.5zm768 630q0 229-5 317-10 208-124 322t-322 124q-88 5-317 5t-317-5q-208-10-322-124t-124-322q-5-88-5-317t5-317q10-208 124-322t322-124q88-5 317-5t317 5q208 10 322 124t124 322q5 88 5 317z"/></svg></span></span><div class="footer-social__txt"><span class="footer-social__name">Instagram</span> <span class="footer-social__user">@ourcodeworld</span></div></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+                                        
+        
+            <script type="text/javascript">
+            (function () {
+                var bsa = document.createElement('script');
+                bsa.type = 'text/javascript';
+                bsa.async = true;
+                bsa.src = '//s3.buysellads.com/ac/bsa.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(bsa);
+            })();
+        </script>
+        <script src="//m.servedby-buysellads.com/monetization.js" type="text/javascript"></script>
+        <script>
+            (function () {
+                if (typeof _bsa !== 'undefined' && _bsa) {
+                    _bsa.init('fancybar', 'CK7DK53I', 'placement:ourcodeworldcom');
+                }
+            })();
+        </script>
+        <style>
+            #_fbn_ > * {
+                transition: all .7s ease-in-out;
+            }
+            ._bsa_hide ._bsa_fancybar {
+                top: auto !important;
+                bottom: -100% !important;
+            }
+            ._bsa_show ._bsa_fancybar {
+                top: auto !important;
+                bottom: 0 !important;
+            }
+        </style>
+    
+                
+            <script src="https://cdn.ourcodeworld.com/assets/vendor/marquee/jquery.marquee.min.js" defer></script>
+    <script type="text/javascript" src="https://cdn.ourcodeworld.com/assets-v2/libs/jssocials/jssocials.min.js" defer></script>
+    <link type="text/css" rel="stylesheet" href="https://cdn.ourcodeworld.com/assets-v2/libs/jssocials/jssocials.css" />
+    <link type="text/css" rel="stylesheet" href="https://cdn.ourcodeworld.com/assets-v2/libs/jssocials/jssocials-theme-flat.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+    <style>
+        div.code-toolbar {
+            position: relative;
+        }
+
+        div.code-toolbar > .toolbar {
+            position: absolute;
+            top: .3em;
+            right: .2em;
+            transition: opacity 0.3s ease-in-out;
+            opacity: 0;
+        }
+
+        div.code-toolbar:hover > .toolbar {
+            opacity: 1;
+        }
+
+        div.code-toolbar > .toolbar .toolbar-item {
+            display: inline-block;
+        }
+
+        div.code-toolbar > .toolbar a {
+            cursor: pointer;
+            color: white;
+        }
+    </style>
+
+        <link href="https://cdn.ourcodeworld.com/assets-v2/libs/prism/prism.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.ourcodeworld.com/assets-v2/libs/prism/prism-treeview.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.ourcodeworld.com/assets-v2/libs/prism/prism.js" defer></script>
+    <script src="https://cdn.ourcodeworld.com/assets-v2/libs/prism/prism-treeview.js" defer></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@17.1.3/dist/lazyload.min.js" defer></script>
+
+    
+                <script src="https://cdn.ourcodeworld.com/assets-v2/libs/scrolltofixed/scrolltofixed.js" defer></script>
+
+            <link href="https://cdn.ourcodeworld.com/assets-v2/libs/zoom/zoom.css" rel="stylesheet" type="text/css">
+    <script src="https://cdn.ourcodeworld.com/assets-v2/libs/zoom/zoom.min.js" defer></script>
+
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                $(function(){
+                    $('#article-content').find('img').each(function () {
+                        $(this).attr("data-action", "zoom");
+                    });
+
+                    $("#floating-social").scrollToFixed({
+                        marginTop: 15,
+                        zIndex: 400
+                    });
+                });
+            });
+        </script>
+        <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            $(function () {
+                window.lazyFunctions = window.lazyFunctions || {};
+
+                var ll = new LazyLoad({
+                    unobserve_entered: true,
+                    callback_enter: function(element) {
+                        var lazyFunctionName = element.getAttribute(
+                            "data-lazy-function"
+                        );
+                        var lazyFunction = window.lazyFunctions[lazyFunctionName];
+                        if (!lazyFunction) return;
+                        lazyFunction(element);
+                    }
+                });
+
+                $("#ocw-share").jsSocials({
+                    showLabel: true,
+                    showCount: false,
+                    text: "Read How to create your own javascript library in Our Code World",
+                    shares: [
+                        {
+                            share: "email",
+                            logo: "data:image/svg+xml;base64,Cjxzdmcgdmlld0JveD0iMCAwIDE3OTIgMTc5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTE1MSA5NjBoMzE2cS0xLTMtMi41LTguNXQtMi41LTcuNWwtMjEyLTQ5NmgtNzA4bC0yMTIgNDk2cS0xIDMtMi41IDguNXQtMi41IDcuNWgzMTZsOTUgMTkyaDMyMHptNTEzIDMwdjQ4MnEwIDI2LTE5IDQ1dC00NSAxOWgtMTQwOHEtMjYgMC00NS0xOXQtMTktNDV2LTQ4MnEwLTYyIDI1LTEyM2wyMzgtNTUycTEwLTI1IDM2LjUtNDJ0NTIuNS0xN2g4MzJxMjYgMCA1Mi41IDE3dDM2LjUgNDJsMjM4IDU1MnEyNSA2MSAyNSAxMjN6IiBmaWxsPSIjZmZmIi8+PC9zdmc+"
+                        },
+                        {
+                            share: "twitter",
+                            logo: "data:image/svg+xml;base64,Cjxzdmcgdmlld0JveD0iMCAwIDE3OTIgMTc5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTY4NCA0MDhxLTY3IDk4LTE2MiAxNjcgMSAxNCAxIDQyIDAgMTMwLTM4IDI1OS41dC0xMTUuNSAyNDguNS0xODQuNSAyMTAuNS0yNTggMTQ2LTMyMyA1NC41cS0yNzEgMC00OTYtMTQ1IDM1IDQgNzggNCAyMjUgMCA0MDEtMTM4LTEwNS0yLTE4OC02NC41dC0xMTQtMTU5LjVxMzMgNSA2MSA1IDQzIDAgODUtMTEtMTEyLTIzLTE4NS41LTExMS41dC03My41LTIwNS41di00cTY4IDM4IDE0NiA0MS02Ni00NC0xMDUtMTE1dC0zOS0xNTRxMC04OCA0NC0xNjMgMTIxIDE0OSAyOTQuNSAyMzguNXQzNzEuNSA5OS41cS04LTM4LTgtNzQgMC0xMzQgOTQuNS0yMjguNXQyMjguNS05NC41cTE0MCAwIDIzNiAxMDIgMTA5LTIxIDIwNS03OC0zNyAxMTUtMTQyIDE3OCA5My0xMCAxODYtNTB6IiBmaWxsPSIjZmZmIi8+PC9zdmc+"
+                        },
+                        {
+                            share: "facebook",
+                            logo: "data:image/svg+xml;base64,Cjxzdmcgdmlld0JveD0iMCAwIDE3OTIgMTc5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTM0MyAxMnYyNjRoLTE1N3EtODYgMC0xMTYgMzZ0LTMwIDEwOHYxODloMjkzbC0zOSAyOTZoLTI1NHY3NTloLTMwNnYtNzU5aC0yNTV2LTI5NmgyNTV2LTIxOHEwLTE4NiAxMDQtMjg4LjV0Mjc3LTEwMi41cTE0NyAwIDIyOCAxMnoiIGZpbGw9IiNmZmYiLz48L3N2Zz4="
+                        },
+                        {
+                            share: "linkedin",
+                            logo: "data:image/svg+xml;base64,Cjxzdmcgdmlld0JveD0iMCAwIDE3OTIgMTc5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNNDc3IDYyNXY5OTFoLTMzMHYtOTkxaDMzMHptMjEtMzA2cTEgNzMtNTAuNSAxMjJ0LTEzNS41IDQ5aC0ycS04MiAwLTEzMi00OXQtNTAtMTIycTAtNzQgNTEuNS0xMjIuNXQxMzQuNS00OC41IDEzMyA0OC41IDUxIDEyMi41em0xMTY2IDcyOXY1NjhoLTMyOXYtNTMwcTAtMTA1LTQwLjUtMTY0LjV0LTEyNi41LTU5LjVxLTYzIDAtMTA1LjUgMzQuNXQtNjMuNSA4NS41cS0xMSAzMC0xMSA4MXY1NTNoLTMyOXEyLTM5OSAyLTY0N3QtMS0yOTZsLTEtNDhoMzI5djE0NGgtMnEyMC0zMiA0MS01NnQ1Ni41LTUyIDg3LTQzLjUgMTE0LjUtMTUuNXExNzEgMCAyNzUgMTEzLjV0MTA0IDMzMi41eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg=="
+                        },
+                        {
+                            share: "pinterest",
+                            logo: "data:image/svg+xml;base64,Cjxzdmcgdmlld0JveD0iMCAwIDE3OTIgMTc5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTY2NCA4OTZxMCAyMDktMTAzIDM4NS41dC0yNzkuNSAyNzkuNS0zODUuNSAxMDNxLTExMSAwLTIxOC0zMiA1OS05MyA3OC0xNjQgOS0zNCA1NC0yMTEgMjAgMzkgNzMgNjcuNXQxMTQgMjguNXExMjEgMCAyMTYtNjguNXQxNDctMTg4LjUgNTItMjcwcTAtMTE0LTU5LjUtMjE0dC0xNzIuNS0xNjMtMjU1LTYzcS0xMDUgMC0xOTYgMjl0LTE1NC41IDc3LTEwOSAxMTAuNS02NyAxMjkuNS0yMS41IDEzNHEwIDEwNCA0MCAxODN0MTE3IDExMXEzMCAxMiAzOC0yMCAyLTcgOC0zMXQ4LTMwcTYtMjMtMTEtNDMtNTEtNjEtNTEtMTUxIDAtMTUxIDEwNC41LTI1OS41dDI3My41LTEwOC41cTE1MSAwIDIzNS41IDgydDg0LjUgMjEzcTAgMTcwLTY4LjUgMjg5dC0xNzUuNSAxMTlxLTYxIDAtOTgtNDMuNXQtMjMtMTA0LjVxOC0zNSAyNi41LTkzLjV0MzAtMTAzIDExLjUtNzUuNXEwLTUwLTI3LTgzdC03Ny0zM3EtNjIgMC0xMDUgNTd0LTQzIDE0MnEwIDczIDI1IDEyMmwtOTkgNDE4cS0xNyA3MC0xMyAxNzctMjA2LTkxLTMzMy0yODF0LTEyNy00MjNxMC0yMDkgMTAzLTM4NS41dDI3OS41LTI3OS41IDM4NS41LTEwMyAzODUuNSAxMDMgMjc5LjUgMjc5LjUgMTAzIDM4NS41eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg=="
+                        },
+                        {
+                            share: "whatsapp",
+                            logo: "data:image/svg+xml;base64,Cjxzdmcgdmlld0JveD0iMCAwIDE3OTIgMTc5MiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTExMyA5NzRxMTMgMCA5Ny41IDQ0dDg5LjUgNTNxMiA1IDIgMTUgMCAzMy0xNyA3Ni0xNiAzOS03MSA2NS41dC0xMDIgMjYuNXEtNTcgMC0xOTAtNjItOTgtNDUtMTcwLTExOHQtMTQ4LTE4NXEtNzItMTA3LTcxLTE5NHYtOHEzLTkxIDc0LTE1OCAyNC0yMiA1Mi0yMiA2IDAgMTggMS41dDE5IDEuNXExOSAwIDI2LjUgNi41dDE1LjUgMjcuNXE4IDIwIDMzIDg4dDI1IDc1cTAgMjEtMzQuNSA1Ny41dC0zNC41IDQ2LjVxMCA3IDUgMTUgMzQgNzMgMTAyIDEzNyA1NiA1MyAxNTEgMTAxIDEyIDcgMjIgNyAxNSAwIDU0LTQ4LjV0NTItNDguNXptLTIwMyA1MzBxMTI3IDAgMjQzLjUtNTB0MjAwLjUtMTM0IDEzNC0yMDAuNSA1MC0yNDMuNS01MC0yNDMuNS0xMzQtMjAwLjUtMjAwLjUtMTM0LTI0My41LTUwLTI0My41IDUwLTIwMC41IDEzNC0xMzQgMjAwLjUtNTAgMjQzLjVxMCAyMDMgMTIwIDM2OGwtNzkgMjMzIDI0Mi03N3ExNTggMTA0IDM0NSAxMDR6bTAtMTM4MnExNTMgMCAyOTIuNSA2MHQyNDAuNSAxNjEgMTYxIDI0MC41IDYwIDI5Mi41LTYwIDI5Mi41LTE2MSAyNDAuNS0yNDAuNSAxNjEtMjkyLjUgNjBxLTE5NSAwLTM2NS05NGwtNDE3IDEzNCAxMzYtNDA1cS0xMDgtMTc4LTEwOC0zODkgMC0xNTMgNjAtMjkyLjV0MTYxLTI0MC41IDI0MC41LTE2MSAyOTIuNS02MHoiIGZpbGw9IiNmZmYiLz48L3N2Zz4="
+                        }                        
+                    ]
+                });
+            });
+            
+                                                var bsaRecommendedTemplate = [
+                        '<li class="posts__item posts__item--category-1" style="padding-bottom: 10px;">',
+                            '<div class="posts__inner">',
+                                '<h6 class="posts__title"><a href="##link##">##title##</a></h6>',
+                                '<span class="posts__date">by ##company##</span>',
+                                '<div class="posts__cat">',
+                                    '<span style="background-color: #06a9f4;" class="label posts__cat-label">Sponsored</span>',
+                                '</div>',
+                            '</div>',
+                        '</li>'
+                    ];
+
+                    _bsa.init('recommended', 'CK7I4K7I', 'placement:ourcodeworldcom',{
+                        target: '.posts--simple-list > li',
+                        template:  bsaRecommendedTemplate.join("")
+                    });
+                                    });
+    </script>
+            <script id="dsq-count-scr" src="//ourcodeworld.disqus.com/count.js" async></script>
+        </body>
+</html>
