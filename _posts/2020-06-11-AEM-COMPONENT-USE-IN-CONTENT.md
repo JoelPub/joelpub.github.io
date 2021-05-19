@@ -14,6 +14,7 @@ https://sourcedcode.com/blog/aem/how-many-times-is-an-aem-component-used-in-the-
 
 
 ```javascript
+http://localhost:4502/libs/cq/search/content/querydebug.html
   
 path=/content/ford/cn/zh_cn
 1_property=sling:resourceType
