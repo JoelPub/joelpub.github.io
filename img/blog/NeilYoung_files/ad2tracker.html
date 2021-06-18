@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html><head lang="zh-tw">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1,initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Third Party Cookie Container</title>
+  </head>
+  <body>
+    <script>
+      const cname = 'ad2udid';
+      const cookie = {
+        set (cname, cvalue, exdays) {
+          const d = new Date();
+          d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+          const expires = 'expires='+ d.toUTCString();
+          document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+        },
+        get(cname) {
+          const name = cname + '=',
+                ca = document.cookie.split(';');
+          let r = ''; 
+          for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+              r = c.substring(name.length, c.length);
+              break;
+            }
+          }
+          return r;
+        }
+      }
+      const search = location.search.substring(1),
+            params = (search!=='')?JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}'):{};
+      if (params.hasOwnProperty(cname)) {
+        cookie.set(cname, params[cname], 99999);
+      }else{
+        window.parent.postMessage({udid: cookie.get(cname)}, '*');
+      }
+    </script>
+  
+
+</body></html>
